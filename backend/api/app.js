@@ -25,6 +25,16 @@ app.get('/listagem-pessoa', async (req, res) => {
   }
 });
 
+app.get('listagem-texto' , async (req,res) => {
+  try{
+    const { rows } = await db.query('SELECT * FROM texto');
+    res.json(rows);
+  }
+  catch(err){
+    res.status(500).send(err.message);
+  }
+});
+
 
 //CREATE
 app.post('/novo-usuario', async (req, res) => {
@@ -61,6 +71,21 @@ app.post('/novo-pessoa', async (req, res) => {
     }
     
     res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/novo-texto', async (req, res) => {
+  try{
+    const { conteudo, id_usuario } = req.body;
+
+    const result = await db.query(
+      'INSERT INTO public.texto (conteudo, id_usuario) VALUES ($1, $2) RETURNING *',
+      [conteudo, id_usuario]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch(err){
+    res.status(500).json({ error: err.message });
   }
 });
 
