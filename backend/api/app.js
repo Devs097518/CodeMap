@@ -1,8 +1,11 @@
 import express from 'express';
+import cors from 'cors';
 import db from '../db/db.js';
 
 
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 
 
@@ -89,4 +92,4 @@ app.post('/novo-texto', async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log('Servidor rodando na porta 3000'));
+app.listen(3003, () => console.log('Servidor rodando na porta 3003'));

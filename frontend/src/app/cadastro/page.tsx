@@ -1,21 +1,52 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { cadastrarCompleto } from '../../service/cadastro-service';
+
 
 export default function RegisterScreen() {
+
+    const [username, setUsername] = useState("");
+    const [uf, setUF] = useState("");
+    const [email, setEmail] = useState("");
+    const [senha, setSenha] = useState("");
+
+    const router = useRouter();
+
     const [formData, setFormData] = useState({
-        nome: '',
         username: '',
         estado: '',
         email: '',
         senha: ''
     });
 
-    const handleChange = (field: string, value: string) => {
-        setFormData({ ...formData, [field]: value });
-    };
 
     const handleRegister = () => {
+        if (!username || !uf || !email || !senha) {
+            console.log('Preencha todos os campos');
+            return;
+        }
+
+        try {
+            cadastrarCompleto({
+                email: email,
+                senha: senha,
+                username: username,
+                uf: uf,
+            });
+            setUsername("");
+            setUF("");
+            setEmail("");
+            setSenha("");
+
+            router.push('../')
+        }
+        catch (error: any) {
+            console.log(error);
+        }
+
         console.log('Cadastro:', formData);
     };
 
@@ -27,28 +58,21 @@ export default function RegisterScreen() {
                 <div className="bg-white rounded-lg shadow-lg p-8 w-100">
                     <h2 className="text-2xl text-black font-medium mb-6">Cadastrar Conta</h2>
 
-                    <input
-                        type="text"
-                        placeholder="Nome"
-                        value={formData.estado}
-                        onChange={(e) => handleChange('estado', e.target.value)}
-                        className="w-full px-3 py-2 mb-4 border border-gray-300 rounded-md text-1xl text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
                     <div className="grid grid-cols-2 gap-3 mb-4">
 
                         <input
                             type="text"
                             placeholder="Username"
-                            value={formData.nome}
-                            onChange={(e) => handleChange('nome', e.target.value)}
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
                             className="px-3 py-2 border border-gray-300 rounded-md text-1xl text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
 
                         <input
                             type="text"
                             placeholder="UF"
-                            value={formData.username}
-                            onChange={(e) => handleChange('username', e.target.value)}
+                            value={uf}
+                            onChange={(e) => setUF(e.target.value)}
                             className="px-3 py-2 border border-gray-300 rounded-md text-1xl text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
@@ -59,28 +83,26 @@ export default function RegisterScreen() {
                         <input
                             type="email"
                             placeholder="Email"
-                            value={formData.email}
-                            onChange={(e) => handleChange('email', e.target.value)}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             className="px-3 py-2 border border-gray-300 rounded-md text-1xl text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
 
                         <input
                             type="password"
                             placeholder="Senha"
-                            value={formData.senha}
-                            onChange={(e) => handleChange('senha', e.target.value)}
+                            value={senha}
+                            onChange={(e) => setSenha(e.target.value)}
                             className="px-3 py-2 border border-gray-300 rounded-md text-1xl text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
-                    <a href="../">
-                        <button
-                            onClick={handleRegister}
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md text-1xl transition-colors"
-                        >
-                            cadastrar
-                        </button>
-                    </a>
+                    <button
+                        onClick={handleRegister}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md text-1xl transition-colors"
+                    >
+                        cadastrar
+                    </button>
 
 
                 </div>
