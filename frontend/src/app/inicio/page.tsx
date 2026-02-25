@@ -1,18 +1,44 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
+import { SalvarTexto , obterConteudoPorID } from '../../service/conteudo-service';
 
 export default function NotesScreen() {
-  const [noteText, setNoteText] = useState('');
+  const [conteudo, setConteudo] = useState('');
+  const id_usuario = sessionStorage.getItem('idUsuario');
   const [savedNote, setSavedNote] = useState('');
 
+  useEffect(()=>{
+    if (id_usuario) {
+      obterConteudoPorID(id_usuario).then((conteudoTexto) => {
+        setSavedNote(String(conteudoTexto));
+      });
+    }
+  }, [id_usuario]);
+
   const handleSave = () => {
-    setSavedNote(noteText);
-    setNoteText('');
+    if (!conteudo || !id_usuario) {
+                console.log('Preencha todos os campos');
+                return;
+            }
+    
+            try {
+                SalvarTexto({
+                    conteudo: conteudo,
+                    id_usuario: id_usuario,
+                });
+                setConteudo("");
+            }
+            catch (error: any) {
+                console.log(error);
+            }
+
+    setSavedNote(conteudo);
   };
 
   const handleLogout = () => {
     console.log('Sessão encerrada');
+    sessionStorage.clear();
   };
 
   return (
@@ -42,8 +68,8 @@ export default function NotesScreen() {
         <div className="flex gap-2">
           <input
             type="text"
-            value={noteText}
-            onChange={(e) => setNoteText(e.target.value)}
+            value={conteudo}
+            onChange={(e) => setConteudo(e.target.value)}
             placeholder=""
             className="flex-1 px-4 py-2 border bg-white text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />

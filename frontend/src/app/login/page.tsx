@@ -1,13 +1,34 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { obterIdUsuarioLogado } from '../../service/usuario-service';
 
 export default function LoginScreen() {
+
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
 
-    const handleLogin = () => {
-        console.log('Login:', { email, senha });
+    const router = useRouter();
+
+    sessionStorage.setItem("email", email);
+    sessionStorage.setItem("senha", senha);
+
+
+    const handleLogin = async () => {
+        try {
+            let dados = await obterIdUsuarioLogado();
+            if (dados) {
+                sessionStorage.setItem("idUsuario", dados.toString());
+                router.push('/inicio');
+            }else{
+                alert('email ou senha incorretos');
+            }
+
+        }
+        catch (error: any) {
+            console.log(error);
+        }
     };
 
     return (
@@ -34,14 +55,14 @@ export default function LoginScreen() {
                         className="w-full px-4 py-2 mb-6 border text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
 
-                    <a href="/inicio">
-                        <button
-                            onClick={handleLogin}
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-8 rounded-md transition-colors"
-                        >
-                            Entrar
-                        </button>
-                    </a>
+
+                    <button
+                        onClick={handleLogin}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-8 rounded-md transition-colors"
+                    >
+                        Entrar
+                    </button>
+
 
                 </div>
             </div>
