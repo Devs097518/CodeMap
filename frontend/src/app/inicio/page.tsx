@@ -1,37 +1,43 @@
 'use client';
 
-import React, { useState , useEffect} from 'react';
-import { SalvarTexto , obterConteudoPorID } from '../../service/conteudo-service';
+import React, { useState, useEffect } from 'react';
+import { SalvarTexto, obterConteudoPorID } from '../../service/conteudo-service';
 
 export default function NotesScreen() {
-  const [conteudo, setConteudo] = useState('');
-  const id_usuario = sessionStorage.getItem('idUsuario');
-  const [savedNote, setSavedNote] = useState('');
+  let id_usuario = sessionStorage.getItem('idUsuario');
+  const [conteudo, setConteudo] = useState('');      // ← o que o usuário digita
+  const [savedNote, setSavedNote] = useState('');    // ← o que veio do banco
 
-  useEffect(()=>{
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const id_usuario = sessionStorage.getItem('idUsuario');
+
     if (id_usuario) {
-      obterConteudoPorID(id_usuario).then((conteudoTexto) => {
-        setSavedNote(String(conteudoTexto));
-      });
+      obterConteudoPorID(id_usuario)
+        .then((conteudoTexto) => {
+          setSavedNote(String(conteudoTexto));  // ← só atualiza o que veio do banco
+        })
+        .catch((err) => console.error(err));
     }
-  }, [id_usuario]);
+  }, []);
 
   const handleSave = () => {
     if (!conteudo || !id_usuario) {
-                console.log('Preencha todos os campos');
-                return;
-            }
-    
-            try {
-                SalvarTexto({
-                    conteudo: conteudo,
-                    id_usuario: id_usuario,
-                });
-                setConteudo("");
-            }
-            catch (error: any) {
-                console.log(error);
-            }
+      console.log('Preencha todos os campos');
+      return;
+    }
+
+    try {
+      SalvarTexto({
+        conteudo: conteudo,
+        id_usuario: id_usuario,
+      });
+      setConteudo("");
+    }
+    catch (error: any) {
+      console.log(error);
+    }
 
     setSavedNote(conteudo);
   };

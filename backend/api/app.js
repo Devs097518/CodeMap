@@ -121,14 +121,14 @@ app.post('/novo-pessoa', async (req, res) => {
 
 app.get('/listagem-texto', async (req, res) => {
   try {
-    const { id } = req.query; // ← Pega o id da query string
+    const { id_usuario } = req.query; // ← muda para id_usuario
 
     let query = `SELECT * FROM texto`;
     let params = [];
 
-    if (id) {
-      query += ` WHERE id = $1`;
-      params.push(id);
+    if (id_usuario) {
+      query += ` WHERE id_usuario = $1`; // ← filtra pela coluna certa
+      params.push(id_usuario);
     }
 
     const { rows } = await db.query(query, params);
