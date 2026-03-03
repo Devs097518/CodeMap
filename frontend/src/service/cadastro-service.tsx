@@ -87,15 +87,7 @@ export async function cadastrarPessoa(
 
 // ─── Serviço principal ────────────────────────────────────────────────────────
 
-/**
- * Orquestra o cadastro completo:
- * 1. Cria o usuário e obtém o id_usuario gerado
- * 2. Usa esse id_usuario para criar a pessoa vinculada
- *
- * Se a criação do usuário for bem-sucedida mas a criação da pessoa falhar,
- * o erro é capturado e relançado com contexto para que a camada de UI
- * possa tratar adequadamente (ex.: alertar o usuário ou tentar novamente).
- */
+
 export async function cadastrarCompleto(
   payload: CadastroCompletoPayload
 ): Promise<CadastroCompletoResponse> {

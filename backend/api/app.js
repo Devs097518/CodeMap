@@ -33,17 +33,17 @@ app.get('/listagem-usuario', async (req, res) => {
   }
 });
 
-app.get('/texto/:id_usuario', async (req, res) => {
+app.get('/nota/:id_usuario', async (req, res) => {
   try {
     const { id_usuario } = req.params;
 
     const result = await db.query(
-      'SELECT * FROM public.texto WHERE id_usuario = $1',
+      'SELECT * FROM public.nota WHERE id_usuario = $1',
       [id_usuario]
     );
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ status: 'erro', mensagem: 'Nenhum texto encontrado' });
+      return res.status(404).json({ status: 'erro', mensagem: 'Nenhum nota encontrado' });
     }
 
     res.status(200).json(result.rows[0]);
@@ -106,24 +106,14 @@ app.post('/novo-pessoa', async (req, res) => {
 
 
 /*
-  TEXTO
+  nota
 */
 
-// app.get('listagem-texto', async (req, res) => {
-//   try {
-//     const { rows } = await db.query('SELECT * FROM texto');
-//     res.json(rows);
-//   }
-//   catch (err) {
-//     res.status(500).send(err.message);
-//   }
-// });
-
-app.get('/listagem-texto', async (req, res) => {
+app.get('/listagem-nota', async (req, res) => {
   try {
     const { id_usuario } = req.query; // ← muda para id_usuario
 
-    let query = `SELECT * FROM texto`;
+    let query = `SELECT * FROM nota`;
     let params = [];
 
     if (id_usuario) {
@@ -139,12 +129,12 @@ app.get('/listagem-texto', async (req, res) => {
 });
 
 
-app.post('/novo-texto', async (req, res) => {
+app.post('/novo-nota', async (req, res) => {
   try {
     const { conteudo, id_usuario } = req.body;
 
     const result = await db.query(
-      'INSERT INTO public.texto (conteudo, id_usuario) VALUES ($1, $2) RETURNING *',
+      'INSERT INTO public.nota (conteudo, id_usuario) VALUES ($1, $2) RETURNING *',
       [conteudo, id_usuario]
     );
 
@@ -154,18 +144,38 @@ app.post('/novo-texto', async (req, res) => {
   }
 });
 
-app.put('/editar-texto/:id_usuario', async (req, res) => {
+app.put('/editar-nota/:id_usuario', async (req, res) => {
   try {
     const { id_usuario } = req.params;
     const { conteudo } = req.body;
 
     const result = await db.query(
-      'UPDATE public.texto SET conteudo = $1 WHERE id_usuario = $2 RETURNING *',
+      'UPDATE public.nota SET conteudo = $1 WHERE id_usuario = $2 RETURNING *',
       [conteudo, id_usuario]
     );
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ status: 'erro', mensagem: 'Texto não encontrado' });
+      return res.status(404).json({ status: 'erro', mensagem: 'nota não encontrado' });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ status: 'erro', mensagem: err.message });
+  }
+});
+
+
+app.delete('/deletar-nota/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await db.query(
+      'DELETE FROM public.nota WHERE id_nota = $1 RETURNING *',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ status: 'erro', mensagem: 'Nota não encontrada' });
     }
 
     res.status(200).json(result.rows[0]);

@@ -1,5 +1,7 @@
 CREATE DATABASE codemap;
 
+USE codemap;
+
 CREATE TABLE usuario(
     id_usuario SERIAL PRIMARY KEY,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -14,8 +16,8 @@ CREATE TABLE pessoa(
 );
 
 
-CREATE TABLE texto(
-    id_texto SERIAL PRIMARY KEY,
+CREATE TABLE nota(
+    id_nota SERIAL PRIMARY KEY,
     conteudo TEXT NOT NULL,
-    id_usuario INTEGER UNIQUE REFERENCES usuario(id_usuario)
+    id_usuario INTEGER REFERENCES usuario(id_usuario)
 );

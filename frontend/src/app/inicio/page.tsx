@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { SalvarTexto, obterConteudoPorID } from '../../service/conteudo-service';
+import { SalvarNota, obterConteudoPorID } from '../../service/conteudo-service';
 
 export default function NotesScreen() {
   let id_usuario = sessionStorage.getItem('idUsuario');
@@ -15,8 +15,8 @@ export default function NotesScreen() {
 
     if (id_usuario) {
       obterConteudoPorID(id_usuario)
-        .then((conteudoTexto) => {
-          setSavedNote(String(conteudoTexto));  // ← só atualiza o que veio do banco
+        .then((conteudoNota) => {
+          setSavedNote(String(conteudoNota));  // ← só atualiza o que veio do banco
         })
         .catch((err) => console.error(err));
     }
@@ -29,7 +29,7 @@ export default function NotesScreen() {
     }
 
     try {
-      SalvarTexto({
+      SalvarNota({
         conteudo: conteudo,
         id_usuario: id_usuario,
       });

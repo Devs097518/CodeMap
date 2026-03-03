@@ -6,7 +6,7 @@ import { API_URL, defaultHeaders } from './api';
 // }
 
 // O que você envia para criar (POST)
-export interface CadastroTexto {
+export interface CadastroNota {
   conteudo: string;
   id_usuario: string;
 }
@@ -14,14 +14,14 @@ export interface CadastroTexto {
 
 
 
-export async function SalvarTexto(dados: CadastroTexto): Promise<void> {
-  // Verifica se o usuário já possui um texto cadastrado ##############################
-  const textoExistente = await BuscarTextoPorUsuario(dados.id_usuario);
+export async function SalvarNota(dados: CadastroNota): Promise<void> {
+  // Verifica se o usuário já possui uma nota cadastrado ##############################
+  const NotaExistente = await BuscarNotaPorUsuario(dados.id_usuario);
 
-  const method = textoExistente ? 'PUT' : 'POST';
-  const url = textoExistente
-    ? `${API_URL}/editar-texto/${dados.id_usuario}`
-    : `${API_URL}/novo-texto`;
+  const method = NotaExistente ? 'PUT' : 'POST';
+  const url = NotaExistente
+    ? `${API_URL}/editar-nota/${dados.id_usuario}`
+    : `${API_URL}/novo-nota`;
 
   const response = await fetch(url, {
     method,
@@ -37,20 +37,20 @@ export async function SalvarTexto(dados: CadastroTexto): Promise<void> {
   }
 
   if (!response.ok || result.status === 'erro') {
-    throw new Error(result.mensagem || `Erro ao salvar texto (HTTP ${response.status})`);
+    throw new Error(result.mensagem || `Erro ao salvar nota (HTTP ${response.status})`);
   }
 }
 
 
 
-// Busca para saber se já existe texto do usuário ###################################
-async function BuscarTextoPorUsuario(id_usuario: string): Promise<boolean> {
-  const response = await fetch(`${API_URL}/texto/${id_usuario}`, {
+// Busca para saber se já existe nota do usuário ###################################
+async function BuscarNotaPorUsuario(id_usuario: string): Promise<boolean> {
+  const response = await fetch(`${API_URL}/nota/${id_usuario}`, {
     headers: defaultHeaders(),
   });
 
   if (response.status === 404) return false;
-  if (!response.ok) throw new Error('Erro ao verificar texto existente');
+  if (!response.ok) throw new Error('Erro ao verificar nota existente');
 
   return true;
 }
@@ -58,29 +58,29 @@ async function BuscarTextoPorUsuario(id_usuario: string): Promise<boolean> {
 
 
 export async function obterConteudoPorID(id: string): Promise<number> {
-  const response = await fetch(`${API_URL}/listagem-texto?id_usuario=${id}`, {
+  const response = await fetch(`${API_URL}/listagem-nota?id_usuario=${id}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
 
   if (!response.ok) {
-    throw new Error("Erro ao buscar texto");
+    throw new Error("Erro ao buscar nota");
   }
 
-   const texto = await response.json(); // ← É um array
+   const nota = await response.json(); // ← É um array
   
-  if (!texto || texto.length === 0) {
+  if (!nota || nota.length === 0) {
     throw new Error("Usuário não encontrado");
   }
   
-  return texto[0].conteudo; // ← Pega o primeiro resultado do array
+  return nota[0].conteudo; // ← Pega o primeiro resultado do array
 }
 
 
 
 
-// export async function CriarTexto(dados: CadastroTexto): Promise<void> {
-//   const response = await fetch(`${API_URL}/novo-texto`, {
+// export async function CriarNota(dados: CadastroNota): Promise<void> {
+//   const response = await fetch(`${API_URL}/novo-Nota`, {
 //     method: 'POST',
 //     headers: defaultHeaders(),
 //     body: JSON.stringify(dados),
@@ -96,16 +96,16 @@ export async function obterConteudoPorID(id: string): Promise<number> {
 //   }
 
 //   if (!response.ok || result.status === 'erro') {
-//     throw new Error(result.mensagem || `Erro ao cadastrar texto (HTTP ${response.status})`);
+//     throw new Error(result.mensagem || `Erro ao cadastrar Nota (HTTP ${response.status})`);
 //   }
 // }
 
-// export class TextoService {
+// export class NotaService {
 //   /**
 //    * POST: Cadastra um novo autor
 //    */
-//   async CriarTexto(dados: CadastroTexto): Promise<void> {
-//     const response = await fetch(`${API_URL}/novo-texto`, {
+//   async CriarNota(dados: CadastroNota): Promise<void> {
+//     const response = await fetch(`${API_URL}/novo-Nota`, {
 //       method: 'POST',
 //       headers: defaultHeaders(),
 //       body: JSON.stringify(dados),
