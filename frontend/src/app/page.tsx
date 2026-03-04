@@ -11,7 +11,14 @@ export default function Home() {
       <nav className="w-full px-8 py-4 flex items-center justify-between text-white bg-[#0C0F4F]">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 font-bold text-base">
-          <span className="text-4xl">🧭</span>
+
+          <img
+            src="/imagens/CodeMap_Icone.png"
+            alt="Mapa de tesouro"
+            width={40}
+            height={40}
+            className="rounded-4xl"
+          />
           <h1 className='text-4xl'>CodeMap</h1>
           
         </Link>
@@ -33,7 +40,7 @@ export default function Home() {
         <div className="flex flex-col items-start gap-5 max-w-sm">
           <h1 className="text-3xl font-extrabold tracking-tight">BEM VINDO!</h1>
 
-          <p>
+          <p className='text-base/7'>
             Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dicta ducimus totam mollitia sequi, porro reprehenderit alias eum, ab incidunt ipsa nam harum perspiciatis quod amet molestiae vitae exercitationem accusantium error.
           </p>
 
