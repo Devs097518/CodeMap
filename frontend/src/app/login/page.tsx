@@ -2,16 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     // Simulate login
+    router.push('/inicio');
     await new Promise((r) => setTimeout(r, 1200));
     setLoading(false);
   };
