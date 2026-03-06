@@ -52,20 +52,20 @@ app.get('/nota/:id_usuario', async (req, res) => {
   }
 });
 
-app.post('/novo-usuario', async (req, res) => {
-  try {
-    const { email, senha } = req.body;
+// app.post('/novo-usuario', async (req, res) => {
+//   try {
+//     const { email, senha } = req.body;
 
-    const result = await db.query(
-      'INSERT INTO public.usuario (email, senha) VALUES ($1, $2) RETURNING *',
-      [email, senha]
-    );
+//     const result = await db.query(
+//       'INSERT INTO public.usuario (email, senha) VALUES ($1, $2) RETURNING *',
+//       [email, senha]
+//     );
 
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+//     res.status(201).json(result.rows[0]);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 
 
@@ -82,27 +82,27 @@ app.get('/listagem-pessoa', async (req, res) => {
   }
 });
 
-app.post('/novo-pessoa', async (req, res) => {
-  try {
-    const { username, uf, id_usuario } = req.body;
+// app.post('/novo-pessoa', async (req, res) => {
+//   try {
+//     const { username, uf, id_usuario } = req.body;
 
-    const result = await db.query(
-      'INSERT INTO public.pessoa (username, uf, id_usuario) VALUES ($1, $2, $3) RETURNING *',
-      [username, uf, id_usuario]
-    );
+//     const result = await db.query(
+//       'INSERT INTO public.pessoa (username, uf, id_usuario) VALUES ($1, $2, $3) RETURNING *',
+//       [username, uf, id_usuario]
+//     );
 
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
+//     res.status(201).json(result.rows[0]);
+//   } catch (error) {
 
-    if (error.code === '23503') {
-      return res.status(400).json({
-        error: 'Usuário não encontrado. O id_usuario informado não existe.'
-      });
-    }
+//     if (error.code === '23503') {
+//       return res.status(400).json({
+//         error: 'Usuário não encontrado. O id_usuario informado não existe.'
+//       });
+//     }
 
-    res.status(500).json({ error: error.message });
-  }
-});
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 
 /*
@@ -206,3 +206,44 @@ app.delete('/deletar-nota/:id', async (req, res) => {
 
 
 app.listen(3003, () => console.log('Servidor rodando na porta 3003'));
+
+
+//CADASTRO
+
+app.post('/novo-cadastro', async (req, res) => {
+  const { email, senha, username, uf } = req.body;
+  const client = await db.connect(); // pega uma conexão dedicada
+
+  try {
+    await client.query('BEGIN');
+
+    const usuarioResult = await client.query(
+      'INSERT INTO public.usuario (email, senha) VALUES ($1, $2) RETURNING *',
+      [email, senha]
+    );
+    const usuario = usuarioResult.rows[0];
+
+    const pessoaResult = await client.query(
+      'INSERT INTO public.pessoa (username, uf, id_usuario) VALUES ($1, $2, $3) RETURNING *',
+      [username, uf, usuario.id_usuario]
+    );
+
+    await client.query('COMMIT');
+
+    res.status(201).json({ usuario, pessoa: pessoaResult.rows[0] });
+
+  } catch (error) {
+    await client.query('ROLLBACK'); // desfaz tudo se qualquer insert falhar
+
+    if (error.constraint === 'usuario_email_key') {
+      return res.status(409).json({ error: 'usuario_email_key' });
+    }
+    if (error.constraint === 'pessoa_username_key') {
+      return res.status(409).json({ error: 'pessoa_username_key' });
+    }
+
+    res.status(500).json({ error: error.message });
+  } finally {
+    client.release(); // devolve a conexão para o pool
+  }
+});

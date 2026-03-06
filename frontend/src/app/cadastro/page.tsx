@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { cadastrarCompleto } from '../../service/cadastro-service';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -10,6 +12,9 @@ export default function LoginPage() {
     const [username, setUsername] = useState("");
     const [uf, setUf] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [fieldError, setFieldError] = useState<{ email?: string; username?: string } | null>(null);
+
+    const router = useRouter();
 
     const UF_OPTIONS = [
         "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO",
@@ -17,12 +22,43 @@ export default function LoginPage() {
         "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO",
     ];
 
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
-        // Simulate login
-        await new Promise((r) => setTimeout(r, 1200));
-        setLoading(false);
+
+        if (!username || !uf || !email || !password || !confirmPassword) {
+            console.log('Preencha todos os campos');
+            return;
+        }
+
+        setLoading(true); 
+
+        try {
+            await cadastrarCompleto({
+                email,
+                senha: password,
+                username,
+                uf,
+            });
+            router.push('../');
+        } catch (error: any) {
+            const msg: string = error?.message ?? "";
+
+            if (msg.includes("usuario_email_key")) {
+                setFieldError({ email: "Este e-mail já está cadastrado." });
+
+            } else if (msg.includes("pessoa_username_key")) {
+
+                setFieldError({ username: "Este username já está em uso." });
+
+            } else {
+                setFieldError(null);
+                console.log(error);
+            }
+
+            setLoading(false);
+        }
+
     };
 
     return (
@@ -65,9 +101,12 @@ export default function LoginPage() {
                                 type="text"
                                 required
                                 value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                onChange={(e) => { setUsername(e.target.value); setFieldError(null); }}
                                 className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-800 outline-none focus:border-[#2d2f6e] focus:ring-2 focus:ring-[#2d2f6e]/10 transition-all bg-white"
                             />
+                            {fieldError?.username && (
+                                <p className="text-xs text-red-400 mt-">{fieldError.username}</p>
+                            )}
                         </div>
 
                         <div className="flex flex-col gap-1 w-28">
@@ -102,10 +141,13 @@ export default function LoginPage() {
                             type="email"
                             autoComplete="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => { setEmail(e.target.value); setFieldError(null); }}
                             required
                             className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-800 outline-none focus:border-[#2d2f6e] focus:ring-2 focus:ring-[#2d2f6e]/10 transition-all bg-white placeholder-transparent"
                         />
+                        {fieldError?.email && (
+                            <p className="text-xs text-red-400 mt-1">{fieldError.email}</p>
+                        )}
                     </div>
 
                     <div className="flex gap-3">
@@ -183,67 +225,6 @@ export default function LoginPage() {
     );
 }
 
-function CompassIcon() {
-    return (
-        <svg
-            width="52"
-            height="52"
-            viewBox="0 0 52 52"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-            <defs>
-                <radialGradient
-                    id="outerRing"
-                    cx="50%"
-                    cy="30%"
-                    r="60%"
-                    fx="50%"
-                    fy="30%"
-                >
-                    <stop offset="0%" stopColor="#c8c4a0" />
-                    <stop offset="100%" stopColor="#7a7a8a" />
-                </radialGradient>
-                <radialGradient
-                    id="innerCircle"
-                    cx="40%"
-                    cy="35%"
-                    r="60%"
-                    fx="40%"
-                    fy="35%"
-                >
-                    <stop offset="0%" stopColor="#5a5870" />
-                    <stop offset="100%" stopColor="#2a2840" />
-                </radialGradient>
-            </defs>
-            {/* Outer ring */}
-            <circle cx="26" cy="26" r="25" fill="url(#outerRing)" />
-            {/* Inner circle */}
-            <circle cx="26" cy="26" r="18" fill="url(#innerCircle)" />
-            {/* Compass needle highlight */}
-            <ellipse
-                cx="26"
-                cy="20"
-                rx="3"
-                ry="7"
-                fill="white"
-                opacity="0.85"
-                transform="rotate(-20 26 26)"
-            />
-            <ellipse
-                cx="26"
-                cy="32"
-                rx="2.5"
-                ry="5"
-                fill="#888"
-                opacity="0.5"
-                transform="rotate(-20 26 26)"
-            />
-            {/* Center dot */}
-            <circle cx="26" cy="26" r="2" fill="white" opacity="0.9" />
-        </svg>
-    );
-}
 
 // 'use client';
 

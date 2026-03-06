@@ -88,30 +88,18 @@ export async function cadastrarPessoa(
 // ─── Serviço principal ────────────────────────────────────────────────────────
 
 
-export async function cadastrarCompleto(
-  payload: CadastroCompletoPayload
-): Promise<CadastroCompletoResponse> {
-  // Passo 1: criar o usuário
-  const usuario = await cadastrarUsuario({
-    email: payload.email,
-    senha: payload.senha,
+
+export async function cadastrarCompleto(payload: CadastroCompletoPayload) {
+  const res = await fetch('http://localhost:3003/novo-cadastro', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
   });
 
-  // Passo 2: criar a pessoa usando o id retornado pelo backend
-  let pessoa: PessoaResponse;
-  try {
-    pessoa = await cadastrarPessoa({
-      username: payload.username,
-      uf: payload.uf,
-      id_usuario: usuario.id_usuario,
-    });
-  } catch (pessoaError) {
-    throw new Error(
-      `Usuário criado (id: ${usuario.id_usuario}), mas houve falha ao criar os dados da pessoa: ${
-        pessoaError instanceof Error ? pessoaError.message : "Erro desconhecido"
-      }`
-    );
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error); 
   }
 
-  return { usuario, pessoa };
+  return res.json();
 }
