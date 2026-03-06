@@ -1,33 +1,70 @@
 'use client';
 
 import React from 'react';
+import Link from "next/link";
 
-export default function WelcomeScreen() {
+export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-200 to-blue-300 flex items-center justify-center p-4">
-      <div className="text-center">
-        <h1 className="text-3xl font-light mb-2 text-black">
-          Bem vindo ao <span className="font-semibold">CodeMap</span>!
-        </h1>
-        <p className="text-sm text-gray-700 mb-8">entre na sua conta para acessar o site</p>
+    <div className="min-h-screen bg-[#ffffff] text-black font-sans">
 
-        <div className="bg-white rounded-lg shadow-lg p-8 w-80">
-          <a href="/login">
-            <button className="w-full bg-gray-300 hover:bg-gray-400 text-black font-medium py-3 px-6 rounded-lg mb-4 transition-colors">
-              Entrar
-            </button>
-          </a>
+      {/* NAVBAR */}
+      <nav className="w-full px-8 py-4 flex items-center justify-between text-white bg-[#0C0F4F]">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 font-bold text-base">
 
-          <a href="/cadastro">
-            <button className="w-full bg-gray-300 hover:bg-gray-400 text-black font-medium py-3 px-6 rounded-lg transition-colors">
-              Cadastrar
-            </button>
-          </a>
+          <img
+            src="/imagens/CodeMap_Icone.png"
+            alt="Mapa de tesouro"
+            width={40}
+            height={40}
+            className="rounded-4xl"
+          />
+          <h1 className='text-4xl'>CodeMap</h1>
+          
+        </Link>
 
+        {/* Links */}
+        <ul className="flex items-center gap-20 text-sm font-medium text-white/80">
+          <li><Link href="#" className="hover:text-white transition-colors text-2xl">sobre</Link></li>
+          <li><Link href="#" className="hover:text-white transition-colors text-2xl">contato</Link></li>
+          <li>
+            <Link href="/login" className="hover:text-white transition-colors text-2xl">entrar</Link>
+          </li>
+        </ul>
+      </nav>
 
+      {/* HERO */}
+      <section className="max-w-5xl mx-auto px-8 py-20 flex flex-col md:flex-row items-center justify-between gap-12">
 
+        {/* Coluna esquerda */}
+        <div className="flex flex-col items-start gap-5 max-w-sm">
+          <h1 className="text-3xl font-extrabold tracking-tight">BEM VINDO!</h1>
+
+          <p className='text-base/7'>
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dicta ducimus totam mollitia sequi, porro reprehenderit alias eum, ab incidunt ipsa nam harum perspiciatis quod amet molestiae vitae exercitationem accusantium error.
+          </p>
+
+          <Link
+            href="/login"
+            className="mt-2 bg-[#312e81] hover:bg-[#3730a3] text-white font-semibold px-6 py-2.5 rounded-lg transition-colors"
+          >
+            entrar
+          </Link>
         </div>
-      </div>
+
+
+        {/* Coluna direita — Ilustração mapa de tesouro */}
+        <div className="flex-1 flex justify-center">
+          <img
+            src="/imagens/roadmap_img.avif"
+            alt="Mapa de tesouro"
+            width={480}
+            height={480}
+            className=""
+          />
+        </div>
+
+      </section>
     </div>
   );
 }
