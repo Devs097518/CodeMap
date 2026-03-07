@@ -26,6 +26,8 @@ export default function NotesPage() {
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
+  const username = sessionStorage.getItem('username');
+
   // Fecha o menu ao clicar fora
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -97,7 +99,7 @@ export default function NotesPage() {
           <li><Link href="#" className="hover:text-white transition-colors text-2xl">
             <div className="flex items-center gap-3">
               <UserCircleIcon />
-              <span>Deyv</span>
+              <span>{username}</span>
             </div>
           </Link></li>
 
@@ -123,7 +125,7 @@ export default function NotesPage() {
       <main className="flex-1 px-8 py-8 ml-28 max-w-2xl">
         {/* Greeting */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800">Olá, Deyv!</h1>
+          <h1 className="text-4xl font-bold text-gray-800">Olá, {username}!</h1>
           <p className="text-1xl text-gray-500">continue as suas notas</p>
         </div>
 

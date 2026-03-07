@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
+import { realizarLogin } from '../../service/usuario-service';
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,11 +14,50 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
     // Simulate login
-    router.push('/inicio');
+    try {
+      const idUsuario = await realizarLogin(email, password);
+      router.push('/inicio');
+    } catch (error: any) {
+      alert(error.message); // "Email não cadastrado" ou "Senha incorreta"
+    }
+
+
     await new Promise((r) => setTimeout(r, 1200));
     setLoading(false);
   };
+
+
+  /*
+
+        try {
+        const idUsuario = await realizarLogin(email, senha);
+        // redirecionar para home, por exemplo
+      } catch (error: any) {
+        setErro(error.message); // "Email não cadastrado" ou "Senha incorreta"
+      }
+
+      --------------------------------------------------------------------------
+
+
+         const handleLogin = async () => {
+         try {
+             let dados = await obterIdUsuarioLogado();
+             if (dados) {
+                 sessionStorage.setItem("idUsuario", dados.toString());
+                 router.push('/inicio');
+             }else{
+                 alert('email ou senha incorretos');
+             }
+
+         }
+         catch (error: any) {
+             console.log(error);
+         }
+     };
+
+  */
 
   return (
     <main className="min-h-screen bg-[#ffffff] flex items-center justify-center px-4">
@@ -113,67 +153,6 @@ export default function LoginPage() {
   );
 }
 
-function CompassIcon() {
-  return (
-    <svg
-      width="52"
-      height="52"
-      viewBox="0 0 52 52"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <defs>
-        <radialGradient
-          id="outerRing"
-          cx="50%"
-          cy="30%"
-          r="60%"
-          fx="50%"
-          fy="30%"
-        >
-          <stop offset="0%" stopColor="#c8c4a0" />
-          <stop offset="100%" stopColor="#7a7a8a" />
-        </radialGradient>
-        <radialGradient
-          id="innerCircle"
-          cx="40%"
-          cy="35%"
-          r="60%"
-          fx="40%"
-          fy="35%"
-        >
-          <stop offset="0%" stopColor="#5a5870" />
-          <stop offset="100%" stopColor="#2a2840" />
-        </radialGradient>
-      </defs>
-      {/* Outer ring */}
-      <circle cx="26" cy="26" r="25" fill="url(#outerRing)" />
-      {/* Inner circle */}
-      <circle cx="26" cy="26" r="18" fill="url(#innerCircle)" />
-      {/* Compass needle highlight */}
-      <ellipse
-        cx="26"
-        cy="20"
-        rx="3"
-        ry="7"
-        fill="white"
-        opacity="0.85"
-        transform="rotate(-20 26 26)"
-      />
-      <ellipse
-        cx="26"
-        cy="32"
-        rx="2.5"
-        ry="5"
-        fill="#888"
-        opacity="0.5"
-        transform="rotate(-20 26 26)"
-      />
-      {/* Center dot */}
-      <circle cx="26" cy="26" r="2" fill="white" opacity="0.9" />
-    </svg>
-  );
-}
 
 
 // import React, { useState } from 'react';
