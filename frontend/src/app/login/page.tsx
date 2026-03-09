@@ -19,8 +19,8 @@ export default function LoginPage() {
     try {
       const idUsuario = await realizarLogin(email, password);
       router.push('/inicio');
-    } catch (error: any) {
-      alert(error.message); // "Email não cadastrado" ou "Senha incorreta"
+    } catch (error: unknown) {
+      alert(error); // "Email não cadastrado" ou "Senha incorreta"
     }
 
 
@@ -28,36 +28,6 @@ export default function LoginPage() {
     setLoading(false);
   };
 
-
-  /*
-
-        try {
-        const idUsuario = await realizarLogin(email, senha);
-        // redirecionar para home, por exemplo
-      } catch (error: any) {
-        setErro(error.message); // "Email não cadastrado" ou "Senha incorreta"
-      }
-
-      --------------------------------------------------------------------------
-
-
-         const handleLogin = async () => {
-         try {
-             let dados = await obterIdUsuarioLogado();
-             if (dados) {
-                 sessionStorage.setItem("idUsuario", dados.toString());
-                 router.push('/inicio');
-             }else{
-                 alert('email ou senha incorretos');
-             }
-
-         }
-         catch (error: any) {
-             console.log(error);
-         }
-     };
-
-  */
 
   return (
     <main className="min-h-screen bg-[#ffffff] flex items-center justify-center px-4">

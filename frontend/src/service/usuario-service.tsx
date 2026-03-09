@@ -21,12 +21,13 @@ export async function realizarLogin(email: string, senha: string): Promise<numbe
   }
 
   const usuario = usuarios[0];
+  const usuario_id = usuario.id_usuario;
 
   if (usuario.senha !== senha) {
     throw new Error("Senha incorreta");
   }
 
- // Busca a pessoa vinculada ao id_usuario para pegar o username
+  // Busca a pessoa vinculada ao id_usuario para pegar o username
   const responsePessoa = await fetch(`${API_URL}/listagem-pessoa?id_usuario=${usuario.id_usuario}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
@@ -45,6 +46,7 @@ export async function realizarLogin(email: string, senha: string): Promise<numbe
 
   // Salva email e username no sessionStorage
   sessionStorage.setItem("email", email);
+  sessionStorage.setItem("id_usuario", usuario_id);
   sessionStorage.setItem("username", username);
 
   return usuario.id_usuario;

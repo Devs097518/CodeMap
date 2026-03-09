@@ -131,11 +131,11 @@ app.get('/listagem-nota', async (req, res) => {
 
 app.post('/novo-nota', async (req, res) => {
   try {
-    const { conteudo, id_usuario } = req.body;
+    const { conteudo, id_usuario, titulo } = req.body;
 
     const result = await db.query(
-      'INSERT INTO public.nota (conteudo, id_usuario) VALUES ($1, $2) RETURNING *',
-      [conteudo, id_usuario]
+      'INSERT INTO public.nota (conteudo, id_usuario, titulo) VALUES ($1, $2, $3) RETURNING *',
+      [conteudo, id_usuario, titulo]
     );
 
     res.status(201).json(result.rows[0]);

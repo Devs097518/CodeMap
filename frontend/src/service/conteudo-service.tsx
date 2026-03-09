@@ -1,35 +1,59 @@
 import { API_URL, defaultHeaders } from './api';
 
-// //GET
-// export interface Conteudo {
-//   id_usuario: number;
-// }
+// ─── Interfaces ───────────────────────────────────────────────────────────────
 
-// O que você envia para criar (POST)
-export interface CadastroNota {
+export interface Nota {
+  id: number;
+  titulo: string;
   conteudo: string;
   id_usuario: string;
 }
 
+export interface CriarNota {
+  titulo: string;
+  conteudo: string;
+  id_usuario: string;
+}
 
+export interface EditarNota {
+  titulo: string;
+  conteudo: string;
+}
 
+// ─── Listar todas as notas do usuário ─────────────────────────────────────────
 
-export async function SalvarNota(dados: CadastroNota): Promise<void> {
-  // Verifica se o usuário já possui uma nota cadastrado ##############################
-  const NotaExistente = await BuscarNotaPorUsuario(dados.id_usuario);
+export async function listarNotasPorUsuario(id_usuario: string): Promise<Nota[]> {
+  const response = await fetch(`${API_URL}/listagem-nota?id_usuario=${id_usuario}`, {
+    method: 'GET',
+    headers: defaultHeaders(),
+  });
 
-  const method = NotaExistente ? 'PUT' : 'POST';
-  const url = NotaExistente
-    ? `${API_URL}/editar-nota/${dados.id_usuario}`
-    : `${API_URL}/novo-nota`;
+  if (response.status === 404) return [];
 
-  const response = await fetch(url, {
-    method,
+  if (!response.ok) {
+    throw new Error(`Erro ao buscar notas (HTTP ${response.status})`);
+  }
+
+  const data = await response.json();
+
+  // Aceita tanto array direto quanto objeto com campo "notas"
+  if (Array.isArray(data)) return data as Nota[];
+  if (data?.notas && Array.isArray(data.notas)) return data.notas as Nota[];
+
+  return [];
+}
+
+// ─── Criar nova nota ──────────────────────────────────────────────────────────
+
+export async function criarNota(dados: CriarNota): Promise<Nota> {
+  const response = await fetch(`${API_URL}/novo-nota`, {
+    method: 'POST',
     headers: defaultHeaders(),
     body: JSON.stringify(dados),
   });
 
-  let result: { status?: string; mensagem?: string } = {};
+  let result: { status?: string; mensagem?: string; nota?: Nota } & Partial<Nota> = {};
+
   try {
     result = await response.json();
   } catch {
@@ -37,111 +61,57 @@ export async function SalvarNota(dados: CadastroNota): Promise<void> {
   }
 
   if (!response.ok || result.status === 'erro') {
-    throw new Error(result.mensagem || `Erro ao salvar nota (HTTP ${response.status})`);
+    throw new Error(result.mensagem || `Erro ao criar nota (HTTP ${response.status})`);
+  }
+
+  // Retorna a nota criada — aceita tanto { nota: {...} } quanto a nota direta
+  if (result.nota) return result.nota;
+  if (result.id) return result as Nota;
+
+  throw new Error('Resposta inesperada do servidor ao criar nota');
+}
+
+// ─── Editar nota existente ────────────────────────────────────────────────────
+
+export async function editarNota(id_nota: number, dados: EditarNota): Promise<void> {
+  const response = await fetch(`${API_URL}/editar-nota/${id_nota}`, {
+    method: 'PUT',
+    headers: defaultHeaders(),
+    body: JSON.stringify(dados),
+  });
+
+  let result: { status?: string; mensagem?: string } = {};
+
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error(`Erro HTTP ${response.status}: resposta inválida do servidor`);
+  }
+
+  if (!response.ok || result.status === 'erro') {
+    throw new Error(result.mensagem || `Erro ao editar nota (HTTP ${response.status})`);
   }
 }
 
+// ─── Excluir nota ─────────────────────────────────────────────────────────────
 
-
-// Busca para saber se já existe nota do usuário ###################################
-async function BuscarNotaPorUsuario(id_usuario: string): Promise<boolean> {
-  const response = await fetch(`${API_URL}/nota/${id_usuario}`, {
+export async function excluirNota(id_nota: number): Promise<void> {
+  const response = await fetch(`${API_URL}/deletar-nota/${id_nota}`, {
+    method: 'DELETE',
     headers: defaultHeaders(),
   });
 
-  if (response.status === 404) return false;
-  if (!response.ok) throw new Error('Erro ao verificar nota existente');
+  let result: { status?: string; mensagem?: string } = {};
 
-  return true;
-}
-
-
-
-export async function obterConteudoPorID(id: string): Promise<number> {
-  const response = await fetch(`${API_URL}/listagem-nota?id_usuario=${id}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!response.ok) {
-    throw new Error("Erro ao buscar nota");
+  try {
+    result = await response.json();
+  } catch {
+    // DELETE pode retornar 204 sem corpo — tudo bem
+    if (response.status === 204) return;
+    throw new Error(`Erro HTTP ${response.status}: resposta inválida do servidor`);
   }
 
-   const nota = await response.json(); // ← É um array
-  
-  if (!nota || nota.length === 0) {
-    throw new Error("Usuário não encontrado");
+  if (!response.ok || result.status === 'erro') {
+    throw new Error(result.mensagem || `Erro ao excluir nota (HTTP ${response.status})`);
   }
-  
-  return nota[0].conteudo; // ← Pega o primeiro resultado do array
 }
-
-
-
-
-// export async function CriarNota(dados: CadastroNota): Promise<void> {
-//   const response = await fetch(`${API_URL}/novo-Nota`, {
-//     method: 'POST',
-//     headers: defaultHeaders(),
-//     body: JSON.stringify(dados),
-//   });
-
-//   // Garante que o parse do JSON não quebre se o servidor retornar corpo vazio/inválido
-//   let result: { status?: string; mensagem?: string } = {};
-//   try {
-//     result = await response.json();
-//   } catch {
-//     // Corpo não é JSON válido (comum em erros 500 sem body estruturado)
-//     throw new Error(`Erro HTTP ${response.status}: resposta inválida do servidor`);
-//   }
-
-//   if (!response.ok || result.status === 'erro') {
-//     throw new Error(result.mensagem || `Erro ao cadastrar Nota (HTTP ${response.status})`);
-//   }
-// }
-
-// export class NotaService {
-//   /**
-//    * POST: Cadastra um novo autor
-//    */
-//   async CriarNota(dados: CadastroNota): Promise<void> {
-//     const response = await fetch(`${API_URL}/novo-Nota`, {
-//       method: 'POST',
-//       headers: defaultHeaders(),
-//       body: JSON.stringify(dados),
-//     });
-
-//     const result = await response.json();
-//     if (!response.ok || result.status === 'erro') {
-//       throw new Error(result.mensagem || 'Erro ao cadastrar autor');
-//     }
-//   }
-
-  /**
-   * GET: Lista todos os autores
-   */
-  // async getAllAuthors(): Promise<Conteudo[]> {
-  //   try {
-  //     const response = await fetch(`${API_URL}/autores/index.php`, {
-  //       method: 'GET',
-  //       // AJUSTE: Adicionado () para autorizar a listagem
-  //       headers: defaultHeaders(),
-  //       cache: 'no-store',
-  //     });
-
-  //     if (!response.ok) return [];
-
-  //     const json = await response.json();
-
-  //     // Ajustado para o padrão do seu PHP que usa a chave 'dados'
-  //     if (json.dados && Array.isArray(json.dados)) return json.dados;
-  //     if (json.data && Array.isArray(json.data)) return json.data;
-  //     if (Array.isArray(json)) return json;
-
-  //     return [];
-  //   } catch (error) {
-  //     console.error('Erro ao buscar autores:', error);
-  //     return [];
-  //   }
-  // }
-// }
