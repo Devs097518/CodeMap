@@ -1,8 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
+import {
+  listarNotasPorUsuario,
+  criarNota,
+  editarNota,
+  excluirNota,
+} from '../../service/conteudo-service';
 
 interface Note {
   id: number;
@@ -11,45 +17,94 @@ interface Note {
 }
 
 export default function NotesPage() {
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: 1,
-      title: "Título",
-      content:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500",
-    },
-  ]);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
+
   const router = useRouter();
+  const [username, setUsername] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  // Fecha o menu ao clicar fora
+  // Lê sessionStorage apenas no cliente
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setOpenMenuId(null);
-      }
+    const name = sessionStorage.getItem('username');
+    const id = sessionStorage.getItem('id_usuario');
+    if (!id) {
+      router.push('../');
+      return;
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    setUsername(name);
+    setUserId(id);
+  }, [router]);
 
-  function handleCreate() {
+  // Carrega notas do banco após ter o userId
+  const carregarNotas = useCallback(async () => {
+    if (!userId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await listarNotasPorUsuario(userId);
+      // Mapeia campos da API (titulo/conteudo) para o padrão da interface (title/content)
+      const mapped: Note[] = data.map((n: any) => ({
+        id: n.id_nota,
+        title: n.titulo ?? n.title ?? '',
+        content: n.conteudo ?? n.content ?? '',
+      }));
+      setNotes(mapped);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao carregar notas");
+    } finally {
+      setLoading(false);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    carregarNotas();
+  }, [carregarNotas]);
+
+  async function handleCreate() {
     if (!newTitle.trim() && !newContent.trim()) return;
-    setNotes((prev) => [
-      ...prev,
-      { id: Date.now(), title: newTitle || "Sem título", content: newContent },
-    ]);
-    setNewTitle("");
-    setNewContent("");
+    if (!userId) return;
+    setActionLoading(true);
+    setError(null);
+    try {
+      const nova = await criarNota({
+        titulo: newTitle.trim() || "Sem título",
+        conteudo: newContent.trim(),
+        id_usuario: userId,
+      });
+      console.log(nova);
+      setNotes((prev) => [
+        ...prev,
+        { id: nova.id, title: nova.titulo, content: nova.conteudo },
+      ]);
+      setNewTitle("");
+      setNewContent("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao criar nota");
+    } finally {
+      setActionLoading(false);
+    }
   }
 
-  function handleDelete(id: number) {
-    setNotes((prev) => prev.filter((n) => n.id !== id));
+  async function handleDelete(id: number) {
     setOpenMenuId(null);
+    setActionLoading(true);
+    setError(null);
+    try {
+      await excluirNota(id);
+      setNotes((prev) => prev.filter((n) => n.id !== id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao excluir nota");
+    } finally {
+      setActionLoading(false);
+    }
   }
 
   function handleEditOpen(note: Note) {
@@ -57,16 +112,27 @@ export default function NotesPage() {
     setOpenMenuId(null);
   }
 
-  function handleEditSave() {
+  async function handleEditSave() {
     if (!editingNote) return;
-    setNotes((prev) =>
-      prev.map((n) => (n.id === editingNote.id ? editingNote : n))
-    );
-    setEditingNote(null);
+    setActionLoading(true);
+    setError(null);
+    try {
+      await editarNota(editingNote.id, {
+        conteudo: editingNote.content,
+        titulo: editingNote.title,
+      });
+      setNotes((prev) =>
+        prev.map((n) => (n.id === editingNote.id ? editingNote : n))
+      );
+      setEditingNote(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao editar nota");
+    } finally {
+      setActionLoading(false);
+    }
   }
 
   const handleLogout = () => {
-    console.log('Sessão encerrada');
     sessionStorage.clear();
     router.push('../');
   };
@@ -76,9 +142,7 @@ export default function NotesPage() {
 
       {/* NAVBAR */}
       <nav className="w-full px-8 py-4 flex items-center justify-between text-white bg-[#0C0F4F]">
-        {/* Logo */}
         <Link href="/" className="flex items-center gap-2 font-bold text-base">
-
           <img
             src="/imagens/CodeMap_Icone.png"
             alt="Mapa de tesouro"
@@ -87,45 +151,44 @@ export default function NotesPage() {
             className="rounded-4xl"
           />
           <h1 className='text-4xl'>CodeMap</h1>
-
         </Link>
 
-        {/* Links */}
         <ul className="flex items-center gap-20 text-sm font-medium text-white/80">
-
-
-          <li><Link href="#" className="hover:text-white transition-colors text-2xl">
-            <div className="flex items-center gap-3">
-              <UserCircleIcon />
-              <span>Deyv</span>
-            </div>
-          </Link></li>
-
-
-          <li><Link href="../" className="hover:text-white transition-colors text-2xl">
-            <div className="flex items-center gap-3">
-              <button onClick={handleLogout}>
-                <LogoutIcon />
-              </button>
-            </div>
-          </Link></li>
-
-
+          <li>
+            <Link href="#" className="hover:text-white transition-colors text-2xl">
+              <div className="flex items-center gap-3">
+                <UserCircleIcon />
+                <span>{username}</span>
+              </div>
+            </Link>
+          </li>
+          <li>
+            <Link href="../" className="hover:text-white transition-colors text-2xl">
+              <div className="flex items-center gap-3">
+                <button onClick={handleLogout}>
+                  <LogoutIcon />
+                </button>
+              </div>
+            </Link>
+          </li>
         </ul>
       </nav>
-
-
-
-
-
 
       {/* Content */}
       <main className="flex-1 px-8 py-8 ml-28 max-w-2xl">
         {/* Greeting */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800">Olá, Deyv!</h1>
+          <h1 className="text-4xl font-bold text-gray-800">Olá, {username}!</h1>
           <p className="text-1xl text-gray-500">continue as suas notas</p>
         </div>
+
+        {/* Feedback de erro */}
+        {error && (
+          <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm flex items-center justify-between">
+            <span>{error}</span>
+            <button onClick={() => setError(null)} className="ml-4 font-bold">✕</button>
+          </div>
+        )}
 
         {/* Create note */}
         <section className="mb-8">
@@ -150,9 +213,10 @@ export default function NotesPage() {
             <div>
               <button
                 onClick={handleCreate}
-                className="bg-[#1e2060] hover:bg-[#2d2f6e] active:scale-95 text-white text-1xl font-medium px-4 py-1.5 rounded-full transition-all"
+                disabled={actionLoading}
+                className="bg-[#1e2060] hover:bg-[#2d2f6e] active:scale-95 disabled:opacity-50 text-white text-1xl font-medium px-4 py-1.5 rounded-full transition-all"
               >
-                criar
+                {actionLoading ? "salvando..." : "criar"}
               </button>
             </div>
           </div>
@@ -163,9 +227,13 @@ export default function NotesPage() {
           <h2 className="text-2xl font-semibold text-[#1e2060] mb-3">
             Notas salvas
           </h2>
-          {notes.length === 0 ? (
+
+          {loading ? (
+            <p className="text-sm text-gray-400">Carregando notas...</p>
+          ) : notes.length === 0 ? (
             <p className="text-sm text-gray-400">Nenhuma nota salva ainda.</p>
           ) : (
+
             <div className="flex flex-col gap-3">
               {notes.map((note) => (
                 <div
@@ -183,32 +251,41 @@ export default function NotesPage() {
                     </div>
 
                     {/* Three dots button */}
-                    <div className="relative" ref={openMenuId === note.id ? menuRef : null}>
+                    <div className="relative">
                       <button
-                        onClick={() =>
-                          setOpenMenuId(openMenuId === note.id ? null : note.id)
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenMenuId(openMenuId === note.id ? null : note.id);
+                        }}
                         className="text-gray-500 hover:text-gray-400 transition-colors p-1 rounded-full hover:bg-gray-300"
                       >
                         <DotsIcon />
                       </button>
 
-                      {/* Dropdown menu */}
                       {openMenuId === note.id && (
-                        <div className="absolute right-0 top-7 bg-white rounded-xl shadow-lg overflow-hidden z-10 w-28 border border-gray-100">
-                          <button
-                            onClick={() => handleEditOpen(note)}
-                            className="w-full text-left px-4 py-2.5 text-1xl text-gray-700 hover:bg-gray-50 transition-colors"
-                          >
-                            Editar
-                          </button>
-                          <button
-                            onClick={() => handleDelete(note.id)}
-                            className="w-full text-left px-4 py-2.5 text-1xl text-red-500 hover:bg-red-50 transition-colors"
-                          >
-                            Excluir
-                          </button>
-                        </div>
+                        <>
+                          {/* Overlay invisível para fechar ao clicar fora */}
+                          <div
+                            className="fixed inset-0 z-[5]"
+                            onClick={() => setOpenMenuId(null)}
+                          />
+                          {/* Dropdown */}
+                          <div className="absolute right-0 top-7 bg-white rounded-xl shadow-lg overflow-hidden z-10 w-28 border border-gray-100">
+                            <button
+                              onClick={() => handleEditOpen(note)}
+                              className="w-full text-left px-4 py-2.5 text-1xl text-gray-700 hover:bg-gray-50 transition-colors"
+                            >
+                              Editar
+                            </button>
+                            <button
+                              onClick={() => handleDelete(note.id)}
+                              disabled={actionLoading}
+                              className="w-full text-left px-4 py-2.5 text-1xl text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                            >
+                              Excluir
+                            </button>
+                          </div>
+                        </>
                       )}
                     </div>
                   </div>
@@ -253,9 +330,10 @@ export default function NotesPage() {
               </button>
               <button
                 onClick={handleEditSave}
-                className="bg-[#1e2060] hover:bg-[#2d2f6e] text-white text-sm px-5 py-2 rounded-full transition-all"
+                disabled={actionLoading}
+                className="bg-[#1e2060] hover:bg-[#2d2f6e] disabled:opacity-50 text-white text-sm px-5 py-2 rounded-full transition-all"
               >
-                salvar
+                {actionLoading ? "salvando..." : "salvar"}
               </button>
             </div>
           </div>
@@ -266,28 +344,6 @@ export default function NotesPage() {
 }
 
 // --- Icons ---
-
-function CompassIcon() {
-  return (
-    <svg width="28" height="28" viewBox="0 0 52 52" fill="none">
-      <defs>
-        <radialGradient id="og" cx="50%" cy="30%" r="60%">
-          <stop offset="0%" stopColor="#c8c4a0" />
-          <stop offset="100%" stopColor="#7a7a8a" />
-        </radialGradient>
-        <radialGradient id="ig" cx="40%" cy="35%" r="60%">
-          <stop offset="0%" stopColor="#5a5870" />
-          <stop offset="100%" stopColor="#2a2840" />
-        </radialGradient>
-      </defs>
-      <circle cx="26" cy="26" r="25" fill="url(#og)" />
-      <circle cx="26" cy="26" r="18" fill="url(#ig)" />
-      <ellipse cx="26" cy="20" rx="3" ry="7" fill="white" opacity="0.85" transform="rotate(-20 26 26)" />
-      <ellipse cx="26" cy="32" rx="2.5" ry="5" fill="#888" opacity="0.5" transform="rotate(-20 26 26)" />
-      <circle cx="26" cy="26" r="2" fill="white" opacity="0.9" />
-    </svg>
-  );
-}
 
 function UserCircleIcon() {
   return (
@@ -318,97 +374,3 @@ function DotsIcon() {
     </svg>
   );
 }
-
-// 'use client';
-
-// import React, { useState, useEffect } from 'react';
-// import { SalvarNota, obterConteudoPorID } from '../../service/conteudo-service';
-
-// export default function NotesScreen() {
-//   let id_usuario = sessionStorage.getItem('idUsuario');
-//   const [conteudo, setConteudo] = useState('');      // ← o que o usuário digita
-//   const [savedNote, setSavedNote] = useState('');    // ← o que veio do banco
-
-//   useEffect(() => {
-//     if (typeof window === 'undefined') return;
-
-//     const id_usuario = sessionStorage.getItem('idUsuario');
-
-//     if (id_usuario) {
-//       obterConteudoPorID(id_usuario)
-//         .then((conteudoNota) => {
-//           setSavedNote(String(conteudoNota));  // ← só atualiza o que veio do banco
-//         })
-//         .catch((err) => console.error(err));
-//     }
-//   }, []);
-
-//   const handleSave = () => {
-//     if (!conteudo || !id_usuario) {
-//       console.log('Preencha todos os campos');
-//       return;
-//     }
-
-//     try {
-//       SalvarNota({
-//         conteudo: conteudo,
-//         id_usuario: id_usuario,
-//       });
-//       setConteudo("");
-//     }
-//     catch (error: any) {
-//       console.log(error);
-//     }
-
-//     setSavedNote(conteudo);
-//   };
-
-//   const handleLogout = () => {
-//     console.log('Sessão encerrada');
-//     sessionStorage.clear();
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-b from-blue-200 to-blue-300 p-4">
-//       <div className="max-w-2xl mx-auto pt-8">
-//         <div className="flex justify-end mb-4">
-//           <a href="../">
-//             <button
-//               onClick={handleLogout}
-//               className="bg-white hover:bg-gray-100 text-gray-800 font-medium py-2 px-4 rounded-lg shadow transition-colors"
-//             >
-//               encerrar sessão
-//             </button>
-//           </a>
-
-//         </div>
-
-//         <div className="bg-white rounded-lg shadow-lg p-6 mb-4">
-//           <p className="text-sm text-gray-400 mb-4">
-//             o texto que você salvar vai ficar aqui
-//           </p>
-//           <div className="min-h-[200px] text-gray-800">
-//             {savedNote}
-//           </div>
-//         </div>
-
-//         <div className="flex gap-2">
-//           <input
-//             type="text"
-//             value={conteudo}
-//             onChange={(e) => setConteudo(e.target.value)}
-//             placeholder=""
-//             className="flex-1 px-4 py-2 border bg-white text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-//           />
-
-//           <button
-//             onClick={handleSave}
-//             className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md transition-colors"
-//           >
-//             SALVAR
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
