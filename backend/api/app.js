@@ -82,27 +82,6 @@ app.get('/listagem-pessoa', async (req, res) => {
   }
 });
 
-// app.post('/novo-pessoa', async (req, res) => {
-//   try {
-//     const { username, uf, id_usuario } = req.body;
-
-//     const result = await db.query(
-//       'INSERT INTO public.pessoa (username, uf, id_usuario) VALUES ($1, $2, $3) RETURNING *',
-//       [username, uf, id_usuario]
-//     );
-
-//     res.status(201).json(result.rows[0]);
-//   } catch (error) {
-
-//     if (error.code === '23503') {
-//       return res.status(400).json({
-//         error: 'Usuário não encontrado. O id_usuario informado não existe.'
-//       });
-//     }
-
-//     res.status(500).json({ error: error.message });
-//   }
-// });
 
 
 /*
@@ -147,11 +126,12 @@ app.post('/novo-nota', async (req, res) => {
 app.put('/editar-nota/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { conteudo } = req.body;
+    const { conteudo, titulo } = req.body;
+    
 
     const result = await db.query(
-      'UPDATE public.nota SET conteudo = $1 WHERE id_nota = $2 RETURNING *',
-      [conteudo, id]
+      'UPDATE public.nota SET conteudo = $1, titulo = $2 WHERE id_nota = $3 RETURNING *',
+      [conteudo, titulo, id]
     );
 
     if (result.rows.length === 0) {

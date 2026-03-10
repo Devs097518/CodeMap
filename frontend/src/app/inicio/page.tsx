@@ -79,9 +79,10 @@ export default function NotesPage() {
         conteudo: newContent.trim(),
         id_usuario: userId,
       });
+      console.log(nova);
       setNotes((prev) => [
-        { id: nova.id, title: nova.titulo, content: nova.conteudo},
         ...prev,
+        { id: nova.id, title: nova.titulo, content: nova.conteudo },
       ]);
       setNewTitle("");
       setNewContent("");
@@ -233,64 +234,64 @@ export default function NotesPage() {
             <p className="text-sm text-gray-400">Nenhuma nota salva ainda.</p>
           ) : (
 
-          <div className="flex flex-col gap-3">
-            {notes.map((note) => (
-              <div
-                key={note.id}
-                className="bg-[#e8e8e8] rounded-2xl px-4 py-3 max-w-sm relative"
-              >
-                <div className="flex justify-between items-start">
-                  <div className="flex-1 pr-6">
-                    <p className="text-2xl font-semibold text-gray-700 mb-1">
-                      {note.title}
-                    </p>
-                    <p className="text-1xl text-gray-600 leading-snug">
-                      {note.content}
-                    </p>
-                  </div>
+            <div className="flex flex-col gap-3">
+              {notes.map((note) => (
+                <div
+                  key={note.id}
+                  className="bg-[#e8e8e8] rounded-2xl px-4 py-3 max-w-sm relative"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1 pr-6">
+                      <p className="text-2xl font-semibold text-gray-700 mb-1">
+                        {note.title}
+                      </p>
+                      <p className="text-1xl text-gray-600 leading-snug">
+                        {note.content}
+                      </p>
+                    </div>
 
-                  {/* Three dots button */}
-                  <div className="relative">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setOpenMenuId(openMenuId === note.id ? null : note.id);
-                      }}
-                      className="text-gray-500 hover:text-gray-400 transition-colors p-1 rounded-full hover:bg-gray-300"
-                    >
-                      <DotsIcon />
-                    </button>
+                    {/* Three dots button */}
+                    <div className="relative">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setOpenMenuId(openMenuId === note.id ? null : note.id);
+                        }}
+                        className="text-gray-500 hover:text-gray-400 transition-colors p-1 rounded-full hover:bg-gray-300"
+                      >
+                        <DotsIcon />
+                      </button>
 
-                    {openMenuId === note.id && (
-                      <>
-                        {/* Overlay invisível para fechar ao clicar fora */}
-                        <div
-                          className="fixed inset-0 z-[5]"
-                          onClick={() => setOpenMenuId(null)}
-                        />
-                        {/* Dropdown */}
-                        <div className="absolute right-0 top-7 bg-white rounded-xl shadow-lg overflow-hidden z-10 w-28 border border-gray-100">
-                          <button
-                            onClick={() => handleEditOpen(note)}
-                            className="w-full text-left px-4 py-2.5 text-1xl text-gray-700 hover:bg-gray-50 transition-colors"
-                          >
-                            Editar
-                          </button>
-                          <button
-                            onClick={() => handleDelete(note.id)}
-                            disabled={actionLoading}
-                            className="w-full text-left px-4 py-2.5 text-1xl text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
-                          >
-                            Excluir
-                          </button>
-                        </div>
-                      </>
-                    )}
+                      {openMenuId === note.id && (
+                        <>
+                          {/* Overlay invisível para fechar ao clicar fora */}
+                          <div
+                            className="fixed inset-0 z-[5]"
+                            onClick={() => setOpenMenuId(null)}
+                          />
+                          {/* Dropdown */}
+                          <div className="absolute right-0 top-7 bg-white rounded-xl shadow-lg overflow-hidden z-10 w-28 border border-gray-100">
+                            <button
+                              onClick={() => handleEditOpen(note)}
+                              className="w-full text-left px-4 py-2.5 text-1xl text-gray-700 hover:bg-gray-50 transition-colors"
+                            >
+                              Editar
+                            </button>
+                            <button
+                              onClick={() => handleDelete(note.id)}
+                              disabled={actionLoading}
+                              className="w-full text-left px-4 py-2.5 text-1xl text-red-500 hover:bg-red-50 transition-colors disabled:opacity-50"
+                            >
+                              Excluir
+                            </button>
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
           )}
         </section>
       </main>

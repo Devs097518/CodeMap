@@ -1,7 +1,6 @@
 import { API_URL, defaultHeaders } from './api';
 
-// ─── Interfaces ───────────────────────────────────────────────────────────────
-
+// Interfaces 
 export interface Nota {
   id: number;
   titulo: string;
@@ -20,7 +19,7 @@ export interface EditarNota {
   conteudo: string;
 }
 
-// ─── Listar todas as notas do usuário ─────────────────────────────────────────
+// Listar todas as notas do usuário
 
 export async function listarNotasPorUsuario(id_usuario: string): Promise<Nota[]> {
   const response = await fetch(`${API_URL}/listagem-nota?id_usuario=${id_usuario}`, {
@@ -43,7 +42,7 @@ export async function listarNotasPorUsuario(id_usuario: string): Promise<Nota[]>
   return [];
 }
 
-// ─── Criar nova nota ──────────────────────────────────────────────────────────
+// Criar nova nota 
 
 export async function criarNota(dados: CriarNota): Promise<Nota> {
   const response = await fetch(`${API_URL}/novo-nota`, {
@@ -52,7 +51,7 @@ export async function criarNota(dados: CriarNota): Promise<Nota> {
     body: JSON.stringify(dados),
   });
 
-  let result: { status?: string; mensagem?: string; nota?: Nota } & Partial<Nota> = {};
+  let result: { status?: string; mensagem?: string; nota?: Nota; id_nota?: number; data?: Nota } & Partial<Nota> = {};
 
   try {
     result = await response.json();
@@ -63,15 +62,22 @@ export async function criarNota(dados: CriarNota): Promise<Nota> {
   if (!response.ok || result.status === 'erro') {
     throw new Error(result.mensagem || `Erro ao criar nota (HTTP ${response.status})`);
   }
+  
+  if (result.id_nota) {
+    return {
+      id: result.id_nota as number,
+      titulo: result.titulo,
+      conteudo: result.conteudo,
+      id_usuario: dados.id_usuario,
+    } as Nota;
+  }
 
-  // Retorna a nota criada — aceita tanto { nota: {...} } quanto a nota direta
-  if (result.nota) return result.nota;
   if (result.id) return result as Nota;
 
   throw new Error('Resposta inesperada do servidor ao criar nota');
 }
 
-// ─── Editar nota existente ────────────────────────────────────────────────────
+// Editar nota existente 
 
 export async function editarNota(id_nota: number, dados: EditarNota): Promise<void> {
   const response = await fetch(`${API_URL}/editar-nota/${id_nota}`, {
@@ -93,7 +99,7 @@ export async function editarNota(id_nota: number, dados: EditarNota): Promise<vo
   }
 }
 
-// ─── Excluir nota ─────────────────────────────────────────────────────────────
+// Excluir nota 
 
 export async function excluirNota(id_nota: number): Promise<void> {
   const response = await fetch(`${API_URL}/deletar-nota/${id_nota}`, {
