@@ -52,21 +52,6 @@ app.get('/nota/:id_usuario', async (req, res) => {
   }
 });
 
-// app.post('/novo-usuario', async (req, res) => {
-//   try {
-//     const { email, senha } = req.body;
-
-//     const result = await db.query(
-//       'INSERT INTO public.usuario (email, senha) VALUES ($1, $2) RETURNING *',
-//       [email, senha]
-//     );
-
-//     res.status(201).json(result.rows[0]);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
 
 
 /*
@@ -144,25 +129,6 @@ app.put('/editar-nota/:id', async (req, res) => {
   }
 });
 
-// app.put('/editar-nota/:id_usuario', async (req, res) => {
-//   try {
-//     const { id_usuario } = req.params;
-//     const { conteudo } = req.body;
-
-//     const result = await db.query(
-//       'UPDATE public.nota SET conteudo = $1 WHERE id_usuario = $2 RETURNING *',
-//       [conteudo, id_usuario]
-//     );
-
-//     if (result.rowCount === 0) {
-//       return res.status(404).json({ status: 'erro', mensagem: 'nota não encontrado' });
-//     }
-
-//     res.status(200).json(result.rows[0]);
-//   } catch (err) {
-//     res.status(500).json({ status: 'erro', mensagem: err.message });
-//   }
-// });
 
 
 app.delete('/deletar-nota/:id', async (req, res) => {
