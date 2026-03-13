@@ -26,7 +26,6 @@ app.get('/listagem-usuario', async (req, res) => {
     }
 
     const { rows } = await db.query(query, params);
-    // const { rows } = await db.query(`SELECT * FROM usuario WHERE email='dayv@gmail.com'`); // <--- funciona
     res.json(rows);
   } catch (err) {
     res.status(500).send(err.message);
@@ -68,21 +67,20 @@ app.get('/listagem-pessoa', async (req, res) => {
 });
 
 
-
 /*
   nota
 */
 
 app.get('/listagem-nota', async (req, res) => {
   try {
-    const { id_usuario } = req.query; // ← muda para id_usuario
+    const { id_pasta } = req.query; // ← muda para id_pasta
 
     let query = `SELECT * FROM nota`;
     let params = [];
 
-    if (id_usuario) {
-      query += ` WHERE id_usuario = $1`; // ← filtra pela coluna certa
-      params.push(id_usuario);
+    if (id_pasta) {
+      query += ` WHERE id_pasta = $1`; // ← filtra pela coluna certa
+      params.push(id_pasta);
     }
 
     const { rows } = await db.query(query, params);
@@ -95,11 +93,11 @@ app.get('/listagem-nota', async (req, res) => {
 
 app.post('/novo-nota', async (req, res) => {
   try {
-    const { conteudo, id_usuario, titulo } = req.body;
+    const { conteudo, id_pasta, titulo } = req.body;
 
     const result = await db.query(
-      'INSERT INTO public.nota (conteudo, id_usuario, titulo) VALUES ($1, $2, $3) RETURNING *',
-      [conteudo, id_usuario, titulo]
+      'INSERT INTO public.nota (conteudo, id_pasta, titulo) VALUES ($1, $2, $3) RETURNING *',
+      [conteudo, id_pasta, titulo]
     );
 
     res.status(201).json(result.rows[0]);
@@ -151,9 +149,6 @@ app.delete('/deletar-nota/:id', async (req, res) => {
 });
 
 
-app.listen(3003, () => console.log('Servidor rodando na porta 3003'));
-
-
 //CADASTRO
 
 app.post('/novo-cadastro', async (req, res) => {
@@ -193,3 +188,88 @@ app.post('/novo-cadastro', async (req, res) => {
     client.release(); // devolve a conexão para o pool
   }
 });
+
+
+/*
+  pasta
+*/
+
+app.get('/listagem-pasta', async (req, res) => {
+  try {
+    const { id_usuario } = req.query; // ← muda para id_usuario
+
+    let query = `SELECT * FROM pasta`;
+    let params = [];
+
+    if (id_usuario) {
+      query += ` WHERE id_usuario = $1`; // ← filtra pela coluna certa
+      params.push(id_usuario);
+    }
+
+    const { rows } = await db.query(query, params);
+    res.json(rows);
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+
+app.post('/novo-pasta', async (req, res) => {
+  try {
+    const { id_usuario, titulo } = req.body;
+
+    const result = await db.query(
+      'INSERT INTO public.pasta (id_usuario, titulo) VALUES ($1, $2) RETURNING *',
+      [id_usuario, titulo]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ status: 'erro', mensagem: err.message });
+  }
+});
+
+app.put('/editar-pasta/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { titulo } = req.body;
+    
+
+    const result = await db.query(
+      'UPDATE public.pasta SET titulo = $1 WHERE id_pasta = $2 RETURNING *',
+      [titulo, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ status: 'erro', mensagem: 'pasta não encontrada' });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ status: 'erro', mensagem: err.message });
+  }
+});
+
+app.delete('/deletar-pasta/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await db.query(
+      'DELETE FROM public.pasta WHERE id_pasta = $1 RETURNING *',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ status: 'erro', mensagem: 'pasta não encontrada' });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ status: 'erro', mensagem: err.message });
+  }
+});
+
+
+
+app.listen(3003, () => console.log('Servidor rodando na porta 3003'));
+
