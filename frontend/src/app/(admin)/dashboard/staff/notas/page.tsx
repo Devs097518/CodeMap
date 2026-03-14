@@ -8,7 +8,7 @@ import {
   criarNota,
   editarNota,
   excluirNota,
-} from '../../service/conteudo-service';
+} from '../../../../../service/conteudo-service';
 
 interface Note {
   id: number;
@@ -139,40 +139,6 @@ export default function NotesPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
-
-      {/* NAVBAR */}
-      <nav className="w-full px-8 py-4 flex items-center justify-between text-white bg-[#0C0F4F]">
-        <Link href="/" className="flex items-center gap-2 font-bold text-base">
-          <img
-            src="/imagens/CodeMap_Icone.png"
-            alt="Mapa de tesouro"
-            width={40}
-            height={40}
-            className="rounded-4xl"
-          />
-          <h1 className='text-4xl'>CodeMap</h1>
-        </Link>
-
-        <ul className="flex items-center gap-20 text-sm font-medium text-white/80">
-          <li>
-            <Link href="#" className="hover:text-white transition-colors text-2xl">
-              <div className="flex items-center gap-3">
-                <UserCircleIcon />
-                <span>{username}</span>
-              </div>
-            </Link>
-          </li>
-          <li>
-            <Link href="../" className="hover:text-white transition-colors text-2xl">
-              <div className="flex items-center gap-3">
-                <button onClick={handleLogout}>
-                  <LogoutIcon />
-                </button>
-              </div>
-            </Link>
-          </li>
-        </ul>
-      </nav>
 
       {/* Content */}
       <main className="flex-1 px-8 py-8 ml-28 max-w-2xl">
