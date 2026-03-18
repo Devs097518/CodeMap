@@ -44,7 +44,6 @@ export async function realizarLogin(email: string, senha: string): Promise<numbe
 
   const username = pessoa.username;
 
-  // Salva email e username no sessionStorage
   sessionStorage.setItem("email", email);
   sessionStorage.setItem("id_usuario", usuario_id);
   sessionStorage.setItem("username", username);

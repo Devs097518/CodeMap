@@ -1,8 +1,9 @@
 import { API_URL, defaultHeaders } from './api';
 
+
 // Interfaces 
 export interface Pasta {
-  id: number;
+  id_pasta: number;
   titulo: string;
   id_usuario: string;
 }
@@ -62,13 +63,13 @@ export async function criarPasta(dados: CriarPasta): Promise<Pasta> {
   
   if (result.id_pasta) {
     return {
-      id: result.id_pasta as number,
+      id_pasta: result.id_pasta as number,
       titulo: result.titulo,
       id_usuario: dados.id_usuario,
     } as Pasta;
   }
 
-  if (result.id) return result as Pasta;
+  if (result.id_pasta) return result as Pasta;
 
   throw new Error('Resposta inesperada do servidor ao criar pasta');
 }
