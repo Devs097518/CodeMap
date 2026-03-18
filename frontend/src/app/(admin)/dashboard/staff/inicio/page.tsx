@@ -15,6 +15,7 @@ export default function FoldersPage() {
   const [pastas, setPastas] = useState<Pasta[]>([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
+  const username = sessionStorage.getItem('username');
 
   const id_usuario =
     typeof window !== "undefined" ? sessionStorage.getItem("id_usuario") ?? "" : "";
@@ -51,7 +52,7 @@ export default function FoldersPage() {
       {/* Header */}
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-gray-900 leading-tight">
-          Olá, Deyv!
+          Olá, {username}!
         </h1>
         <p className="text-xl text-gray-500 mt-0.5">continue as suas notas</p>
       </div>
