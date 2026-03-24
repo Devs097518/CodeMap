@@ -67,9 +67,7 @@ app.get('/listagem-pessoa', async (req, res) => {
 });
 
 
-/*
-  nota
-*/
+//NOTA
 
 app.get('/listagem-nota', async (req, res) => {
   try {
@@ -91,13 +89,17 @@ app.get('/listagem-nota', async (req, res) => {
 });
 
 
+
+
+
+
 app.post('/novo-nota', async (req, res) => {
   try {
-    const { conteudo, id_pasta, titulo } = req.body;
+    const { conteudo, id_pasta, titulo, status } = req.body;
 
     const result = await db.query(
-      'INSERT INTO public.nota (conteudo, id_pasta, titulo) VALUES ($1, $2, $3) RETURNING *',
-      [conteudo, id_pasta, titulo]
+      'INSERT INTO public.nota (conteudo, id_pasta, titulo, status) VALUES ($1, $2, $3, $4) RETURNING *',
+      [conteudo, id_pasta, titulo, status]
     );
 
     res.status(201).json(result.rows[0]);
@@ -106,15 +108,19 @@ app.post('/novo-nota', async (req, res) => {
   }
 });
 
+
+
+
+
 app.put('/editar-nota/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { conteudo, titulo } = req.body;
+    const { conteudo, titulo , status } = req.body;
     
 
     const result = await db.query(
-      'UPDATE public.nota SET conteudo = $1, titulo = $2 WHERE id_nota = $3 RETURNING *',
-      [conteudo, titulo, id]
+      'UPDATE public.nota SET conteudo = $1, titulo = $2, status = $4 WHERE id_nota = $3 RETURNING *',
+      [conteudo, titulo, id, status]
     );
 
     if (result.rows.length === 0) {
@@ -190,9 +196,7 @@ app.post('/novo-cadastro', async (req, res) => {
 });
 
 
-/*
-  pasta
-*/
+//PASTA
 
 app.get('/listagem-pasta', async (req, res) => {
   try {
