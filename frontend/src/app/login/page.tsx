@@ -18,7 +18,7 @@ export default function LoginPage() {
     // Simulate login
     try {
       const idUsuario = await realizarLogin(email, password);
-      router.push('/inicio');
+      router.push('/dashboard/staff/inicio');
     } catch (error: unknown) {
       alert(error); // "Email não cadastrado" ou "Senha incorreta"
     }

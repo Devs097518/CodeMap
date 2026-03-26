@@ -8,7 +8,7 @@ import {
   criarNota,
   editarNota,
   excluirNota,
-} from '../../service/conteudo-service';
+} from '../../../../../service/conteudo-service';
 
 interface Note {
   id: number;

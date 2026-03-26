@@ -2,27 +2,30 @@ import { API_URL, defaultHeaders } from './api';
 
 // Interfaces 
 export interface Nota {
-  id: number;
+  id_nota: number;
   titulo: string;
   conteudo: string;
-  id_usuario: string;
+  id_pasta: string;
+  status: string;
 }
 
 export interface CriarNota {
   titulo: string;
   conteudo: string;
-  id_usuario: string;
+  id_pasta: string;
+  status: string;
 }
 
 export interface EditarNota {
   titulo: string;
   conteudo: string;
+  status: string;
 }
 
 // Listar todas as notas do usuário
 
-export async function listarNotasPorUsuario(id_usuario: string): Promise<Nota[]> {
-  const response = await fetch(`${API_URL}/listagem-nota?id_usuario=${id_usuario}`, {
+export async function listarNotasPorPasta(id_pasta: string): Promise<Nota[]> {
+  const response = await fetch(`${API_URL}/listagem-nota?id_pasta=${id_pasta}`, {
     method: 'GET',
     headers: defaultHeaders(),
   });
@@ -65,14 +68,17 @@ export async function criarNota(dados: CriarNota): Promise<Nota> {
   
   if (result.id_nota) {
     return {
-      id: result.id_nota as number,
+      id_nota: result.id_nota as number,
       titulo: result.titulo,
       conteudo: result.conteudo,
-      id_usuario: dados.id_usuario,
+      id_pasta: dados.id_pasta,
+      status: result.status
     } as Nota;
   }
 
-  if (result.id) return result as Nota;
+  if (result.nota) return result.nota;
+
+  if (result.data) return result.data;
 
   throw new Error('Resposta inesperada do servidor ao criar nota');
 }
