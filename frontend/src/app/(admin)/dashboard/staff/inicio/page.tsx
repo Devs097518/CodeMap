@@ -103,7 +103,10 @@ export default function FoldersPage() {
               <Link
                 key={pasta.id_pasta}
                 href={notas}
-                onClick={() => sessionStorage.setItem("id_pasta", String(pasta.id_pasta))}
+                onClick={() => {
+                  sessionStorage.setItem("id_pasta", String(pasta.id_pasta));
+                  sessionStorage.setItem("titulo_pasta", String(pasta.titulo));
+                }}
                 className="group flex items-center justify-between bg-[#eeff66] rounded-2xl px-5 py-5 text-left hover:bg-[#FBBF24] active:scale-95 transition-all duration-150 cursor-pointer"
               >
                 <span className="text-xl font-semibold text-gray-900 truncate pr-2">

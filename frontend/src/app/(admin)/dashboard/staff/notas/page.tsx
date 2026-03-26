@@ -1,18 +1,22 @@
 'use client';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import {
+  listarNotasPorPasta,
+  criarNota,
+  editarNota,
+  excluirNota,
+  type Nota,
+} from "@/service/conteudo-service";
 
 type Status = "pendente" | "fazendo" | "feito";
 
-interface Note {
-  id: number;
-  title: string;
-  content: string;
+interface NoteUI extends Nota {
   status: Status;
 }
 
 // ---------------------------------------------------------------------------
-// Icons
+// Icons (mantidos iguais)
 // ---------------------------------------------------------------------------
 const StatusIcon = ({ status }: { status: Status }) => {
   if (status === "pendente")
@@ -66,21 +70,31 @@ const BackIcon = () => (
 // EditModal
 // ---------------------------------------------------------------------------
 interface EditModalProps {
-  note: Note | null;
+  note: NoteUI | null;
   isNew: boolean;
   onClose: () => void;
-  onSave: (data: { title: string; content: string; status: Status }) => void;
+  onSave: (data: { titulo: string; conteudo: string; status: Status }) => Promise<void>;
 }
 
 function EditModal({ note, isNew, onClose, onSave }: EditModalProps) {
-  const [title, setTitle] = useState(note?.title ?? "");
-  const [content, setContent] = useState(note?.content ?? "");
+  const [titulo, setTitulo] = useState(note?.titulo ?? "");
+  const [conteudo, setConteudo] = useState(note?.conteudo ?? "");
   const [status, setStatus] = useState<Status>(note?.status ?? "pendente");
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
 
-  const handleSave = () => {
-    if (!title.trim()) return;
-    onSave({ title, content, status });
-    onClose();
+  const handleSave = async () => {
+    if (!titulo.trim()) return;
+    setLoading(true);
+    setErro("");
+    try {
+      await onSave({ titulo, conteudo, status });
+      onClose();
+    } catch (e: unknown) {
+      setErro(e instanceof Error ? e.message : "Erro ao salvar nota");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -90,7 +104,6 @@ function EditModal({ note, isNew, onClose, onSave }: EditModalProps) {
     >
       <div className="w-full max-w-md rounded-2xl shadow-2xl overflow-hidden bg-gradient-to-br from-white to-[#f8f6ff] border border-violet-100">
 
-        {/* Header */}
         <div className="px-6 py-4 text-center border-b border-violet-100">
           <h2 className="text-2xl font-bold text-gray-800 leading-tight">
             {isNew ? "NOVA NOTA" : "EDITAR NOTA"}
@@ -99,94 +112,72 @@ function EditModal({ note, isNew, onClose, onSave }: EditModalProps) {
 
         <div className="px-6 py-5 space-y-5">
 
-          {/* Title field */}
+          {erro && (
+            <div className="px-4 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
+              {erro}
+            </div>
+          )}
+
           <div className="space-y-1.5">
-            <label className="block text-xl font-medium tracking-widest uppercase text-gray-800">
-              título
-            </label>
+            <label className="block text-xl font-medium tracking-widest uppercase text-gray-800">título</label>
             <input
               type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
               placeholder="Título da nota..."
               className="w-full rounded-xl px-4 py-2.5 text-1xl outline-none bg-violet-50 text-gray-800 placeholder:text-violet-300 border border-transparent focus:border-violet-400 transition-colors"
             />
           </div>
 
-          {/* Content field */}
           <div className="space-y-1.5">
-            <label className="block text-xl font-medium tracking-widest uppercase text-gray-800">
-              conteúdo
-            </label>
+            <label className="block text-xl font-medium tracking-widest uppercase text-gray-800">conteúdo</label>
             <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+              value={conteudo}
+              onChange={(e) => setConteudo(e.target.value)}
               placeholder="Escreva sua nota aqui..."
               rows={4}
               className="w-full rounded-xl px-4 py-2.5 text-1xl outline-none resize-none bg-violet-50 text-[#2d2540] placeholder:text-violet-300 border border-transparent focus:border-violet-400 transition-colors"
             />
           </div>
 
-          {/* Status selector */}
           <div className="space-y-2.5">
-            <label className="block text-xl font-medium tracking-widest uppercase text-gray-800">
-              status
-            </label>
+            <label className="block text-xl font-medium tracking-widest uppercase text-gray-800">status</label>
             <div className="flex gap-2">
-
-              <button
-                onClick={() => setStatus("pendente")}
-                className={`flex-1 flex flex-col items-center gap-1.5 py-2.5 rounded-xl transition-all border-2 border-transparent
-                  ${status === "pendente"
-                    ? "bg-slate-300 ring-2 ring-slate-300/50 text-[#1e1b2e]"
-                    : "bg-slate-100 text-slate-500"
-                  }`}
-              >
-                <StatusIcon status="pendente" />
-                <span className="text-1xl font-semibold">pendente</span>
-              </button>
-
-              <button
-                onClick={() => setStatus("fazendo")}
-                className={`flex-1 flex flex-col items-center gap-1.5 py-2.5 rounded-xl transition-all border-2 border-transparent
-                  ${status === "fazendo"
-                    ? "bg-amber-400 ring-2 ring-amber-400/50 text-[#1e1b2e]"
-                    : "bg-amber-100 text-slate-500"
-                  }`}
-              >
-                <StatusIcon status="fazendo" />
-                <span className="text-1xl font-semibold">fazendo</span>
-              </button>
-
-              <button
-                onClick={() => setStatus("feito")}
-                className={`flex-1 flex flex-col items-center gap-1.5 py-2.5 rounded-xl transition-all border-2 border-transparent
-                  ${status === "feito"
-                    ? "bg-emerald-400 ring-2 ring-emerald-400/50 text-[#1e1b2e]"
-                    : "bg-emerald-100 text-slate-500"
-                  }`}
-              >
-                <StatusIcon status="feito" />
-                <span className="text-1xl font-semibold">feito</span>
-              </button>
-
+              {(["pendente", "fazendo", "feito"] as Status[]).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setStatus(s)}
+                  className={`flex-1 flex flex-col items-center gap-1.5 py-2.5 rounded-xl transition-all border-2 border-transparent
+                    ${s === "pendente" && status === s ? "bg-slate-300 ring-2 ring-slate-300/50 text-[#1e1b2e]" : ""}
+                    ${s === "pendente" && status !== s ? "bg-slate-100 text-slate-500" : ""}
+                    ${s === "fazendo" && status === s ? "bg-amber-400 ring-2 ring-amber-400/50 text-[#1e1b2e]" : ""}
+                    ${s === "fazendo" && status !== s ? "bg-amber-100 text-slate-500" : ""}
+                    ${s === "feito" && status === s ? "bg-emerald-400 ring-2 ring-emerald-400/50 text-[#1e1b2e]" : ""}
+                    ${s === "feito" && status !== s ? "bg-emerald-100 text-slate-500" : ""}
+                  `}
+                >
+                  <StatusIcon status={s} />
+                  <span className="text-1xl font-semibold">{s}</span>
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Footer */}
         <div className="px-6 py-4 flex gap-3 border-t border-violet-100">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl text-1xl font-medium bg-violet-50 text-[#0C0F4F] hover:bg-violet-100 transition-colors"
+            disabled={loading}
+            className="flex-1 py-2.5 rounded-xl text-1xl font-medium bg-violet-50 text-[#0C0F4F] hover:bg-violet-100 transition-colors disabled:opacity-50"
           >
             cancelar
           </button>
           <button
             onClick={handleSave}
-            className="flex-1 py-2.5 rounded-xl text-1xl font-semibold text-white bg-[#0C0F4F] hover:brightness-150 transition-all"
+            disabled={loading}
+            className="flex-1 py-2.5 rounded-xl text-1xl font-semibold text-white bg-[#0C0F4F] hover:brightness-150 transition-all disabled:opacity-50"
           >
-            salvar
+            {loading ? "salvando..." : "salvar"}
           </button>
         </div>
       </div>
@@ -195,10 +186,10 @@ function EditModal({ note, isNew, onClose, onSave }: EditModalProps) {
 }
 
 // ---------------------------------------------------------------------------
-// NoteCard
+// NoteCard (mantido igual)
 // ---------------------------------------------------------------------------
 interface NoteCardProps {
-  note: Note;
+  note: NoteUI;
   onEdit: () => void;
   onDelete: () => void;
 }
@@ -212,54 +203,34 @@ function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
         ${note.status === "feito" && "border-emerald-400"}
       `}
     >
-      {/* Top accent line */}
-      <div
-        className={`h-0.5 w-full bg-gradient-to-r to-transparent
-          ${note.status === "pendente" && "from-slate-300"}
-          ${note.status === "fazendo" && "from-amber-400"}
-          ${note.status === "feito" && "from-emerald-400"}
-        `}
-      />
+      <div className={`h-0.5 w-full bg-gradient-to-r to-transparent
+        ${note.status === "pendente" && "from-slate-300"}
+        ${note.status === "fazendo" && "from-amber-400"}
+        ${note.status === "feito" && "from-emerald-400"}
+      `} />
 
-      {/* Header */}
       <div className="flex items-center justify-between px-5 pt-4 pb-3">
-        <h3 className="text-2xl font-bold text-gray-800 leading-tight">
-          {note.title}
-        </h3>
+        <h3 className="text-2xl font-bold text-gray-800 leading-tight">{note.titulo}</h3>
         <div className="flex items-center gap-1">
-          <button
-            onClick={onEdit}
-            className="p-1.5 rounded-lg text-violet-400 hover:bg-violet-50 transition-colors"
-            title="Editar nota"
-          >
+          <button onClick={onEdit} className="p-1.5 rounded-lg text-violet-400 hover:bg-violet-50 transition-colors">
             <EditIcon />
           </button>
-          <button
-            onClick={onDelete}
-            className="p-1.5 rounded-lg text-violet-400 hover:bg-red-50 hover:text-red-400 transition-colors"
-            title="Deletar nota"
-          >
+          <button onClick={onDelete} className="p-1.5 rounded-lg text-violet-400 hover:bg-red-50 hover:text-red-400 transition-colors">
             <TrashIcon />
           </button>
-          <div
-            className={`p-1 rounded-lg
-              ${note.status === "pendente" && "text-slate-400"}
-              ${note.status === "fazendo" && "text-amber-400"}
-              ${note.status === "feito" && "text-emerald-400"}
-            `}
-            title={note.status}
-          >
+          <div className={`p-1 rounded-lg
+            ${note.status === "pendente" && "text-slate-400"}
+            ${note.status === "fazendo" && "text-amber-400"}
+            ${note.status === "feito" && "text-emerald-400"}
+          `}>
             <StatusIcon status={note.status} />
           </div>
         </div>
       </div>
 
-      {/* Divider */}
       <div className="mx-5 h-px bg-violet-50" />
-
-      {/* Content */}
       <p className="px-5 py-4 text-xl leading-relaxed text-slate-500">
-        {note.content || <span className="italic opacity-50">sem conteúdo</span>}
+        {note.conteudo || <span className="italic opacity-50">sem conteúdo</span>}
       </p>
     </div>
   );
@@ -268,130 +239,165 @@ function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
 // ---------------------------------------------------------------------------
 // Main page
 // ---------------------------------------------------------------------------
-const initialNotes: Note[] = [
-  {
-    id: 1,
-    title: "Nota 1",
-    content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    status: "pendente",
-  },
-  {
-    id: 2,
-    title: "Nota 2",
-    content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    status: "fazendo",
-  },
-  {
-    id: 3,
-    title: "Nota 3",
-    content: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
-    status: "feito",
-  },
-];
+
+// O status não vem da API — é gerenciado localmente no cliente.
+// Ao carregar, todas as notas começam como "pendente".
+// O status é preservado enquanto o usuário estiver na sessão.
+const statusLocal: Record<number, Status> = {};
 
 export default function NotesApp() {
-  const [notes, setNotes] = useState<Note[]>(initialNotes);
-  const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [notes, setNotes] = useState<NoteUI[]>([]);
+  const [editingNote, setEditingNote] = useState<NoteUI | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [nextId, setNextId] = useState(4);
+  const [idPasta, setIdPasta] = useState<string>("");
+  const [nomePasta, setNomePasta] = useState<string>("Pasta");
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
 
-  const handleSave = (data: { title: string; content: string; status: Status }) => {
+  // Lê o id_pasta do sessionStorage e carrega as notas
+  useEffect(() => {
+    const id = sessionStorage.getItem("id_pasta") ?? "";
+    const nome = sessionStorage.getItem("nome_pasta") ?? "Pasta";
+    setIdPasta(id);
+    setNomePasta(nome);
+
+    if (!id) {
+      setErro("Nenhuma pasta selecionada.");
+      setCarregando(false);
+      return;
+    }
+
+    carregarNotas(id);
+  }, []);
+
+  const carregarNotas = async (id: string) => {
+    setCarregando(true);
+    setErro("");
+    try {
+      const dados = await listarNotasPorPasta(id);
+      setNotes(dados.map((n) => ({
+        ...n,
+        // Preserva status local se já existir, senão começa como "pendente"
+        status: statusLocal[n.id_nota] ?? "pendente",
+      })));
+    } catch (e: unknown) {
+      setErro(e instanceof Error ? e.message : "Erro ao carregar notas");
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  const handleSave = async (data: { titulo: string; conteudo: string; status: Status }) => {
     if (isCreating) {
-      setNotes((prev) => [...prev, { id: nextId, ...data }]);
-      setNextId((n) => n + 1);
+      const nova = await criarNota({ titulo: data.titulo, conteudo: data.conteudo, id_pasta: idPasta, status: data.status });
+      statusLocal[nova.id_nota] = data.status;
+      setNotes((prev) => [...prev, { ...nova, status: data.status }]);
     } else if (editingNote) {
+      await editarNota(editingNote.id_nota, { titulo: data.titulo, conteudo: data.conteudo, status: data.status });
+      statusLocal[editingNote.id_nota] = data.status;
       setNotes((prev) =>
-        prev.map((n) => (n.id === editingNote.id ? { ...n, ...data } : n))
+        prev.map((n) =>
+          n.id_nota === editingNote.id_nota
+            ? { ...n, titulo: data.titulo, conteudo: data.conteudo, status: data.status }
+            : n
+        )
       );
     }
     setEditingNote(null);
     setIsCreating(false);
   };
 
-  const handleDelete = (id: number) => {
-    setNotes((prev) => prev.filter((n) => n.id !== id));
+  const handleDelete = async (id: number) => {
+    try {
+      await excluirNota(id);
+      delete statusLocal[id];
+      setNotes((prev) => prev.filter((n) => n.id_nota !== id));
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : "Erro ao excluir nota");
+    }
   };
 
   return (
     <>
-      {/* Google Fonts */}
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');`}</style>
 
       <div className="min-h-screen bg-gradient-to-br from-[#f5f2ff] via-[#ede9fe] to-[#f0fdf4]">
-
-        {/* Decorative blobs */}
         <div className="fixed top-0 right-0 w-64 h-64 rounded-full pointer-events-none bg-[radial-gradient(circle,_#c4b5fd33_0%,_transparent_70%)] translate-x-1/3 -translate-y-1/3" />
         <div className="fixed bottom-0 left-0 w-48 h-48 rounded-full pointer-events-none bg-[radial-gradient(circle,_#6ee7b733_0%,_transparent_70%)] -translate-x-1/3 translate-y-1/3" />
 
         <div className="relative max-w-250 mx-auto px-4 py-8">
 
-          {/* Back nav */}
-          <Link
-            href={'../staff/inicio'}
-            className="flex items-center gap-1.5 text-xl mb-6 text-[#0C0F4F] hover:gap-3 transition-all">
+          <Link href="../staff/inicio" className="flex items-center gap-1.5 text-xl mb-6 text-[#0C0F4F] hover:gap-3 transition-all">
             <BackIcon />
             voltar ao início
           </Link>
 
-          {/* Folder title + new note button */}
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 leading-tight">
-              Pasta 1
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-900 leading-tight">{nomePasta}</h1>
             <button
               onClick={() => setIsCreating(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xl font-semibold text-white bg-[#0C0F4F] shadow-lg shadow-violet-300/40 hover:brightness-105 transition-all"
+              disabled={!idPasta || carregando}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xl font-semibold text-white bg-[#0C0F4F] shadow-lg shadow-violet-300/40 hover:brightness-105 transition-all disabled:opacity-50"
             >
               <PlusIcon />
               nova nota
             </button>
           </div>
 
-          {/* Notes list */}
-          <div className="space-y-4">
-            {notes.length === 0 && (
-              <div className="text-center py-16 rounded-2xl bg-white/50 border border-dashed border-violet-300">
-                <p className="text-[0.85rem] text-violet-400">nenhuma nota ainda</p>
-              </div>
-            )}
-            {notes.map((note) => (
-              <NoteCard
-                key={note.id}
-                note={note}
-                onEdit={() => setEditingNote(note)}
-                onDelete={() => handleDelete(note.id)}
-              />
-            ))}
-          </div>
+          {/* Estados de carregamento e erro */}
+          {carregando && (
+            <div className="text-center py-16 rounded-2xl bg-white/50 border border-dashed border-violet-300">
+              <p className="text-violet-400 animate-pulse">carregando notas...</p>
+            </div>
+          )}
 
-          {/* Status legend */}
+          {!carregando && erro && (
+            <div className="text-center py-16 rounded-2xl bg-red-50 border border-dashed border-red-300">
+              <p className="text-red-500">{erro}</p>
+            </div>
+          )}
+
+          {/* Lista de notas */}
+          {!carregando && !erro && (
+            <div className="space-y-4">
+              {notes.length === 0 && (
+                <div className="text-center py-16 rounded-2xl bg-white/50 border border-dashed border-violet-300">
+                  <p className="text-violet-400">nenhuma nota ainda</p>
+                </div>
+              )}
+              {notes.map((note) => (
+                <NoteCard
+                  key={note.id_nota}
+                  note={note}
+                  onEdit={() => setEditingNote(note)}
+                  onDelete={() => handleDelete(note.id_nota)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Legenda */}
           <div className="mt-8 flex items-center justify-center gap-6 py-3 rounded-xl bg-white/50 border border-violet-100">
-            <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-slate-400" />
-              <span className="text-1xl text-gray-600">pendente</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-amber-400" />
-              <span className="text-1xl text-gray-600">fazendo</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span className="text-1xl text-gray-600">feito</span>
-            </div>
+            {[
+              { cor: "bg-slate-400", label: "pendente" },
+              { cor: "bg-amber-400", label: "fazendo" },
+              { cor: "bg-emerald-400", label: "feito" },
+            ].map(({ cor, label }) => (
+              <div key={label} className="flex items-center gap-1.5">
+                <div className={`w-2 h-2 rounded-full ${cor}`} />
+                <span className="text-1xl text-gray-600">{label}</span>
+              </div>
+            ))}
           </div>
 
         </div>
       </div>
 
-      {/* Modal */}
       {(isCreating || editingNote) && (
         <EditModal
           note={editingNote}
           isNew={isCreating}
-          onClose={() => {
-            setEditingNote(null);
-            setIsCreating(false);
-          }}
+          onClose={() => { setEditingNote(null); setIsCreating(false); }}
           onSave={handleSave}
         />
       )}
