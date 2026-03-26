@@ -76,7 +76,9 @@ export async function criarNota(dados: CriarNota): Promise<Nota> {
     } as Nota;
   }
 
-  if (result.id) return result as Nota;
+  if (result.nota) return result.nota;
+
+  if (result.data) return result.data;
 
   throw new Error('Resposta inesperada do servidor ao criar nota');
 }

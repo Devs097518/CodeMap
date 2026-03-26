@@ -257,7 +257,7 @@ export default function NotesApp() {
   // Lê o id_pasta do sessionStorage e carrega as notas
   useEffect(() => {
     const id = sessionStorage.getItem("id_pasta") ?? "";
-    const nome = sessionStorage.getItem("nome_pasta") ?? "Pasta";
+    const nome = sessionStorage.getItem("titulo_pasta") ?? "Pasta";
     setIdPasta(id);
     setNomePasta(nome);
 
