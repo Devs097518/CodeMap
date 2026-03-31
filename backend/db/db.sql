@@ -2,10 +2,13 @@ CREATE DATABASE codemap;
 
 /c codemap;
 
+CREATE TYPE tipo_atribuicao AS ENUM ('cliete', 'admin');
+
 CREATE TABLE usuario(
     id_usuario SERIAL PRIMARY KEY,
     email VARCHAR(100) UNIQUE NOT NULL,
     senha VARCHAR(255) NOT NULL
+    papel tipo_atribuicao;
 );
 
 CREATE TABLE pessoa(
