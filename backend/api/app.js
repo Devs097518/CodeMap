@@ -159,14 +159,15 @@ app.delete('/deletar-nota/:id', async (req, res) => {
 
 app.post('/novo-cadastro', async (req, res) => {
   const { email, senha, username, uf } = req.body;
+  const papel = 'cliente' ;
   const client = await db.connect(); // pega uma conexão dedicada
 
   try {
     await client.query('BEGIN');
 
     const usuarioResult = await client.query(
-      'INSERT INTO public.usuario (email, senha) VALUES ($1, $2) RETURNING *',
-      [email, senha]
+      'INSERT INTO public.usuario (email, senha, papel) VALUES ($1, $2, $3) RETURNING *',
+      [email, senha, papel]
     );
     const usuario = usuarioResult.rows[0];
 
