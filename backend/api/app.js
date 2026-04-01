@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import db from '../db/db.js';
+import bcrypt from 'bcrypt';
 
 
 const app = express();
@@ -115,8 +116,8 @@ app.post('/novo-nota', async (req, res) => {
 app.put('/editar-nota/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { conteudo, titulo , status } = req.body;
-    
+    const { conteudo, titulo, status } = req.body;
+
 
     const result = await db.query(
       'UPDATE public.nota SET conteudo = $1, titulo = $2, status = $4 WHERE id_nota = $3 RETURNING *',
@@ -159,15 +160,19 @@ app.delete('/deletar-nota/:id', async (req, res) => {
 
 app.post('/novo-cadastro', async (req, res) => {
   const { email, senha, username, uf } = req.body;
-  const papel = 'cliente' ;
-  const client = await db.connect(); // pega uma conexão dedicada
+  const papel = 'cliente';
+
+  const client = await db.connect();
+
+  const salt = bcrypt.genSaltSync(1);
+  const senhaCriptografada = bcrypt.hashSync(senha, salt);
 
   try {
     await client.query('BEGIN');
 
     const usuarioResult = await client.query(
       'INSERT INTO public.usuario (email, senha, papel) VALUES ($1, $2, $3) RETURNING *',
-      [email, senha, papel]
+      [email, senhaCriptografada, papel]
     );
     const usuario = usuarioResult.rows[0];
 
@@ -238,7 +243,7 @@ app.put('/editar-pasta/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { titulo } = req.body;
-    
+
 
     const result = await db.query(
       'UPDATE public.pasta SET titulo = $1 WHERE id_pasta = $2 RETURNING *',
