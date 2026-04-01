@@ -201,6 +201,24 @@ app.post('/novo-cadastro', async (req, res) => {
   }
 });
 
+//LOGIN
+app.get('/validacao', async (req, res) => {
+    try {
+        // Pegando os dados da URL: /api/validar-login?senhaDigitada=123&hashDoBanco=$2b$10...
+        const { senhaDigitada, hashDoBanco } = req.query;
+
+        const validacao = await bcrypt.compare(senhaDigitada, hashDoBanco);
+
+        // Retornando o resultado booleano
+        return res.json({ valido: validacao });
+
+    } catch (error) {
+        console.error("Erro na validação:", error);
+        return res.status(500).json({ error: "Erro interno no servidor de validação." });
+    }
+});
+
+
 
 //PASTA
 

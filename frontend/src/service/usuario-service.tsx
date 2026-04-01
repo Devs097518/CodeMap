@@ -22,12 +22,12 @@ export async function realizarLogin(email: string, senha: string): Promise<numbe
 
   const usuario = usuarios[0];
   const usuario_id = usuario.id_usuario;
+  const hash = usuario.senha;
 
-  if (usuario.senha !== senha) {
-    throw new Error("Senha incorreta");
-  }
 
-  // Busca a pessoa vinculada ao id_usuario para pegar o username
+  await validarLogin(senha, hash);
+  
+
   const responsePessoa = await fetch(`${API_URL}/listagem-pessoa?id_usuario=${usuario.id_usuario}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
@@ -35,7 +35,6 @@ export async function realizarLogin(email: string, senha: string): Promise<numbe
 
   const pessoas = await responsePessoa.json();
 
-  // Filtra no frontend garantindo que é o id_usuario correto
   const pessoa = pessoas.find((p: any) => p.id_usuario === usuario.id_usuario);
 
   if (!pessoa) {
@@ -49,6 +48,23 @@ export async function realizarLogin(email: string, senha: string): Promise<numbe
   sessionStorage.setItem("username", username);
 
   return usuario.id_usuario;
+}
+
+async function validarLogin(senha: string, hash: string): Promise<void> {
+  const params = new URLSearchParams({
+    senhaDigitada: senha,
+    hashDoBanco: hash,
+  });
+
+  const response = await fetch(`http://localhost:3003/validacao?${params.toString()}`);
+  const data = await response.json();
+
+  if (data.valido) {
+    console.log("Login autorizado!");
+  } else {
+    console.log("Senha incorreta.");
+    throw new Error("Senha incorreta");
+  }
 }
 
 /**
