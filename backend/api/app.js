@@ -2,9 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import db from '../db/db.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import 'dotenv/config';
 
 
 const app = express();
+const SECRET_KEY = process.env.SECRET_KEY;
 
 app.use(cors());
 app.use(express.json());
@@ -201,21 +204,32 @@ app.post('/novo-cadastro', async (req, res) => {
   }
 });
 
+
+
 //LOGIN
 app.get('/validacao', async (req, res) => {
-    try {
-        // Pegando os dados da URL: /api/validar-login?senhaDigitada=123&hashDoBanco=$2b$10...
-        const { senhaDigitada, hashDoBanco } = req.query;
+  try {
+    // Pegando os dados da URL: /api/validar-login?senhaDigitada=123&hashDoBanco=$2b$10...
+    const { senhaDigitada, hashDoBanco, idUsuario, papelUsuario } = req.query;
 
-        const validacao = await bcrypt.compare(senhaDigitada, hashDoBanco);
+    const validacao = await bcrypt.compare(senhaDigitada, hashDoBanco);
+    let token = null;
 
-        // Retornando o resultado booleano
-        return res.json({ valido: validacao });
-
-    } catch (error) {
-        console.error("Erro na validação:", error);
-        return res.status(500).json({ error: "Erro interno no servidor de validação." });
+    if (validacao) {
+      token = jwt.sign(
+        { id: idUsuario, role: papelUsuario },
+        SECRET_KEY,
+        { expiresIn: '1h' }
+      );
     }
+
+
+    return res.json({ valido: validacao, token: token });
+
+  } catch (error) {
+    console.error("Erro na validação:", error);
+    return res.status(500).json({ error: "Erro interno no servidor de validação." });
+  }
 });
 
 

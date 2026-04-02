@@ -22,11 +22,13 @@ export async function realizarLogin(email: string, senha: string): Promise<numbe
 
   const usuario = usuarios[0];
   const usuario_id = usuario.id_usuario;
+
   const hash = usuario.senha;
+  const papel = usuario.papel;
 
 
-  await validarLogin(senha, hash);
-  
+  await validarLogin(senha, hash, usuario_id, papel);
+
 
   const responsePessoa = await fetch(`${API_URL}/listagem-pessoa?id_usuario=${usuario.id_usuario}`, {
     method: "GET",
@@ -50,10 +52,12 @@ export async function realizarLogin(email: string, senha: string): Promise<numbe
   return usuario.id_usuario;
 }
 
-async function validarLogin(senha: string, hash: string): Promise<void> {
+async function validarLogin(senha: string, hash: string, usuario_id: string, papel: string): Promise<void> {
   const params = new URLSearchParams({
     senhaDigitada: senha,
     hashDoBanco: hash,
+    idUsuario: usuario_id,
+    papelUsuario: papel,
   });
 
   const response = await fetch(`http://localhost:3003/validacao?${params.toString()}`);
@@ -61,6 +65,7 @@ async function validarLogin(senha: string, hash: string): Promise<void> {
 
   if (data.valido) {
     console.log("Login autorizado!");
+    sessionStorage.setItem("token", data.token);
   } else {
     console.log("Senha incorreta.");
     throw new Error("Senha incorreta");
