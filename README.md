@@ -102,7 +102,24 @@ cd frontend
 npm install
 ```
 
-### 4. Rode o projeto
+### 4. Crie o banco de dados
+
+Abra o terminal do PostgreSQL (em terminal linux)
+
+```bash
+sudo -u postgres psql
+```
+
+Crie o banco de dados do CodeMap e se conecte
+
+```bash
+CREATE DATABASE codemap;
+\c codemap;
+```
+
+Cole o conteúdo do arquivo backend/db/db.sql e crie o banco
+
+### 5. Rode o projeto
 
 ```bash
 # Backend
