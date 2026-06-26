@@ -5,7 +5,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
  * Salva o email no sessionStorage em caso de sucesso.
  */
 export async function realizarLogin(email: string, senha: string): Promise<number> {
-  const response = await fetch(`${API_URL}/listagem-usuario?email=${email}`, {
+  const response = await fetch(`${API_URL}/api/usuario/listagem?email=${email}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
@@ -27,15 +27,13 @@ export async function realizarLogin(email: string, senha: string): Promise<numbe
     throw new Error("Senha incorreta");
   }
 
-  // Busca a pessoa vinculada ao id_usuario para pegar o username
-  const responsePessoa = await fetch(`${API_URL}/listagem-pessoa?id_usuario=${usuario.id_usuario}`, {
+  const responsePessoa = await fetch(`${API_URL}/api/pessoa/listagem?id_usuario=${usuario.id_usuario}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
 
   const pessoas = await responsePessoa.json();
 
-  // Filtra no frontend garantindo que é o id_usuario correto
   const pessoa = pessoas.find((p: any) => p.id_usuario === usuario.id_usuario);
 
   if (!pessoa) {
@@ -55,7 +53,7 @@ export async function realizarLogin(email: string, senha: string): Promise<numbe
  * Busca o id_usuario no backend com base no email.
  */
 export async function obterIdUsuarioPorEmail(email: string): Promise<number> {
-  const response = await fetch(`${API_URL}/listagem-usuario?email=${email}`, {
+  const response = await fetch(`${API_URL}/api/usuario/listagem?email=${email}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });

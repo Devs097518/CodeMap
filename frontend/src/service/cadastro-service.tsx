@@ -60,7 +60,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 export async function cadastrarUsuario(
   payload: CadastroUsuarioPayload
 ): Promise<UsuarioResponse> {
-  const response = await fetch(`${API_URL}/novo-usuario`, {
+  const response = await fetch(`${API_URL}/api/usuario/novo`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -76,7 +76,7 @@ export async function cadastrarUsuario(
 export async function cadastrarPessoa(
   payload: CadastroPessoaPayload
 ): Promise<PessoaResponse> {
-  const response = await fetch(`${API_URL}/novo-pessoa`, {
+  const response = await fetch(`${API_URL}/api/pessoa/novo`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

@@ -20,7 +20,7 @@ export interface EditarPasta {
 // Listar todas as pastas do usuário
 
 export async function listarPastasPorUsuario(id_usuario: string): Promise<Pasta[]> {
-  const response = await fetch(`${API_URL}/listagem-pasta?id_usuario=${id_usuario}`, {
+  const response = await fetch(`${API_URL}/api/pasta/listagem?id_usuario=${id_usuario}`, {
     method: 'GET',
     headers: defaultHeaders(),
   });
@@ -43,7 +43,7 @@ export async function listarPastasPorUsuario(id_usuario: string): Promise<Pasta[
 // Criar nova pasta 
 
 export async function criarPasta(dados: CriarPasta): Promise<Pasta> {
-  const response = await fetch(`${API_URL}/novo-pasta`, {
+  const response = await fetch(`${API_URL}/api/pasta/novo`, {
     method: 'POST',
     headers: defaultHeaders(),
     body: JSON.stringify(dados),
@@ -77,7 +77,7 @@ export async function criarPasta(dados: CriarPasta): Promise<Pasta> {
 // Editar pasta existente 
 
 export async function editarPasta(id_pasta: number, dados: EditarPasta): Promise<void> {
-  const response = await fetch(`${API_URL}/editar-pasta/${id_pasta}`, {
+  const response = await fetch(`${API_URL}/api/pasta/editar${id_pasta}`, {
     method: 'PUT',
     headers: defaultHeaders(),
     body: JSON.stringify(dados),
@@ -99,7 +99,7 @@ export async function editarPasta(id_pasta: number, dados: EditarPasta): Promise
 // Excluir pasta 
 
 export async function excluirPasta(id_pasta: number): Promise<void> {
-  const response = await fetch(`${API_URL}/deletar-pasta/${id_pasta}`, {
+  const response = await fetch(`${API_URL}/api/pasta/deletar${id_pasta}`, {
     method: 'DELETE',
     headers: defaultHeaders(),
   });

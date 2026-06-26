@@ -25,7 +25,7 @@ export interface EditarNota {
 // Listar todas as notas do usuário
 
 export async function listarNotasPorPasta(id_pasta: string): Promise<Nota[]> {
-  const response = await fetch(`${API_URL}/listagem-nota?id_pasta=${id_pasta}`, {
+  const response = await fetch(`${API_URL}/api/nota/listagem/?id_pasta=${id_pasta}`, {
     method: 'GET',
     headers: defaultHeaders(),
   });
@@ -48,7 +48,7 @@ export async function listarNotasPorPasta(id_pasta: string): Promise<Nota[]> {
 // Criar nova nota 
 
 export async function criarNota(dados: CriarNota): Promise<Nota> {
-  const response = await fetch(`${API_URL}/novo-nota`, {
+  const response = await fetch(`${API_URL}/api/nota/novo`, {
     method: 'POST',
     headers: defaultHeaders(),
     body: JSON.stringify(dados),
@@ -86,7 +86,7 @@ export async function criarNota(dados: CriarNota): Promise<Nota> {
 // Editar nota existente 
 
 export async function editarNota(id_nota: number, dados: EditarNota): Promise<void> {
-  const response = await fetch(`${API_URL}/editar-nota/${id_nota}`, {
+  const response = await fetch(`${API_URL}/api/nota/editar/${id_nota}`, {
     method: 'PUT',
     headers: defaultHeaders(),
     body: JSON.stringify(dados),
@@ -108,7 +108,7 @@ export async function editarNota(id_nota: number, dados: EditarNota): Promise<vo
 // Excluir nota 
 
 export async function excluirNota(id_nota: number): Promise<void> {
-  const response = await fetch(`${API_URL}/deletar-nota/${id_nota}`, {
+  const response = await fetch(`${API_URL}/api/nota/deletar/${id_nota}`, {
     method: 'DELETE',
     headers: defaultHeaders(),
   });
