@@ -13,7 +13,7 @@ app.listen(3003, () => console.log('Servidor rodando na porta 3003'));
 
 // import express from 'express';
 // import cors from 'cors';
-// import db from './db/db.js';
+// import db from './db/pool.js';
 
 
 // const app = express();

@@ -124,8 +124,7 @@ Cole o conteúdo do arquivo backend/db/db.sql e crie o banco
 ```bash
 # Backend
 cd backend
-cd api
-node app.js
+node server.js
 
 # Frontend
 cd frontend
