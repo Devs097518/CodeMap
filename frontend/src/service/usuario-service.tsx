@@ -17,14 +17,14 @@ export async function realizarLogin(email: string, senha: string): Promise<numbe
   const usuarios = await response.json();
 
   if (!usuarios || usuarios.length === 0) {
-    throw new Error("Email não cadastrado");
+    throw new Error("Email ou senha incorretos"); //Email não cadastrado
   }
 
   const usuario = usuarios[0];
   const usuario_id = usuario.id_usuario;
 
   if (usuario.senha !== senha) {
-    throw new Error("Senha incorreta");
+    throw new Error("Email ou senha incorretos"); // Senha incorreta
   }
 
   const responsePessoa = await fetch(`${API_URL}/api/pessoa/listagem?id_usuario=${usuario.id_usuario}`, {

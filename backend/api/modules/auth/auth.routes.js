@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import db from '../../../db/pool.js';
+import bcrypt from 'bcrypt';
 
 const router = Router();
 
@@ -10,9 +11,11 @@ router.post('/cadastro', async (req, res) => {
   try {
     await client.query('BEGIN');
 
+    const hashSenha = await bcrypt.hash(senha, 10);
+
     const usuarioResult = await client.query(
       'INSERT INTO public.usuario (email, senha) VALUES ($1, $2) RETURNING *',
-      [email, senha]
+      [email, hashSenha]
     );
     const usuario = usuarioResult.rows[0];
 
