@@ -4,7 +4,7 @@ import pool from '../../../db/pool.js'
 
 export const login = async (email, senha) => {
   const { rows } = await pool.query(
-    'SELECT * FROM usuarios WHERE email = $1',
+    'SELECT * FROM usuario WHERE email = $1',
     [email]
   )
   const usuario = rows[0]

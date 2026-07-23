@@ -1,6 +1,7 @@
 import * as authService from './auth.service.js'
 
 export const login = async (req, res) => {
+    const { email, senha } = req.body
   try {
     const { email, senha } = req.body
     const token = await authService.login(email, senha)

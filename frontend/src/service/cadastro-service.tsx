@@ -90,7 +90,7 @@ export async function cadastrarPessoa(
 
 
 export async function cadastrarCompleto(payload: CadastroCompletoPayload) {
-  const res = await fetch('http://localhost:3003/api/auth/cadastro', {
+  const res = await fetch(`${API_URL}/api/cadastro/cadastro`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
