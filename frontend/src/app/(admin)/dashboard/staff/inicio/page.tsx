@@ -20,7 +20,6 @@ export default function FoldersPage() {
   const id_usuario =
     typeof window !== "undefined" ? sessionStorage.getItem("id_usuario") ?? "" : "";
 
-  // Carrega as pastas ao montar o componente
   useEffect(() => {
     if (!id_usuario) return;
 

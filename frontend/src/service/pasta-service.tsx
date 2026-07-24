@@ -1,5 +1,6 @@
 import { API_URL, defaultHeaders } from './api';
 
+const token = sessionStorage.getItem('token');
 
 // Interfaces 
 export interface Pasta {
@@ -22,7 +23,10 @@ export interface EditarPasta {
 export async function listarPastasPorUsuario(id_usuario: string): Promise<Pasta[]> {
   const response = await fetch(`${API_URL}/api/pasta/listagem?id_usuario=${id_usuario}`, {
     method: 'GET',
-    headers: defaultHeaders(),
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
   });
 
   if (response.status === 404) return [];
@@ -45,7 +49,10 @@ export async function listarPastasPorUsuario(id_usuario: string): Promise<Pasta[
 export async function criarPasta(dados: CriarPasta): Promise<Pasta> {
   const response = await fetch(`${API_URL}/api/pasta/novo`, {
     method: 'POST',
-    headers: defaultHeaders(),
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
     body: JSON.stringify(dados),
   });
 
@@ -79,7 +86,10 @@ export async function criarPasta(dados: CriarPasta): Promise<Pasta> {
 export async function editarPasta(id_pasta: number, dados: EditarPasta): Promise<void> {
   const response = await fetch(`${API_URL}/api/pasta/editar${id_pasta}`, {
     method: 'PUT',
-    headers: defaultHeaders(),
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
     body: JSON.stringify(dados),
   });
 
@@ -101,7 +111,10 @@ export async function editarPasta(id_pasta: number, dados: EditarPasta): Promise
 export async function excluirPasta(id_pasta: number): Promise<void> {
   const response = await fetch(`${API_URL}/api/pasta/deletar${id_pasta}`, {
     method: 'DELETE',
-    headers: defaultHeaders(),
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
   });
 
   let result: { status?: string; mensagem?: string } = {};

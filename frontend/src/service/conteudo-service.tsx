@@ -1,5 +1,7 @@
 import { API_URL, defaultHeaders } from './api';
 
+const token = sessionStorage.getItem('token');
+
 // Interfaces 
 export interface Nota {
   id_nota: number;
@@ -27,7 +29,10 @@ export interface EditarNota {
 export async function listarNotasPorPasta(id_pasta: string): Promise<Nota[]> {
   const response = await fetch(`${API_URL}/api/nota/listagem/?id_pasta=${id_pasta}`, {
     method: 'GET',
-    headers: defaultHeaders(),
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
   });
 
   if (response.status === 404) return [];
@@ -50,7 +55,10 @@ export async function listarNotasPorPasta(id_pasta: string): Promise<Nota[]> {
 export async function criarNota(dados: CriarNota): Promise<Nota> {
   const response = await fetch(`${API_URL}/api/nota/novo`, {
     method: 'POST',
-    headers: defaultHeaders(),
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
     body: JSON.stringify(dados),
   });
 
@@ -88,7 +96,10 @@ export async function criarNota(dados: CriarNota): Promise<Nota> {
 export async function editarNota(id_nota: number, dados: EditarNota): Promise<void> {
   const response = await fetch(`${API_URL}/api/nota/editar/${id_nota}`, {
     method: 'PUT',
-    headers: defaultHeaders(),
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
     body: JSON.stringify(dados),
   });
 
@@ -110,7 +121,10 @@ export async function editarNota(id_nota: number, dados: EditarNota): Promise<vo
 export async function excluirNota(id_nota: number): Promise<void> {
   const response = await fetch(`${API_URL}/api/nota/deletar/${id_nota}`, {
     method: 'DELETE',
-    headers: defaultHeaders(),
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
   });
 
   let result: { status?: string; mensagem?: string } = {};
