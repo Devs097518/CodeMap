@@ -1,15 +1,8 @@
-import { Router } from 'express';
-import db from '../../../db/pool.js';
+import { Router } from 'express'
+import * as pessoaController from './pessoa.controller.js'
 
-const router = Router();
+const router = Router()
 
-router.get('/listagem', async (req, res) => {
-  try {
-    const { rows } = await db.query('SELECT * FROM pessoa');
-    res.json(rows);
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
+router.get('/listagem', pessoaController.listagem)
 
-export default router;
+export default router
