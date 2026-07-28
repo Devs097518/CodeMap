@@ -2,8 +2,6 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import pool from '../../../db/pool.js'
 
-console.log('SECRET no login:', process.env.JWT_SECRET)
-
 export const login = async (email, senha) => {
   const { rows } = await pool.query(
     'SELECT * FROM usuario WHERE email = $1',

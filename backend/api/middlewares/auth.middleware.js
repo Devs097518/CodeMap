@@ -1,7 +1,5 @@
 import jwt from 'jsonwebtoken'
 
-console.log('SECRET no middleware:', process.env.JWT_SECRET)
-
 export const autenticar = (req, res, next) => {
   const authHeader = req.headers.authorization
 
