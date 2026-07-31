@@ -21,3 +21,25 @@ export const login = async (email, senha) => {
 
   return token
 }
+
+export const buscarUsuarioLogado = async (id_usuario) => {
+  const { rows } = await pool.query(
+    'SELECT u.id_usuario, u.email, u.role, p.username, p.uf FROM usuario u LEFT JOIN pessoa p ON p.id_usuario = u.id_usuario WHERE u.id_usuario = $1',
+    [id_usuario]
+  )
+  return rows[0] || null
+}
+
+
+
+
+// # Login (salva o cookie num arquivo)
+// curl -c cookies.txt -X POST http://localhost:3003/login \
+//   -H "Content-Type: application/json" \
+//   -d '{"email":"seu@email.com","senha":"suasenha"}'
+
+// # Testa rota protegida usando o cookie salvo
+// curl -b cookies.txt http://localhost:3003/auth/me
+
+// # Testa logout
+// curl -b cookies.txt -X POST http://localhost:3003/logout
