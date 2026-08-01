@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect, useCallback, ReactNode } from "react";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { buscarUsuarioLogado } from '../../../../service/usuario-service';
-import { apiFetch } from '../../../../service/api-fetch';
+import { buscarUsuarioLogado } from '@/service/usuario-service';
+import { apiFetch } from '@/service/api-fetch';
 
 export default function StaffLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
