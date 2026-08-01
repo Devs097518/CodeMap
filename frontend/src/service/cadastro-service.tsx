@@ -1,4 +1,4 @@
-import { API_URL, defaultHeaders } from './api';
+import { apiFetch } from './api-fetch';
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -60,9 +60,8 @@ async function handleResponse<T>(response: Response): Promise<T> {
 export async function cadastrarUsuario(
   payload: CadastroUsuarioPayload
 ): Promise<UsuarioResponse> {
-  const response = await fetch(`${API_URL}/api/usuario/novo`, {
+  const response = await apiFetch('/api/usuario/novo', {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
@@ -76,9 +75,8 @@ export async function cadastrarUsuario(
 export async function cadastrarPessoa(
   payload: CadastroPessoaPayload
 ): Promise<PessoaResponse> {
-  const response = await fetch(`${API_URL}/api/pessoa/novo`, {
+  const response = await apiFetch('/api/pessoa/novo', {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
@@ -90,9 +88,8 @@ export async function cadastrarPessoa(
 
 
 export async function cadastrarCompleto(payload: CadastroCompletoPayload) {
-  const res = await fetch(`${API_URL}/api/cadastro/cadastro`, {
+  const res = await apiFetch('/api/cadastro/cadastro', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
 

@@ -1,8 +1,5 @@
-import { API_URL, defaultHeaders } from './api';
+import { apiFetch } from './api-fetch';
 
-const token = sessionStorage.getItem('token');
-
-// Interfaces 
 export interface Pasta {
   id_pasta: number;
   titulo: string;
@@ -18,15 +15,9 @@ export interface EditarPasta {
   titulo: string;
 }
 
-// Listar todas as pastas do usuário
-
 export async function listarPastasPorUsuario(id_usuario: string): Promise<Pasta[]> {
-  const response = await fetch(`${API_URL}/api/pasta/listagem?id_usuario=${id_usuario}`, {
+  const response = await apiFetch(`/api/pasta/listagem?id_usuario=${id_usuario}`, {
     method: 'GET',
-      headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
   });
 
   if (response.status === 404) return [];
@@ -37,7 +28,6 @@ export async function listarPastasPorUsuario(id_usuario: string): Promise<Pasta[
 
   const data = await response.json();
 
-  // Aceita tanto array direto quanto objeto com campo "pastas"
   if (Array.isArray(data)) return data as Pasta[];
   if (data?.pastas && Array.isArray(data.pastas)) return data.pastas as Pasta[];
 
@@ -47,12 +37,8 @@ export async function listarPastasPorUsuario(id_usuario: string): Promise<Pasta[
 // Criar nova pasta 
 
 export async function criarPasta(dados: CriarPasta): Promise<Pasta> {
-  const response = await fetch(`${API_URL}/api/pasta/novo`, {
+  const response = await apiFetch('/api/pasta/novo', {
     method: 'POST',
-      headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
     body: JSON.stringify(dados),
   });
 
@@ -67,7 +53,7 @@ export async function criarPasta(dados: CriarPasta): Promise<Pasta> {
   if (!response.ok || result.status === 'erro') {
     throw new Error(result.mensagem || `Erro ao criar pasta (HTTP ${response.status})`);
   }
-  
+
   if (result.id_pasta) {
     return {
       id_pasta: result.id_pasta as number,
@@ -76,20 +62,16 @@ export async function criarPasta(dados: CriarPasta): Promise<Pasta> {
     } as Pasta;
   }
 
-  if (result.id_pasta) return result as Pasta;
-
   throw new Error('Resposta inesperada do servidor ao criar pasta');
 }
+
+
 
 // Editar pasta existente 
 
 export async function editarPasta(id_pasta: number, dados: EditarPasta): Promise<void> {
-  const response = await fetch(`${API_URL}/api/pasta/editar${id_pasta}`, {
+  const response = await apiFetch(`/api/pasta/editar${id_pasta}`, {
     method: 'PUT',
-      headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
     body: JSON.stringify(dados),
   });
 
@@ -109,12 +91,8 @@ export async function editarPasta(id_pasta: number, dados: EditarPasta): Promise
 // Excluir pasta 
 
 export async function excluirPasta(id_pasta: number): Promise<void> {
-  const response = await fetch(`${API_URL}/api/pasta/deletar${id_pasta}`, {
+  const response = await apiFetch(`/api/pasta/deletar${id_pasta}`, {
     method: 'DELETE',
-      headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
   });
 
   let result: { status?: string; mensagem?: string } = {};

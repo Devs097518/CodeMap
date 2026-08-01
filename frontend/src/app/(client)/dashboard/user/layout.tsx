@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect, useCallback, ReactNode } from "react";
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { buscarUsuarioLogado } from '../../../../service/usuario-service';
+import { apiFetch } from '../../../../service/api-fetch';
 
 export default function StaffLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
@@ -12,20 +14,20 @@ export default function StaffLayout({ children }: { children: ReactNode }) {
 
   // Proteção de autenticação (redireciona se não logado)
   useEffect(() => {
-    const name = sessionStorage.getItem('username');
-    const id = sessionStorage.getItem('id_usuario');
-    if (!id) {
-      router.push('../');
-      return;
-    }
-    setUsername(name);
-    setUserId(id);
-    setIsLoaded(true);
+    buscarUsuarioLogado()
+    .then((usuario) => {
+      setUsername(usuario.username);
+      setUserId(usuario.id_usuario);
+      setIsLoaded(true);
+    })
+    .catch(() => {
+      router.push('/login');
+    });
   }, [router]);
 
-  const handleLogout = () => {
-    sessionStorage.clear();
-    router.push('http://localhost:3000/');
+  const handleLogout = async () => {
+    await apiFetch('/logout', { method: 'POST' });
+    window.location.href = '/';
   };
 
   // Loading spinner enquanto verifica auth

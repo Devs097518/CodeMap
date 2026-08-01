@@ -1,6 +1,4 @@
-import { API_URL, defaultHeaders } from './api';
-
-const token = sessionStorage.getItem('token');
+import { apiFetch } from './api-fetch';
 
 // Interfaces 
 export interface Nota {
@@ -27,12 +25,8 @@ export interface EditarNota {
 // Listar todas as notas do usuário
 
 export async function listarNotasPorPasta(id_pasta: string): Promise<Nota[]> {
-  const response = await fetch(`${API_URL}/api/nota/listagem/?id_pasta=${id_pasta}`, {
+  const response = await apiFetch(`/api/nota/listagem/?id_pasta=${id_pasta}`, {
     method: 'GET',
-      headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
   });
 
   if (response.status === 404) return [];
@@ -53,12 +47,8 @@ export async function listarNotasPorPasta(id_pasta: string): Promise<Nota[]> {
 // Criar nova nota 
 
 export async function criarNota(dados: CriarNota): Promise<Nota> {
-  const response = await fetch(`${API_URL}/api/nota/novo`, {
+  const response = await apiFetch('/api/nota/novo', {
     method: 'POST',
-      headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
     body: JSON.stringify(dados),
   });
 
@@ -94,12 +84,8 @@ export async function criarNota(dados: CriarNota): Promise<Nota> {
 // Editar nota existente 
 
 export async function editarNota(id_nota: number, dados: EditarNota): Promise<void> {
-  const response = await fetch(`${API_URL}/api/nota/editar/${id_nota}`, {
+  const response = await apiFetch(`/api/nota/editar/${id_nota}`, {
     method: 'PUT',
-      headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
     body: JSON.stringify(dados),
   });
 
@@ -119,12 +105,8 @@ export async function editarNota(id_nota: number, dados: EditarNota): Promise<vo
 // Excluir nota 
 
 export async function excluirNota(id_nota: number): Promise<void> {
-  const response = await fetch(`${API_URL}/api/nota/deletar/${id_nota}`, {
+  const response = await apiFetch(`/api/nota/deletar/${id_nota}`, {
     method: 'DELETE',
-      headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
   });
 
   let result: { status?: string; mensagem?: string } = {};
