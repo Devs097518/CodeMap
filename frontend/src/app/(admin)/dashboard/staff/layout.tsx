@@ -38,7 +38,7 @@ export default function StaffLayout({ children }: { children: ReactNode }) {
   // }, [router]);
 
   const handleLogout = async () => {
-    await apiFetch('/logout', { method: 'POST' });
+    await apiFetch('/api/auth/logout', { method: 'POST' });
     window.location.href = '/';
   };
 
