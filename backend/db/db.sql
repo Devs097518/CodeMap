@@ -2,10 +2,13 @@ CREATE DATABASE codemap;
 
 /c codemap;
 
+CREATE TYPE tipo_usuario AS ENUM ('client', 'admin');
+
 CREATE TABLE usuario(
     id_usuario SERIAL PRIMARY KEY,
     email VARCHAR(100) UNIQUE NOT NULL,
-    senha VARCHAR(255) NOT NULL
+    senha VARCHAR(255) NOT NULL,
+    role tipo_usuario NOT NULL DEFAULT 'client'
 );
 
 CREATE TABLE pessoa(

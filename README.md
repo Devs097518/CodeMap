@@ -88,7 +88,7 @@ cp .env_exemple.txt .env
 cp .env_exemple.txt .env
 ```
 
-> ⚠️ Preencha os valores das variáveis de ambiente antes de rodar o projeto.
+> ⚠️ Preencha os valores das suas variáveis de ambiente antes de rodar o projeto.
 
 ### 3. Instale as dependências
 
