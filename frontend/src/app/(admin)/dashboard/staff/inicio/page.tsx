@@ -47,57 +47,6 @@ export default function FoldersPage() {
     if (e.key === "Enter") handleCriar();
   };
   
-// "use client";
-
-// import { useState, useEffect } from "react";
-// import Link from "next/link";
-// import { ArrowRight, FolderPlus } from "lucide-react";
-// import {
-//   listarPastasPorUsuario,
-//   criarPasta,
-//   Pasta,
-// } from "@/service/pasta-service";
-// import { useAuth } from '@/context/AuthContext';
-
-// export default function FoldersPage() {
-//   const [titulo, setTitulo] = useState("");
-//   const notas: string = "../staff/notas";
-//   const [pastas, setPastas] = useState<Pasta[]>([]);
-//   const [loading, setLoading] = useState(true);
-//   const [erro, setErro] = useState<string | null>(null);
-//   const username = sessionStorage.getItem('username');
-
-//   const id_usuario =
-//     typeof window !== "undefined" ? sessionStorage.getItem("id_usuario") ?? "" : "";
-
-//   useEffect(() => {
-//     if (!id_usuario) return;
-
-//     listarPastasPorUsuario(id_usuario)
-//       .then((data) => setPastas(data))
-//       .catch(() => setErro("Erro ao carregar pastas."))
-//       .finally(() => setLoading(false));
-//   }, [id_usuario]);
-
-//   const handleCriar = async () => {
-//     const trimmed = titulo.trim();
-//     if (!trimmed || !id_usuario) return;
-
-//     try {
-//       const nova = await criarPasta({ titulo: trimmed, id_usuario });
-//       setPastas((prev) => [...prev, nova]);
-//       setTitulo("");
-//     } catch {
-//       setErro("Erro ao criar pasta.");
-//     }
-//   };
-
-//   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-//     if (e.key === "Enter") handleCriar();
-//   };
-
-//   return (
-
   return (
 
 

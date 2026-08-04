@@ -20,7 +20,7 @@ export async function middleware(req: NextRequest) {
     const role = payload.role as string
 
     if (pathname.startsWith('/dashboard/staff') && role !== 'admin') {
-      return NextResponse.redirect(new URL('/dashboard/user', req.url))
+      return NextResponse.redirect(new URL('/dashboard/user/inicio', req.url))
     }
 
     if (pathname.startsWith('/dashboard/user') && !role) {

@@ -8,19 +8,19 @@ import {
   criarPasta,
   Pasta,
 } from "@/service/pasta-service";
+import { useAuth } from '@/context/AuthContext';
 
 export default function FoldersPage() {
+  const { usuario } = useAuth();
   const [titulo, setTitulo] = useState("");
-  const notas: string = "../staff/notas";
+  const notas: string = "../user/notas";
   const [pastas, setPastas] = useState<Pasta[]>([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
-  const username = sessionStorage.getItem('username');
 
-  const id_usuario =
-    typeof window !== "undefined" ? sessionStorage.getItem("id_usuario") ?? "" : "";
+  const username = usuario?.username ?? "";
+  const id_usuario = usuario?.id_usuario ?? "";
 
-  // Carrega as pastas ao montar o componente
   useEffect(() => {
     if (!id_usuario) return;
 
@@ -46,8 +46,10 @@ export default function FoldersPage() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") handleCriar();
   };
-
+  
   return (
+
+
     <main className="min-h-screen bg-white px-10 py-10 font-sans">
       {/* Header */}
       <div className="mb-10">
