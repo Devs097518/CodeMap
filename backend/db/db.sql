@@ -33,3 +33,11 @@ CREATE TABLE nota(
     id_pasta INTEGER REFERENCES pasta(id_pasta) ON DELETE CASCADE NOT NULL,
     status status_nota
 );
+
+CREATE TABLE categoria(
+    id_categoria SERIAL PRIMARY KEY,
+    nome VARCHAR(20) UNIQUE NOT NULL,
+    slug VARCHAR(50) UNIQUE NOT NULL,
+    ordem INTEGER UNIQUE NOT NULL,
+    deleted_at TIMESTAMPTZ DEFAULT NULL
+);
