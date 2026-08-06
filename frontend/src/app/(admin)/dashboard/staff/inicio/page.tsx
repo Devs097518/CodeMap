@@ -12,7 +12,16 @@ import {
   Categoria,
 } from "@/service/categoria-service";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import  RoadmapModal  from "@/components/RoadmapModal";
 import { useAuth } from "@/context/AuthContext";
+import {
+  listarRoadmaps,
+  criarRoadmap,
+  editarRoadmap,
+  arquivarRoadmap,
+  restaurarRoadmap,
+  Roadmap,
+} from "@/service/roadmap-service";
 
 export default function AdminInicioPage() {
   const { usuario } = useAuth();
@@ -23,20 +32,27 @@ export default function AdminInicioPage() {
   const [modalAberto, setModalAberto] = useState(false);
   const [categoriaEditando, setCategoriaEditando] = useState<Categoria | null>(null);
   const [categoriaParaArquivar, setCategoriaParaArquivar] = useState<Categoria | null>(null);
+  const [roadmaps, setRoadmaps] = useState<Roadmap[]>([]);
+  const [modalRoadmapAberto, setModalRoadmapAberto] = useState(false);
+  const [roadmapEditando, setRoadmapEditando] = useState<Roadmap | null>(null);
+  const [categoriaParaNovoRoadmap, setCategoriaParaNovoRoadmap] = useState<Categoria | null>(null);
+  const [roadmapParaArquivar, setRoadmapParaArquivar] = useState<Roadmap | null>(null);
 
   const username = usuario?.username ?? "";
 
-  const carregarCategorias = () => {
+  const carregarDados = () => {
     setLoading(true);
-    listarCategorias(mostrarArquivados)
-      .then(setCategorias)
-      .catch(() => setErro("Erro ao carregar categorias."))
+    Promise.all([listarCategorias(mostrarArquivados), listarRoadmaps(mostrarArquivados)])
+      .then(([cats, rms]) => {
+        setCategorias(cats);
+        setRoadmaps(rms);
+      })
+      .catch(() => setErro("Erro ao carregar dados."))
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    carregarCategorias();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    carregarDados();
   }, [mostrarArquivados]);
 
   const abrirModalCriar = () => {
@@ -54,7 +70,7 @@ export default function AdminInicioPage() {
     try {
       await arquivarCategoria(categoriaParaArquivar.id_categoria);
       setCategoriaParaArquivar(null);
-      carregarCategorias();
+      carregarDados();
     } catch {
       setErro("Erro ao arquivar categoria.");
     }
@@ -63,7 +79,7 @@ export default function AdminInicioPage() {
   const handleRestaurar = async (categoria: Categoria) => {
     try {
       await restaurarCategoria(categoria.id_categoria);
-      carregarCategorias();
+      carregarDados();
     } catch {
       setErro("Erro ao restaurar categoria.");
     }
@@ -72,9 +88,41 @@ export default function AdminInicioPage() {
   const handleMover = async (id: number, direcao: "cima" | "baixo") => {
     try {
       await moverCategoria(id, direcao);
-      carregarCategorias();
+      carregarDados();
     } catch {
       setErro("Erro ao mover categoria.");
+    }
+  };
+
+    const abrirModalCriarRoadmap = (categoria: Categoria) => {
+    setRoadmapEditando(null);
+    setCategoriaParaNovoRoadmap(categoria);
+    setModalRoadmapAberto(true);
+  };
+
+  const abrirModalEditarRoadmap = (roadmap: Roadmap) => {
+    setRoadmapEditando(roadmap);
+    setCategoriaParaNovoRoadmap(null);
+    setModalRoadmapAberto(true);
+  };
+
+  const handleArquivarRoadmap = async () => {
+    if (!roadmapParaArquivar) return;
+    try {
+      await arquivarRoadmap(roadmapParaArquivar.id_roadmap);
+      setRoadmapParaArquivar(null);
+      carregarDados();
+    } catch {
+      setErro("Erro ao arquivar roadmap.");
+    }
+  };
+
+  const handleRestaurarRoadmap = async (roadmap: Roadmap) => {
+    try {
+      await restaurarRoadmap(roadmap.id_roadmap);
+      carregarDados();
+    } catch {
+      setErro("Erro ao restaurar roadmap.");
     }
   };
 
@@ -119,8 +167,8 @@ export default function AdminInicioPage() {
             <section key={categoria.id_categoria}>
               <div className="flex items-center gap-2 mb-3">
                 <h3
-                  className={`text-xl font-semibold ${
-                    categoria.deleted_at ? "text-gray-400" : "text-gray-800"
+                  className={`text-xl rounded-xl p-2 font-semibold ${
+                    categoria.deleted_at ? "text-gray-400 bg-gray-100" : "text-gray-800 bg-yellow-100" 
                   }`}
                 >
                   {categoria.nome}
@@ -171,12 +219,61 @@ export default function AdminInicioPage() {
                 )}
               </div>
 
-              {/* Cards de roadmap entram aqui na issue #9 */}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-2xl px-5 py-8 text-gray-300">
-                  <Plus size={20} />
-                  <span className="text-sm mt-2">Novo roadmap</span>
-                </div>
+                {roadmaps.filter((r) => r.categoria_id === categoria.id_categoria).map((roadmap) => (
+                    <div
+                      key={roadmap.id_roadmap}
+                      className="relative group bg-white border border-gray-200 rounded-2xl px-5 py-5 hover:border-gray-300 transition-colors duration-150"
+                    >
+                      <p className={`text-base font-semibold truncate pr-2 ${roadmap.deleted_at ? "text-gray-400" : "text-gray-900"}`}>
+                        {roadmap.titulo}
+                      </p>
+
+                      {roadmap.deleted_at ? (
+                        <span className="inline-block mt-2 text-xs text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">arquivado</span>
+                      ) : !roadmap.is_active ? (
+                        <span className="inline-block mt-2 text-xs text-amber-600 bg-amber-50 rounded-full px-2 py-0.5">rascunho</span>
+                      ) : null}
+
+                      <div className="flex gap-2 mt-3">
+                        <button
+                          onClick={() => abrirModalEditarRoadmap(roadmap)}
+                          disabled={!!roadmap.deleted_at}
+                          aria-label="Editar roadmap"
+                          className="text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:hover:text-gray-400"
+                        >
+                          <Pencil size={14} />
+                        </button>
+                        {roadmap.deleted_at ? (
+                          <button
+                            onClick={() => handleRestaurarRoadmap(roadmap)}
+                            aria-label="Restaurar roadmap"
+                            className="text-gray-400 hover:text-gray-700"
+                          >
+                            <ArchiveRestore size={14} />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => setRoadmapParaArquivar(roadmap)}
+                            aria-label="Arquivar roadmap"
+                            className="text-gray-400 hover:text-red-600"
+                          >
+                            <Archive size={14} />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                {!categoria.deleted_at && (
+                  <button
+                    onClick={() => abrirModalCriarRoadmap(categoria)}
+                    className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-2xl px-5 py-8 text-gray-300 hover:border-gray-300 hover:text-gray-400 transition-colors duration-150"
+                  >
+                    <Plus size={20} />
+                    <span className="text-xl mt-2">Novo roadmap</span>
+                  </button>
+                )}
               </div>
             </section>
           ))}
@@ -189,7 +286,7 @@ export default function AdminInicioPage() {
           onClose={() => setModalAberto(false)}
           onSuccess={() => {
             setModalAberto(false);
-            carregarCategorias();
+            carregarDados();
           }}
         />
       )}
@@ -204,6 +301,30 @@ export default function AdminInicioPage() {
           onConfirm={handleArquivar}
         />
       )}
+
+      {modalRoadmapAberto && (
+        <RoadmapModal
+          roadmap={roadmapEditando}
+          categoriaPadrao={categoriaParaNovoRoadmap}
+          onClose={() => setModalRoadmapAberto(false)}
+          onSuccess={() => {
+            setModalRoadmapAberto(false);
+            carregarDados();
+          }}
+        />
+      )}
+
+      {roadmapParaArquivar && (
+        <ConfirmModal
+          titulo="Arquivar roadmap"
+          mensagem={`Arquivar "${roadmapParaArquivar.titulo}"? Ele some da listagem padrão, mas os tópicos continuam intactos.`}
+          textoConfirmar="Arquivar"
+          textoConfirmando="Arquivando..."
+          onCancel={() => setRoadmapParaArquivar(null)}
+          onConfirm={handleArquivarRoadmap}
+        />
+      )}
+
     </main>
   );
 }
@@ -254,7 +375,7 @@ function CategoriaModal({
           onChange={(e) => setNome(e.target.value)}
           maxLength={50}
           placeholder="Nome da categoria"
-          className="w-full bg-gray-200 text-gray-700 rounded-xl px-4 py-3 text-base outline-none mb-2"
+          className="w-full bg-gray-100 text-gray-800 rounded-xl px-4 py-3 text-base outline-none mb-2"
           autoFocus
         />
 

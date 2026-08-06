@@ -41,3 +41,12 @@ CREATE TABLE categoria(
     ordem INTEGER UNIQUE NOT NULL,
     deleted_at TIMESTAMPTZ DEFAULT NULL
 );
+
+CREATE TABLE roadmap(
+    id_roadmap SERIAL PRIMARY KEY,
+    categoria_id INTEGER NOT NULL REFERENCES categoria(id_categoria),
+    titulo VARCHAR(100) NOT NULL,
+    descricao TEXT,
+    is_active BOOLEAN NOT NULL DEFAULT false,
+    deleted_at TIMESTAMPTZ DEFAULT NULL
+);
