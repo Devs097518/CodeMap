@@ -8,5 +8,6 @@ router.post('/criarCategoria', categoriaController.novo)
 router.put('/editar/:id', categoriaController.editar)
 router.delete('/deletar/:id', categoriaController.deletar)
 router.put('/restaurar/:id', categoriaController.restaurar)
+router.put('/mover/:id', categoriaController.mover)
 
 export default router

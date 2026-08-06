@@ -26,22 +26,24 @@ export const listarCategorias = async (incluirArquivadas) => {
   return rows
 }
 
-export const criarCategoria = async (nome, ordem) => {
+export const criarCategoria = async (nome) => {
   const slug = gerarSlug(nome)
 
-  const result = await db.query(
-    'INSERT INTO public.categoria (nome, slug, ordem) VALUES ($1, $2, $3) RETURNING *',
-    [nome, slug, ordem]
+  const { rows } = await db.query(
+    `INSERT INTO public.categoria (nome, slug, ordem)
+     VALUES ($1, $2, COALESCE((SELECT MAX(ordem) FROM categoria), 0) + 1)
+     RETURNING *`,
+    [nome, slug]
   )
-  return result.rows[0]
+  return rows[0]
 }
 
-export const editarCategoria = async (id, nome, ordem) => {
+export const editarCategoria = async (id, nome) => {
   const slug = gerarSlug(nome)
 
   const result = await db.query(
-    'UPDATE public.categoria SET nome = $1, slug = $2, ordem = $3 WHERE id_categoria = $4 AND deleted_at IS NULL RETURNING *',
-    [nome, slug, ordem, id]
+    'UPDATE public.categoria SET nome = $1, slug = $2 WHERE id_categoria = $3 AND deleted_at IS NULL RETURNING *',
+    [nome, slug, id]
   )
   return result.rows[0] || null
 }
@@ -68,4 +70,46 @@ export const buscarCategoriaPorId = async (id) => {
     [id]
   )
   return result.rows[0] || null
+}
+
+export const moverCategoria = async (id, direcao) => {
+  const client = await db.connect()
+  try {
+    await client.query('BEGIN')
+
+    const { rows: atualRows } = await client.query(
+      'SELECT * FROM categoria WHERE id_categoria = $1 AND deleted_at IS NULL FOR UPDATE',
+      [id]
+    )
+    const atual = atualRows[0]
+    if (!atual) {
+      await client.query('ROLLBACK')
+      return { encontrada: false }
+    }
+
+    const operador = direcao === 'cima' ? '<' : '>'
+    const ordenacao = direcao === 'cima' ? 'DESC' : 'ASC'
+
+    const { rows: vizinhoRows } = await client.query(
+      `SELECT * FROM categoria WHERE deleted_at IS NULL AND ordem ${operador} $1 ORDER BY ordem ${ordenacao} LIMIT 1 FOR UPDATE`,
+      [atual.ordem]
+    )
+    const vizinho = vizinhoRows[0]
+    if (!vizinho) {
+      await client.query('ROLLBACK')
+      return { encontrada: true, semMovimento: true }
+    }
+
+    await client.query('UPDATE categoria SET ordem = -1 WHERE id_categoria = $1', [atual.id_categoria])
+    await client.query('UPDATE categoria SET ordem = $1 WHERE id_categoria = $2', [atual.ordem, vizinho.id_categoria])
+    await client.query('UPDATE categoria SET ordem = $1 WHERE id_categoria = $2', [vizinho.ordem, atual.id_categoria])
+
+    await client.query('COMMIT')
+    return { encontrada: true, semMovimento: false }
+  } catch (err) {
+    await client.query('ROLLBACK')
+    throw err
+  } finally {
+    client.release()
+  }
 }
