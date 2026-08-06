@@ -79,6 +79,7 @@ export default function AdminInicioPage() {
   };
 
   return (
+    
     <main className="min-h-screen bg-white px-10 py-10 font-sans">
       <div className="mb-10 flex items-center justify-between">
         <div>
@@ -86,7 +87,7 @@ export default function AdminInicioPage() {
           <p className="text-xl text-gray-500 mt-0.5">espaço de gerenciamento dos roadmaps</p>
         </div>
         <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2 text-sm text-gray-600">
+          <label className="flex items-center gap-2 text-x text-gray-600">
             <input
               type="checkbox"
               checked={mostrarArquivados}
@@ -96,7 +97,7 @@ export default function AdminInicioPage() {
           </label>
           <button
             onClick={abrirModalCriar}
-            className="flex items-center gap-2 bg-[#1a0066] text-white text-sm font-bold px-4 py-2.5 rounded-xl hover:bg-[#2a0099] transition-colors duration-150"
+            className="flex items-center gap-2 bg-[#1a0066] text-white text-x px-4 py-2.5 rounded-xl hover:bg-[#2a0099] transition-colors duration-150"
           >
             <Plus size={16} />
             Nova Categoria
@@ -104,7 +105,7 @@ export default function AdminInicioPage() {
         </div>
       </div>
 
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Roadmaps</h2>
+      <h2 className="text-2xl border-t-2 border-gray-200 font-bold text-gray-900 mb-6 pt-6">Roadmaps</h2>
 
       {erro && <p className="text-red-500 text-sm mb-4">{erro}</p>}
 
@@ -118,7 +119,7 @@ export default function AdminInicioPage() {
             <section key={categoria.id_categoria}>
               <div className="flex items-center gap-2 mb-3">
                 <h3
-                  className={`text-lg font-semibold ${
+                  className={`text-xl font-semibold ${
                     categoria.deleted_at ? "text-gray-400" : "text-gray-800"
                   }`}
                 >
@@ -129,7 +130,7 @@ export default function AdminInicioPage() {
                   onClick={() => handleMover(categoria.id_categoria, "cima")}
                   disabled={index === 0 || !!categoria.deleted_at}
                   aria-label="Mover categoria para cima"
-                  className="text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:hover:text-gray-400"
+                  className="text-gray-700 hover:text-gray-900 disabled:opacity-30 disabled:hover:text-gray-400"
                 >
                   <ChevronUp size={16} />
                 </button>
@@ -137,7 +138,7 @@ export default function AdminInicioPage() {
                   onClick={() => handleMover(categoria.id_categoria, "baixo")}
                   disabled={index === categorias.length - 1 || !!categoria.deleted_at}
                   aria-label="Mover categoria para baixo"
-                  className="text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:hover:text-gray-400"
+                  className="text-gray-700 hover:text-gray-900 disabled:opacity-30 disabled:hover:text-gray-400"
                 >
                   <ChevronDown size={16} />
                 </button>
@@ -146,7 +147,7 @@ export default function AdminInicioPage() {
                   onClick={() => abrirModalEditar(categoria)}
                   disabled={!!categoria.deleted_at}
                   aria-label="Editar categoria"
-                  className="text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:hover:text-gray-400"
+                  className="text-gray-600 hover:text-gray-900 disabled:opacity-30 disabled:hover:text-gray-400"
                 >
                   <Pencil size={16} />
                 </button>
@@ -163,7 +164,7 @@ export default function AdminInicioPage() {
                   <button
                     onClick={() => setCategoriaParaArquivar(categoria)}
                     aria-label="Arquivar categoria"
-                    className="text-gray-400 hover:text-red-600"
+                    className="text-gray-700 hover:text-red-600"
                   >
                     <Archive size={16} />
                   </button>
@@ -253,7 +254,7 @@ function CategoriaModal({
           onChange={(e) => setNome(e.target.value)}
           maxLength={50}
           placeholder="Nome da categoria"
-          className="w-full bg-gray-100 rounded-xl px-4 py-3 text-base outline-none mb-2"
+          className="w-full bg-gray-200 text-gray-700 rounded-xl px-4 py-3 text-base outline-none mb-2"
           autoFocus
         />
 
