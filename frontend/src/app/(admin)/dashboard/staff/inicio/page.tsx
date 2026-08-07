@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Plus, Pencil, Archive, ArchiveRestore, ChevronUp, ChevronDown } from "lucide-react";
+import Link from "next/link";
 import {
   listarCategorias,
   criarCategoria,
@@ -221,9 +222,10 @@ export default function AdminInicioPage() {
 
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {roadmaps.filter((r) => r.categoria_id === categoria.id_categoria).map((roadmap) => (
-                    <div
+                    <Link
                       key={roadmap.id_roadmap}
-                      className="relative group bg-white border border-gray-200 rounded-2xl px-5 py-5 hover:border-gray-300 transition-colors duration-150"
+                      href={`/dashboard/staff/roadmap/${roadmap.id_roadmap}`}
+                      className="relative group bg-white border border-gray-200 rounded-2xl px-5 py-5 hover:border-gray-300 transition-colors duration-150 block"
                     >
                       <p className={`text-base font-semibold truncate pr-2 ${roadmap.deleted_at ? "text-gray-400" : "text-gray-900"}`}>
                         {roadmap.titulo}
@@ -237,7 +239,7 @@ export default function AdminInicioPage() {
 
                       <div className="flex gap-2 mt-3">
                         <button
-                          onClick={() => abrirModalEditarRoadmap(roadmap)}
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); abrirModalEditarRoadmap(roadmap); }}
                           disabled={!!roadmap.deleted_at}
                           aria-label="Editar roadmap"
                           className="text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:hover:text-gray-400"
@@ -246,7 +248,7 @@ export default function AdminInicioPage() {
                         </button>
                         {roadmap.deleted_at ? (
                           <button
-                            onClick={() => handleRestaurarRoadmap(roadmap)}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRestaurarRoadmap(roadmap); }}
                             aria-label="Restaurar roadmap"
                             className="text-gray-400 hover:text-gray-700"
                           >
@@ -254,7 +256,7 @@ export default function AdminInicioPage() {
                           </button>
                         ) : (
                           <button
-                            onClick={() => setRoadmapParaArquivar(roadmap)}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setRoadmapParaArquivar(roadmap); }}
                             aria-label="Arquivar roadmap"
                             className="text-gray-400 hover:text-red-600"
                           >
@@ -262,7 +264,7 @@ export default function AdminInicioPage() {
                           </button>
                         )}
                       </div>
-                    </div>
+                    </Link>
                   ))}
 
                 {!categoria.deleted_at && (
@@ -306,11 +308,9 @@ export default function AdminInicioPage() {
         <RoadmapModal
           roadmap={roadmapEditando}
           categoriaPadrao={categoriaParaNovoRoadmap}
+          categorias={categorias}
           onClose={() => setModalRoadmapAberto(false)}
-          onSuccess={() => {
-            setModalRoadmapAberto(false);
-            carregarDados();
-          }}
+          onSuccess={() => { setModalRoadmapAberto(false); carregarDados(); }}
         />
       )}
 
