@@ -50,3 +50,22 @@ CREATE TABLE roadmap(
     is_active BOOLEAN NOT NULL DEFAULT false,
     deleted_at TIMESTAMPTZ DEFAULT NULL
 );
+
+CREATE TABLE topico(
+    id_topico SERIAL PRIMARY KEY,
+    roadmap_id INTEGER NOT NULL REFERENCES roadmap(id_roadmap),
+    titulo VARCHAR(100) NOT NULL,
+    descricao TEXT,
+    ordem INTEGER NOT NULL,
+    UNIQUE (roadmap_id, ordem)
+);
+
+CREATE TABLE subitem(
+    id_subitem SERIAL PRIMARY KEY,
+    topico_id INTEGER NOT NULL REFERENCES topico(id_topico) ON DELETE CASCADE,
+    titulo VARCHAR(100) NOT NULL,
+    descricao TEXT,
+    ordem INTEGER NOT NULL,
+    UNIQUE (topico_id, ordem)
+);
+

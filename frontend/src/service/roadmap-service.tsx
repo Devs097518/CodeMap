@@ -84,3 +84,8 @@ export async function restaurarRoadmap(id_roadmap: number): Promise<Roadmap> {
   });
   return parseResposta<Roadmap>(response, 'Erro ao restaurar roadmap');
 }
+
+export async function buscarRoadmap(id_roadmap: number): Promise<Roadmap> {
+  const response = await apiFetch(`/api/roadmap/detalhe/${id_roadmap}`, { method: 'GET' });
+  return parseResposta<Roadmap>(response, 'Erro ao buscar roadmap');
+}
