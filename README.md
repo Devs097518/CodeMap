@@ -42,8 +42,8 @@ O CodeMap está sendo construído em versões funcionais incrementais:
 | V1 | Usuário cria várias notas | ✅ Concluído |
 | V2 | Usuário cria pastas e organiza notas | ✅ Concluído |
 | V3 | Autenticação | ✅ Concluído |
-| **V4** | **Painel do Administrador** | 🔄 **Em andamento** |
-| V5 | Painel do Cliente | 🔜 Planejado |
+| V4 | Painel do Administrador | ✅ Concluído |
+| **V5** | **Painel do Cliente** | 🔄 **Em andamento** |
 
 ---
 
