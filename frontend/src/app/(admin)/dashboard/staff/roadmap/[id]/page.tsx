@@ -16,6 +16,16 @@ import { Trash2 } from "lucide-react";
 import { excluirTopico } from "@/service/topico-service";
 import { excluirSubitem } from "@/service/subitem-service";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import RecursosBadge from "@/components/RecursoModal";
+import { Link2, X } from "lucide-react";
+import {
+  listarRecursos,
+  criarRecurso,
+  editarRecurso,
+  excluirRecurso,
+  Recurso,
+  TipoItem,
+} from "@/service/recurso-service";
 
 export default function RoadmapDetalhePage() {
   const params = useParams();
@@ -183,6 +193,9 @@ export default function RoadmapDetalhePage() {
       </div>
     </div>
     {topico.descricao && <p className="text-sm text-gray-500 mt-1">{topico.descricao}</p>}
+
+      <RecursosBadge tipo="topico" id={topico.id_topico} />
+
       {topico.subitens.length > 0 && (
         <div className="border-l-2 border-gray-200 ml-1.5 pl-4 mt-3 flex flex-col gap-2">
           {topico.subitens.map((sub, subIndex) => (
@@ -221,6 +234,9 @@ export default function RoadmapDetalhePage() {
                 </div>
               </div>
               {sub.descricao && <p className="text-xs text-gray-500 mt-0.5">{sub.descricao}</p>}
+
+              <RecursosBadge tipo="subitem" id={sub.id_subitem} />
+
             </div>
           ))}
         </div>
@@ -284,6 +300,8 @@ export default function RoadmapDetalhePage() {
 
     </main>
   );
+
+
 }
 
 function TopicoModal({
@@ -443,4 +461,6 @@ function SubitemModal({
     </div>
   );
 }
+
+
 
