@@ -69,3 +69,14 @@ CREATE TABLE subitem(
     UNIQUE (topico_id, ordem)
 );
 
+CREATE TABLE recurso(
+    id_recurso SERIAL PRIMARY KEY,
+    topico_id INTEGER REFERENCES topico(id_topico) ON DELETE CASCADE,
+    subitem_id INTEGER REFERENCES subitem(id_subitem) ON DELETE CASCADE,
+    label VARCHAR(100) NOT NULL,
+    url VARCHAR(255) NOT NULL,
+    CONSTRAINT chk_recurso_um_pai CHECK (
+        (topico_id IS NOT NULL AND subitem_id IS NULL) OR
+        (topico_id IS NULL AND subitem_id IS NOT NULL)
+    )
+);

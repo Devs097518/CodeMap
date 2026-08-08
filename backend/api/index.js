@@ -11,6 +11,7 @@ import categoriaRoutes from './modules/categoria/categoria.routes.js';
 import roadmapRoutes from './modules/roadmap/roadmap.routes.js';
 import topicoRoutes from './modules/topico/topico.routes.js';
 import subitemRoutes from './modules/subitem/subitem.routes.js';
+import recursoRoutes from './modules/recurso/recurso.routes.js';
 
 
 const router = Router();
@@ -25,5 +26,6 @@ router.use('/categoria', categoriaRoutes); //autenticar, role('admin'),
 router.use('/roadmap', roadmapRoutes); // autenticar, role('admin'),
 router.use('/topico', topicoRoutes); // autenticar, role('admin'), 
 router.use('/subitem', subitemRoutes); // autenticar, role('admin'),
+router.use('/recurso', recursoRoutes); // autenticar, role('admin'),
 
 export default router;
