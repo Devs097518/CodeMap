@@ -146,7 +146,7 @@ export default function AdminInicioPage() {
           </label>
           <button
             onClick={abrirModalCriar}
-            className="flex items-center gap-2 bg-[#1a0066] text-white text-x px-4 py-2.5 rounded-xl hover:bg-[#2a0099] transition-colors duration-150"
+            className="flex items-center gap-2 bg-[#0C0F4F] text-white text-x px-4 py-2.5 rounded-xl hover:bg-[#1f237d] transition-colors duration-150"
           >
             <Plus size={16} />
             Nova Categoria
@@ -232,9 +232,9 @@ export default function AdminInicioPage() {
                       </p>
 
                       {roadmap.deleted_at ? (
-                        <span className="inline-block mt-2 text-xs text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">arquivado</span>
+                        <span className="inline-block mt-2 text-x text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">arquivado</span>
                       ) : !roadmap.is_active ? (
-                        <span className="inline-block mt-2 text-xs text-amber-600 bg-amber-50 rounded-full px-2 py-0.5">rascunho</span>
+                        <span className="inline-block mt-2 text-x text-amber-600 bg-amber-50 rounded-full px-2 py-0.5">rascunho</span>
                       ) : null}
 
                       <div className="flex gap-2 mt-3">
