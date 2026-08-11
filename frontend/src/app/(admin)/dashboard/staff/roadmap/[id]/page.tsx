@@ -17,15 +17,6 @@ import { excluirTopico } from "@/service/topico-service";
 import { excluirSubitem } from "@/service/subitem-service";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import RecursosBadge from "@/components/RecursoModal";
-import { Link2, X } from "lucide-react";
-import {
-  listarRecursos,
-  criarRecurso,
-  editarRecurso,
-  excluirRecurso,
-  Recurso,
-  TipoItem,
-} from "@/service/recurso-service";
 
 export default function RoadmapDetalhePage() {
   const params = useParams();
@@ -133,14 +124,14 @@ export default function RoadmapDetalhePage() {
 
   return (
     <main className="min-h-screen bg-white px-10 py-10 font-sans">
-      <div className="flex items-center justify-between mb-6">
-        <Link href="/dashboard/staff/inicio" className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700">
+      <div className="flex items-center justify-between mb-6 border-b-2 pb-9">
+        <Link href="/dashboard/staff/inicio" className="flex items-center gap-2 text-x text-gray-500 hover:text-gray-700">
           <ArrowLeft size={16} />
           voltar ao início
         </Link>
         <button
           onClick={abrirModalCriarTopico}
-          className="flex items-center gap-2 bg-[#1a0066] text-white text-sm font-bold px-4 py-2.5 rounded-xl hover:bg-[#2a0099] transition-colors duration-150"
+          className="flex items-center gap-2 bg-[#0C0F4F] text-white text-x px-4 py-2.5 rounded-xl hover:bg-[#1f237d] transition-colors duration-150"
         >
           <Plus size={16} />
           Novo tópico
@@ -149,7 +140,7 @@ export default function RoadmapDetalhePage() {
 
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">{roadmap.titulo}</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-x text-gray-500 mt-1">
           {roadmap.deleted_at ? "arquivado" : roadmap.is_active ? "ativo" : "rascunho"}
         </p>
         {roadmap.descricao && <p className="text-sm text-gray-600 mt-3">{roadmap.descricao}</p>}
@@ -157,12 +148,12 @@ export default function RoadmapDetalhePage() {
 
       <div className="flex flex-col gap-4">
         {topicos.map((topico, index) => (
-  <div key={topico.id_topico} className="bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4">
+  <div key={topico.id_topico} className="border-gray-200 bg-gray-50 rounded-2xl px-7 py-4 mb-2">
     <div className="flex items-center justify-between">
 
-      <span className="text-base font-semibold text-gray-900">{topico.titulo}</span>
+      <span className="text-base text-xl font-semibold text-gray-900">{topico.titulo}</span>
       <div className="flex items-center gap-1">
-        <span className="text-xs text-gray-400 mr-1">ordem #{topico.ordem}</span>
+        <span className="text-x text-gray-400 mr-1">ordem #{topico.ordem}</span>
 
         <button onClick={() => 
           handleMoverTopico(topico.id_topico, "cima")} 
@@ -192,14 +183,14 @@ export default function RoadmapDetalhePage() {
 
       </div>
     </div>
-    {topico.descricao && <p className="text-sm text-gray-500 mt-1">{topico.descricao}</p>}
+    {topico.descricao && <p className="text-x text-gray-500 mt-1">{topico.descricao}</p>}
 
       <RecursosBadge tipo="topico" id={topico.id_topico} />
 
       {topico.subitens.length > 0 && (
-        <div className="border-l-2 border-gray-200 ml-1.5 pl-4 mt-3 flex flex-col gap-2">
+        <div className="ml-1.5 mt-3 flex flex-col gap-2">
           {topico.subitens.map((sub, subIndex) => (
-            <div key={sub.id_subitem} className="bg-white rounded-lg px-3 py-2">
+            <div key={sub.id_subitem} className="bg-white rounded-xl px-3 py-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium text-gray-800">{sub.titulo}</span>
                 <div className="flex items-center gap-1">
@@ -244,9 +235,9 @@ export default function RoadmapDetalhePage() {
 
       <button
         onClick={() => abrirModalCriarSubitem(topico)}
-        className="mt-3 flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800"
+        className="mt-3 flex items-center gap-1.5 text-x text-gray-500 hover:text-gray-800"
       >
-        <Plus size={14} />
+        <Plus size={18} />
         Adicionar sub-item
       </button>
 
@@ -422,7 +413,7 @@ function SubitemModal({
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={onClose}>
-      <div className="bg-white rounded-2xl px-6 py-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-white px-6 py-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-lg font-bold text-gray-900 mb-1">
           {subitem ? "Editar sub-item" : "Novo sub-item"}
         </h2>
@@ -442,7 +433,7 @@ function SubitemModal({
           onChange={(e) => setDescricao(e.target.value)}
           placeholder="Descrição (opcional)"
           rows={3}
-          className="w-full bg-gray-200 text-gray-700 rounded-xl px-4 py-3 text-base outline-none mb-2 resize-none"
+          className="w-full bg-gray-2x00 text-gray-700 rounded-xl px-4 py-3 text-base outline-none mb-2 resize-none"
         />
 
         {erro && <p className="text-red-500 text-sm mb-2">{erro}</p>}

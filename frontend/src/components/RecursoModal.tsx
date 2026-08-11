@@ -31,9 +31,9 @@ function RecursosBadge({ tipo, id }: { tipo: TipoItem; id: number }) {
     <>
       <button
         onClick={() => setModalAberto(true)}
-        className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-700 mt-2"
+        className="flex items-center gap-1.5 text-x text-gray-400 hover:text-gray-700 mt-2"
       >
-        <Link2 size={12} />
+        <Link2 size={18} />
         {recursos === null
           ? "carregando..."
           : recursos.length > 0
