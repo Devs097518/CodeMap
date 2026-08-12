@@ -9,9 +9,18 @@ const tratarErroPostgres = (err, res) => {
 
 export const listagem = async (req, res) => {
   try {
+    const roadmaps = await roadmapService.listarRoadmapsPublicos()
+    res.json(roadmaps)
+  } catch (err) {
+    res.status(500).json({ status: 'erro', mensagem: err.message })
+  }
+}
+
+export const listagemAdmin = async (req, res) => {
+  try {
     const { categoria_id } = req.query
     const incluirArquivados = req.query.arquivados === 'true'
-    const roadmaps = await roadmapService.listarRoadmaps({ categoria_id, incluirArquivados })
+    const roadmaps = await roadmapService.listarRoadmapsAdmin({ categoria_id, incluirArquivados })
     res.json(roadmaps)
   } catch (err) {
     res.status(500).json({ status: 'erro', mensagem: err.message })
@@ -21,7 +30,20 @@ export const listagem = async (req, res) => {
 export const detalhe = async (req, res) => {
   try {
     const { id } = req.params
-    const roadmap = await roadmapService.buscarRoadmapPorId(id)
+    const roadmap = await roadmapService.buscarRoadmapPublicoPorId(id)
+    if (!roadmap) {
+      return res.status(404).json({ status: 'erro', mensagem: 'Roadmap não encontrado' })
+    }
+    res.json(roadmap)
+  } catch (err) {
+    res.status(500).json({ status: 'erro', mensagem: err.message })
+  }
+}
+
+export const detalheAdmin = async (req, res) => {
+  try {
+    const { id } = req.params
+    const roadmap = await roadmapService.buscarRoadmapAdminPorId(id)
 
     if (!roadmap) {
       return res.status(404).json({ status: 'erro', mensagem: 'Roadmap não encontrado' })

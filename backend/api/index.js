@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { autenticar } from './middlewares/auth.middleware.js';
-// import { role } from './middlewares/role.middleware.js';
 import usuarioRoutes from './modules/usuario/usuario.routes.js';
 import notaRoutes from './modules/nota/nota.routes.js';
 import pastaRoutes from './modules/pasta/pasta.routes.js';
@@ -22,10 +21,12 @@ router.use('/pasta', autenticar, pastaRoutes);
 router.use('/pessoa', pessoaRoutes);
 router.use('/auth', authRoutes);
 router.use('/cadastro', cadastroRoutes);
-router.use('/categoria', categoriaRoutes); //autenticar, role('admin'),
-router.use('/roadmap', roadmapRoutes); // autenticar, role('admin'),
-router.use('/topico', topicoRoutes); // autenticar, role('admin'), 
-router.use('/subitem', subitemRoutes); // autenticar, role('admin'),
-router.use('/recurso', recursoRoutes); // autenticar, role('admin'),
+
+router.use('/categoria', categoriaRoutes); 
+router.use('/roadmap', roadmapRoutes); 
+
+router.use('/topico', topicoRoutes);  
+router.use('/subitem', subitemRoutes); 
+router.use('/recurso', recursoRoutes); 
 
 export default router;

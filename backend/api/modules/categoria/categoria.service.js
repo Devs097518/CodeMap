@@ -13,16 +13,20 @@ const gerarSlug = (nome) => {
     .replace(/-$/, '') 
 }
 
-export const listarCategorias = async (incluirArquivadas) => {
+export const listarCategoriasAdmin = async (incluirArquivadas) => {
   let query = `SELECT * FROM categoria`
-
   if (!incluirArquivadas) {
     query += ` WHERE deleted_at IS NULL`
   }
-
   query += ` ORDER BY ordem ASC`
-
   const { rows } = await db.query(query)
+  return rows
+}
+
+export const listarCategoriasPublicas = async () => {
+  const { rows } = await db.query(
+    `SELECT * FROM categoria WHERE deleted_at IS NULL ORDER BY ordem ASC`
+  )
   return rows
 }
 

@@ -1,5 +1,6 @@
 import * as topicoService from './topico.service.js'
 import * as subitemService from '../subitem/subitem.service.js'
+import * as roadmapService from '../roadmap/roadmap.service.js'
 
 const tratarErroPostgres = (err, res) => {
   if (err.code === '23503') {
@@ -10,16 +11,36 @@ const tratarErroPostgres = (err, res) => {
 
 export const listagemComSubitens = async (req, res) => {
   try {
-    const { id } = req.params // id_roadmap
-    const topicos = await topicoService.listarTopicosPorRoadmap(id)
+    const { id } = req.params
+    const roadmap = await roadmapService.buscarRoadmapPublicoPorId(id)
 
+    if (!roadmap) {
+      return res.status(404).json({ status: 'erro', mensagem: 'Roadmap não encontrado' })
+    }
+
+    const topicos = await topicoService.listarTopicosPorRoadmap(id)
     const topicosComSubitens = await Promise.all(
       topicos.map(async (topico) => ({
         ...topico,
         subitens: await subitemService.listarSubitensPorTopico(topico.id_topico),
       }))
     )
+    res.json(topicosComSubitens)
+  } catch (err) {
+    res.status(500).json({ status: 'erro', mensagem: err.message })
+  }
+}
 
+export const listagemComSubitensAdmin = async (req, res) => {
+  try {
+    const { id } = req.params
+    const topicos = await topicoService.listarTopicosPorRoadmap(id)
+    const topicosComSubitens = await Promise.all(
+      topicos.map(async (topico) => ({
+        ...topico,
+        subitens: await subitemService.listarSubitensPorTopico(topico.id_topico),
+      }))
+    )
     res.json(topicosComSubitens)
   } catch (err) {
     res.status(500).json({ status: 'erro', mensagem: err.message })

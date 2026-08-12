@@ -1,6 +1,6 @@
 import db from '../../../db/pool.js'
 
-export const listarRoadmaps = async ({ categoria_id, incluirArquivados } = {}) => {
+export const listarRoadmapsAdmin = async ({ categoria_id, incluirArquivados } = {}) => {
   const conditions = []
   const params = []
 
@@ -22,8 +22,33 @@ export const listarRoadmaps = async ({ categoria_id, incluirArquivados } = {}) =
   return rows
 }
 
-export const buscarRoadmapPorId = async (id) => {
+export const buscarRoadmapAdminPorId = async (id) => {
   const { rows } = await db.query('SELECT * FROM roadmap WHERE id_roadmap = $1', [id])
+  return rows[0] || null
+}
+
+export const listarRoadmapsPublicos = async () => {
+  const { rows } = await db.query(
+    `SELECT roadmap.* FROM roadmap
+     JOIN categoria ON categoria.id_categoria = roadmap.categoria_id
+     WHERE roadmap.is_active = true
+       AND roadmap.deleted_at IS NULL
+       AND categoria.deleted_at IS NULL
+     ORDER BY roadmap.id_roadmap ASC`
+  )
+  return rows
+}
+
+export const buscarRoadmapPublicoPorId = async (id) => {
+  const { rows } = await db.query(
+    `SELECT roadmap.* FROM roadmap
+     JOIN categoria ON categoria.id_categoria = roadmap.categoria_id
+     WHERE roadmap.id_roadmap = $1
+       AND roadmap.is_active = true
+       AND roadmap.deleted_at IS NULL
+       AND categoria.deleted_at IS NULL`,
+    [id]
+  )
   return rows[0] || null
 }
 
