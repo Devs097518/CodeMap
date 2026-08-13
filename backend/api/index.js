@@ -11,6 +11,7 @@ import roadmapRoutes from './modules/roadmap/roadmap.routes.js';
 import topicoRoutes from './modules/topico/topico.routes.js';
 import subitemRoutes from './modules/subitem/subitem.routes.js';
 import recursoRoutes from './modules/recurso/recurso.routes.js';
+import progressoRoutes from './modules/progresso/progresso.routes.js';
 
 
 const router = Router();
@@ -28,5 +29,6 @@ router.use('/roadmap', autenticar, roadmapRoutes);
 router.use('/topico', autenticar, topicoRoutes);  
 router.use('/subitem', autenticar, subitemRoutes); 
 router.use('/recurso', autenticar, recursoRoutes); 
+router.use('/progresso', autenticar, progressoRoutes);
 
 export default router;

@@ -1,4 +1,5 @@
 import db from '../../../db/pool.js'
+import * as progressoService from '../progresso/progresso.service.js'
 
 export const listarSubitensPorTopico = async (topico_id) => {
   const { rows } = await db.query(
@@ -28,7 +29,13 @@ export const editarSubitem = async (id, titulo, descricao) => {
 
 export const excluirSubitem = async (id) => {
   const result = await db.query('DELETE FROM public.subitem WHERE id_subitem = $1 RETURNING *', [id])
-  return result.rows[0] || null
+  const subitem = result.rows[0] || null
+
+  if (subitem) {
+    await progressoService.excluirProgressoPorItem('subitem', id)
+  }
+
+  return subitem
 }
 
 export const moverSubitem = async (id, direcao) => {
