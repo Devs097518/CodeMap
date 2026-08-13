@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Pencil, Archive, ArchiveRestore, ChevronUp, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import {
-  listarCategorias,
+  listarCategoriasAdmin,
   criarCategoria,
   editarCategoria,
   arquivarCategoria,
@@ -16,7 +16,7 @@ import { ConfirmModal } from "@/components/ConfirmModal";
 import  RoadmapModal  from "@/components/RoadmapModal";
 import { useAuth } from "@/context/AuthContext";
 import {
-  listarRoadmaps,
+  listarRoadmapsAdmin,
   criarRoadmap,
   editarRoadmap,
   arquivarRoadmap,
@@ -43,7 +43,7 @@ export default function AdminInicioPage() {
 
   const carregarDados = () => {
     setLoading(true);
-    Promise.all([listarCategorias(mostrarArquivados), listarRoadmaps(mostrarArquivados)])
+    Promise.all([listarCategoriasAdmin(mostrarArquivados), listarRoadmapsAdmin(mostrarArquivados)])
       .then(([cats, rms]) => {
         setCategorias(cats);
         setRoadmaps(rms);

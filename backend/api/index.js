@@ -22,11 +22,11 @@ router.use('/pessoa', pessoaRoutes);
 router.use('/auth', authRoutes);
 router.use('/cadastro', cadastroRoutes);
 
-router.use('/categoria', categoriaRoutes); 
-router.use('/roadmap', roadmapRoutes); 
+router.use('/categoria', autenticar, categoriaRoutes); 
+router.use('/roadmap', autenticar, roadmapRoutes); 
 
-router.use('/topico', topicoRoutes);  
-router.use('/subitem', subitemRoutes); 
-router.use('/recurso', recursoRoutes); 
+router.use('/topico', autenticar, topicoRoutes);  
+router.use('/subitem', autenticar, subitemRoutes); 
+router.use('/recurso', autenticar, recursoRoutes); 
 
 export default router;

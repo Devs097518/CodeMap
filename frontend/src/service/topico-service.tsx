@@ -48,6 +48,15 @@ export async function listarTopicosComSubitens(roadmap_id: number): Promise<Topi
   return Array.isArray(data) ? (data as TopicoComSubitens[]) : [];
 }
 
+export async function listarTopicosComSubitensAdmin(roadmap_id: number): Promise<TopicoComSubitens[]> {
+  const response = await apiFetch(`/api/roadmap/${roadmap_id}/topicosAdmin`, { method: 'GET' });
+  if (!response.ok) {
+    throw new Error(`Erro ao buscar tópicos (HTTP ${response.status})`);
+  }
+  const data = await response.json();
+  return Array.isArray(data) ? (data as TopicoComSubitens[]) : [];
+}
+
 export async function criarTopico(dados: CriarTopico): Promise<Topico> {
   const response = await apiFetch('/api/topico/criarTopico', {
     method: 'POST',
