@@ -23,6 +23,11 @@ export interface EditarRoadmap {
   is_active?: boolean;
 }
 
+export interface RoadmapComProgresso extends Roadmap {
+  iniciado: boolean;
+  progresso_percentual: number;
+}
+
 type RespostaErro = { status?: string; mensagem?: string };
 
 async function parseResposta<T>(response: Response, acaoErro: string): Promise<T> {
@@ -41,10 +46,8 @@ async function parseResposta<T>(response: Response, acaoErro: string): Promise<T
   return result as T;
 }
 
-export async function listarRoadmaps(incluirArquivados = false): Promise<Roadmap[]> {
-  const response = await apiFetch(`/api/roadmap/listagem?arquivados=${incluirArquivados}`, {
-    method: 'GET',
-  });
+export async function listarRoadmaps(): Promise<RoadmapComProgresso[]> {
+  const response = await apiFetch(`/api/roadmap/listagem`, { method: 'GET' });
 
   if (response.status === 404) return [];
   if (!response.ok) {
@@ -52,7 +55,7 @@ export async function listarRoadmaps(incluirArquivados = false): Promise<Roadmap
   }
 
   const data = await response.json();
-  return Array.isArray(data) ? (data as Roadmap[]) : [];
+  return Array.isArray(data) ? (data as RoadmapComProgresso[]) : [];
 }
 
 export async function listarRoadmapsAdmin(incluirArquivados = false): Promise<Roadmap[]> {

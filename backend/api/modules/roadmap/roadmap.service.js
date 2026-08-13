@@ -27,14 +27,29 @@ export const buscarRoadmapAdminPorId = async (id) => {
   return rows[0] || null
 }
 
-export const listarRoadmapsPublicos = async () => {
+export const listarRoadmapsPublicos = async (id_usuario) => {
   const { rows } = await db.query(
-    `SELECT roadmap.* FROM roadmap
-     JOIN categoria ON categoria.id_categoria = roadmap.categoria_id
-     WHERE roadmap.is_active = true
-       AND roadmap.deleted_at IS NULL
-       AND categoria.deleted_at IS NULL
-     ORDER BY roadmap.id_roadmap ASC`
+    `SELECT 
+       r.*,
+       COALESCE(unidades.total, 0) AS total_unidades,
+       COALESCE(unidades.estudadas, 0) AS unidades_estudadas
+     FROM roadmap r
+     JOIN categoria c ON c.id_categoria = r.categoria_id
+     LEFT JOIN LATERAL (
+       SELECT
+         (SELECT COUNT(*) FROM topico t WHERE t.roadmap_id = r.id_roadmap)
+         + (SELECT COUNT(*) FROM subitem s JOIN topico t2 ON t2.id_topico = s.topico_id WHERE t2.roadmap_id = r.id_roadmap)
+         AS total,
+         (SELECT COUNT(*) FROM progresso p JOIN topico t ON t.id_topico = p.item_id
+            WHERE p.tipo = 'topico' AND t.roadmap_id = r.id_roadmap AND p.id_usuario = $1 AND p.estudado = true)
+         + (SELECT COUNT(*) FROM progresso p JOIN subitem s ON s.id_subitem = p.item_id
+            JOIN topico t2 ON t2.id_topico = s.topico_id
+            WHERE p.tipo = 'subitem' AND t2.roadmap_id = r.id_roadmap AND p.id_usuario = $1 AND p.estudado = true)
+         AS estudadas
+     ) unidades ON true
+     WHERE r.is_active = true AND r.deleted_at IS NULL AND c.deleted_at IS NULL
+     ORDER BY r.id_roadmap ASC`,
+    [id_usuario]
   )
   return rows
 }

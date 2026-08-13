@@ -9,8 +9,15 @@ const tratarErroPostgres = (err, res) => {
 
 export const listagem = async (req, res) => {
   try {
-    const roadmaps = await roadmapService.listarRoadmapsPublicos()
-    res.json(roadmaps)
+    const roadmaps = await roadmapService.listarRoadmapsPublicos(req.user.id)
+
+    const resultado = roadmaps.map(({ total_unidades, unidades_estudadas, ...roadmap }) => ({
+      ...roadmap,
+      iniciado: unidades_estudadas > 0,
+      progresso_percentual: total_unidades > 0 ? Math.round((unidades_estudadas / total_unidades) * 100) : 0,
+    }))
+
+    res.json(resultado)
   } catch (err) {
     res.status(500).json({ status: 'erro', mensagem: err.message })
   }
