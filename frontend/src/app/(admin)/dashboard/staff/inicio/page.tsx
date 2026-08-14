@@ -221,7 +221,9 @@ export default function AdminInicioPage() {
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {roadmaps.filter((r) => r.categoria_id === categoria.id_categoria).map((roadmap) => (
+                {roadmaps
+                .filter((r) => r.categoria_id === categoria.id_categoria)
+                .map((roadmap) => (
                     <Link
                       key={roadmap.id_roadmap}
                       href={`/dashboard/staff/roadmap/${roadmap.id_roadmap}`}
