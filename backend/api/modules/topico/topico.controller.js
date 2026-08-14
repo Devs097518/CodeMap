@@ -9,6 +9,8 @@ const tratarErroPostgres = (err, res) => {
   return res.status(500).json({ status: 'erro', mensagem: err.message })
 }
 
+import * as progressoService from '../progresso/progresso.service.js'
+
 export const listagemComSubitens = async (req, res) => {
   try {
     const { id } = req.params
@@ -19,12 +21,30 @@ export const listagemComSubitens = async (req, res) => {
     }
 
     const topicos = await topicoService.listarTopicosPorRoadmap(id)
-    const topicosComSubitens = await Promise.all(
-      topicos.map(async (topico) => ({
-        ...topico,
-        subitens: await subitemService.listarSubitensPorTopico(topico.id_topico),
-      }))
+    const topicoIds = topicos.map((t) => t.id_topico)
+
+    const subitensPorTopico = await Promise.all(
+      topicos.map((t) => subitemService.listarSubitensPorTopico(t.id_topico))
     )
+    const subitemIds = subitensPorTopico.flat().map((s) => s.id_subitem)
+
+    const [progressoTopicos, progressoSubitens] = await Promise.all([
+      progressoService.buscarProgressoTopicos(req.user.id, topicoIds),
+      progressoService.buscarProgressoSubitens(req.user.id, subitemIds),
+    ])
+
+    const mapaTopicos = new Map(progressoTopicos.map((p) => [p.item_id, p.estudado]))
+    const mapaSubitens = new Map(progressoSubitens.map((p) => [p.item_id, p.estudado]))
+
+    const topicosComSubitens = topicos.map((topico, index) => ({
+      ...topico,
+      estudado: mapaTopicos.get(topico.id_topico) ?? false,
+      subitens: subitensPorTopico[index].map((sub) => ({
+        ...sub,
+        estudado: mapaSubitens.get(sub.id_subitem) ?? false,
+      })),
+    }))
+
     res.json(topicosComSubitens)
   } catch (err) {
     res.status(500).json({ status: 'erro', mensagem: err.message })

@@ -12,7 +12,7 @@ import {
 } from "@/service/recurso-service";
 import { ConfirmModal } from "@/components/ConfirmModal";
 
-function RecursosBadge({ tipo, id }: { tipo: TipoItem; id: number }) {
+function RecursosBadge({ tipo, id, readOnly = false }: { tipo: TipoItem; id: number; readOnly?: boolean }) {
   const [recursos, setRecursos] = useState<Recurso[] | null>(null);
   const [modalAberto, setModalAberto] = useState(false);
 
@@ -25,7 +25,7 @@ function RecursosBadge({ tipo, id }: { tipo: TipoItem; id: number }) {
   useEffect(() => {
     carregar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tipo, id]);
+  }, [tipo, id, readOnly]);
 
   return (
     <>
@@ -45,6 +45,7 @@ function RecursosBadge({ tipo, id }: { tipo: TipoItem; id: number }) {
         <RecursoModal
           tipo={tipo}
           id={id}
+          readOnly={readOnly}
           onClose={() => setModalAberto(false)}
           onChange={carregar}
         />
@@ -56,11 +57,13 @@ function RecursosBadge({ tipo, id }: { tipo: TipoItem; id: number }) {
 function RecursoModal({
   tipo,
   id,
+  readOnly = false,
   onClose,
   onChange,
 }: {
   tipo: TipoItem;
   id: number;
+  readOnly: boolean;
   onClose: () => void;
   onChange: () => void;
 }) {
@@ -86,7 +89,7 @@ function RecursoModal({
   useEffect(() => {
     carregar();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [tipo, id, readOnly]);
 
   const abrirNovo = () => {
     setEdicaoId("novo");
@@ -186,14 +189,17 @@ function RecursoModal({
                       {recurso.url}
                     </a>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0 ml-2">
+                  {!readOnly && (
+                    <div className="flex items-center gap-2 shrink-0 ml-2">
                     <button onClick={() => abrirEditar(recurso)} aria-label="Editar recurso" className="text-gray-400 hover:text-gray-700">
                       <Pencil size={14} />
                     </button>
                     <button onClick={() => setRecursoParaExcluir(recurso)} aria-label="Excluir recurso" className="text-gray-400 hover:text-red-600">
                       <Trash2 size={14} />
                     </button>
-                  </div>
+                    </div>
+                  )}
+                  
                 </div>
               )
             )}
@@ -216,7 +222,7 @@ function RecursoModal({
 
         {erro && <p className="text-red-500 text-sm mb-3">{erro}</p>}
 
-        {edicaoId === null && (
+        {!readOnly && edicaoId === null && (
           <button
             onClick={abrirNovo}
             className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800"

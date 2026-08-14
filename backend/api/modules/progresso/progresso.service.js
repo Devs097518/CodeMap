@@ -15,3 +15,21 @@ export const alternarProgresso = async (id_usuario, tipo, item_id, estudado) => 
 export const excluirProgressoPorItem = async (tipo, item_id) => {
   await db.query('DELETE FROM public.progresso WHERE tipo = $1 AND item_id = $2', [tipo, item_id])
 }
+
+export const buscarProgressoTopicos = async (id_usuario, topico_ids) => {
+  if (topico_ids.length === 0) return []
+  const { rows } = await db.query(
+    `SELECT item_id, estudado FROM progresso WHERE id_usuario = $1 AND tipo = 'topico' AND item_id = ANY($2)`,
+    [id_usuario, topico_ids]
+  )
+  return rows
+}
+
+export const buscarProgressoSubitens = async (id_usuario, subitem_ids) => {
+  if (subitem_ids.length === 0) return []
+  const { rows } = await db.query(
+    `SELECT item_id, estudado FROM progresso WHERE id_usuario = $1 AND tipo = 'subitem' AND item_id = ANY($2)`,
+    [id_usuario, subitem_ids]
+  )
+  return rows
+}

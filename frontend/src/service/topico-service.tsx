@@ -85,3 +85,17 @@ export async function moverTopico(id_topico: number, direcao: "cima" | "baixo"):
   });
   await parseResposta<{ status: string }>(response, 'Erro ao mover tópico');
 }
+
+export interface TopicoComProgresso extends Topico {
+  estudado: boolean;
+  subitens: (Subitem & { estudado: boolean })[];
+}
+
+export async function listarTopicosComProgresso(roadmap_id: number): Promise<TopicoComProgresso[]> {
+  const response = await apiFetch(`/api/roadmap/${roadmap_id}/topicos`, { method: 'GET' });
+  if (!response.ok) {
+    throw new Error(`Erro ao buscar tópicos (HTTP ${response.status})`);
+  }
+  const data = await response.json();
+  return Array.isArray(data) ? (data as TopicoComProgresso[]) : [];
+}
