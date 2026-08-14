@@ -48,6 +48,20 @@ export async function listarCategorias(incluirArquivadas = false): Promise<Categ
   return Array.isArray(data) ? (data as Categoria[]) : [];
 }
 
+export async function listarCategoriasAdmin(incluirArquivadas = false): Promise<Categoria[]> {
+  const response = await apiFetch(`/api/categoria/listagemAdmin?arquivadas=${incluirArquivadas}`, {
+    method: 'GET',
+  });
+
+  if (response.status === 404) return [];
+  if (!response.ok) {
+    throw new Error(`Erro ao buscar categorias (HTTP ${response.status})`);
+  }
+
+  const data = await response.json();
+  return Array.isArray(data) ? (data as Categoria[]) : [];
+}
+
 export async function criarCategoria(dados: CriarCategoria): Promise<Categoria> {
   const response = await apiFetch('/api/categoria/criarCategoria', {
     method: 'POST',

@@ -23,6 +23,11 @@ export interface EditarRoadmap {
   is_active?: boolean;
 }
 
+export interface RoadmapComProgresso extends Roadmap {
+  iniciado: boolean;
+  progresso_percentual: number;
+}
+
 type RespostaErro = { status?: string; mensagem?: string };
 
 async function parseResposta<T>(response: Response, acaoErro: string): Promise<T> {
@@ -41,8 +46,20 @@ async function parseResposta<T>(response: Response, acaoErro: string): Promise<T
   return result as T;
 }
 
-export async function listarRoadmaps(incluirArquivados = false): Promise<Roadmap[]> {
-  const response = await apiFetch(`/api/roadmap/listagem?arquivados=${incluirArquivados}`, {
+export async function listarRoadmaps(): Promise<RoadmapComProgresso[]> {
+  const response = await apiFetch(`/api/roadmap/listagem`, { method: 'GET' });
+
+  if (response.status === 404) return [];
+  if (!response.ok) {
+    throw new Error(`Erro ao buscar roadmaps (HTTP ${response.status})`);
+  }
+
+  const data = await response.json();
+  return Array.isArray(data) ? (data as RoadmapComProgresso[]) : [];
+}
+
+export async function listarRoadmapsAdmin(incluirArquivados = false): Promise<Roadmap[]> {
+  const response = await apiFetch(`/api/roadmap/listagemAdmin?arquivados=${incluirArquivados}`, {
     method: 'GET',
   });
 
@@ -87,5 +104,10 @@ export async function restaurarRoadmap(id_roadmap: number): Promise<Roadmap> {
 
 export async function buscarRoadmap(id_roadmap: number): Promise<Roadmap> {
   const response = await apiFetch(`/api/roadmap/detalhe/${id_roadmap}`, { method: 'GET' });
+  return parseResposta<Roadmap>(response, 'Erro ao buscar roadmap');
+}
+
+export async function buscarRoadmapAdmin(id_roadmap: number): Promise<Roadmap> {
+  const response = await apiFetch(`/api/roadmap/detalheAdmin/${id_roadmap}`, { method: 'GET' });
   return parseResposta<Roadmap>(response, 'Erro ao buscar roadmap');
 }

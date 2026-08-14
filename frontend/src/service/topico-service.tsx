@@ -48,6 +48,15 @@ export async function listarTopicosComSubitens(roadmap_id: number): Promise<Topi
   return Array.isArray(data) ? (data as TopicoComSubitens[]) : [];
 }
 
+export async function listarTopicosComSubitensAdmin(roadmap_id: number): Promise<TopicoComSubitens[]> {
+  const response = await apiFetch(`/api/roadmap/${roadmap_id}/topicosAdmin`, { method: 'GET' });
+  if (!response.ok) {
+    throw new Error(`Erro ao buscar tópicos (HTTP ${response.status})`);
+  }
+  const data = await response.json();
+  return Array.isArray(data) ? (data as TopicoComSubitens[]) : [];
+}
+
 export async function criarTopico(dados: CriarTopico): Promise<Topico> {
   const response = await apiFetch('/api/topico/criarTopico', {
     method: 'POST',
@@ -75,4 +84,18 @@ export async function moverTopico(id_topico: number, direcao: "cima" | "baixo"):
     body: JSON.stringify({ direcao }),
   });
   await parseResposta<{ status: string }>(response, 'Erro ao mover tópico');
+}
+
+export interface TopicoComProgresso extends Topico {
+  estudado: boolean;
+  subitens: (Subitem & { estudado: boolean })[];
+}
+
+export async function listarTopicosComProgresso(roadmap_id: number): Promise<TopicoComProgresso[]> {
+  const response = await apiFetch(`/api/roadmap/${roadmap_id}/topicos`, { method: 'GET' });
+  if (!response.ok) {
+    throw new Error(`Erro ao buscar tópicos (HTTP ${response.status})`);
+  }
+  const data = await response.json();
+  return Array.isArray(data) ? (data as TopicoComProgresso[]) : [];
 }

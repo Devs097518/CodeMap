@@ -80,3 +80,12 @@ CREATE TABLE recurso(
         (topico_id IS NULL AND subitem_id IS NOT NULL)
     )
 );
+
+CREATE TABLE progresso(
+    id_usuario INTEGER NOT NULL REFERENCES usuario(id_usuario),
+    tipo VARCHAR(10) NOT NULL,
+    item_id INTEGER NOT NULL,
+    estudado BOOLEAN NOT NULL DEFAULT true,
+    PRIMARY KEY (id_usuario, tipo, item_id),
+    CONSTRAINT chk_progresso_tipo CHECK (tipo IN ('topico', 'subitem'))
+);

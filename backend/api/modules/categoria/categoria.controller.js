@@ -9,8 +9,17 @@ const tratarErroPostgres = (err, res) => {
 
 export const listagem = async (req, res) => {
   try {
+    const categorias = await categoriaService.listarCategoriasPublicas()
+    res.json(categorias)
+  } catch (err) {
+    res.status(500).json({ status: 'erro', mensagem: err.message })
+  }
+}
+
+export const listagemAdmin = async (req, res) => {
+  try {
     const incluirArquivadas = req.query.arquivadas === 'true'
-    const categorias = await categoriaService.listarCategorias(incluirArquivadas)
+    const categorias = await categoriaService.listarCategoriasAdmin(incluirArquivadas)
     res.json(categorias)
   } catch (err) {
     res.status(500).json({ status: 'erro', mensagem: err.message })

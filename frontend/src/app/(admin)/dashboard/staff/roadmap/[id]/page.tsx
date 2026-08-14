@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { useParams } from "next/navigation";
-import { buscarRoadmap, Roadmap } from "@/service/roadmap-service";
-import { listarTopicosComSubitens, TopicoComSubitens } from "@/service/topico-service";
+import { listarRoadmapsAdmin, buscarRoadmapAdmin, Roadmap } from "@/service/roadmap-service";
+import { listarTopicosComSubitensAdmin, TopicoComSubitens } from "@/service/topico-service";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { moverTopico } from "@/service/topico-service";
 import { moverSubitem } from "@/service/subitem-service";
@@ -38,7 +38,7 @@ export default function RoadmapDetalhePage() {
 
   const carregarDados = () => {
     setLoading(true);
-    Promise.all([buscarRoadmap(roadmapId), listarTopicosComSubitens(roadmapId)])
+    Promise.all([buscarRoadmapAdmin(roadmapId), listarTopicosComSubitensAdmin(roadmapId)])
       .then(([r, t]) => {
         setRoadmap(r);
         setTopicos(t);

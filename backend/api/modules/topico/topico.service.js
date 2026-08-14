@@ -1,4 +1,6 @@
 import db from '../../../db/pool.js'
+import * as subitemService from '../subitem/subitem.service.js'
+import * as progressoService from '../progresso/progresso.service.js'
 
 export const listarTopicosPorRoadmap = async (roadmap_id) => {
   const { rows } = await db.query(
@@ -27,9 +29,20 @@ export const editarTopico = async (id, titulo, descricao) => {
 }
 
 export const excluirTopico = async (id) => {
-  // ON DELETE CASCADE na FK cuida dos sub-itens automaticamente
+  const subitens = await subitemService.listarSubitensPorTopico(id)
+
   const result = await db.query('DELETE FROM public.topico WHERE id_topico = $1 RETURNING *', [id])
-  return result.rows[0] || null
+  const topico = result.rows[0] || null
+
+  if (topico) {
+    await progressoService.excluirProgressoPorItem('topico', id)
+
+    for (const subitem of subitens) {
+      await progressoService.excluirProgressoPorItem('subitem', subitem.id_subitem)
+    }
+  }
+
+  return topico
 }
 
 export const moverTopico = async (id, direcao) => {
