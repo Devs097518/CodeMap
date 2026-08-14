@@ -27,7 +27,7 @@ export default function ClientInicioPage() {
 
   const iniciados = roadmaps.filter((r) => r.iniciado);
   const categoriasComRoadmap = categorias.filter((c) =>
-    roadmaps.some((r) => r.categoria_id === c.id_categoria)
+    roadmaps.some((r) => r.categoria_id === c.id_categoria && !r.iniciado)
   );
 
   return (
@@ -47,9 +47,12 @@ export default function ClientInicioPage() {
             <div className="mb-10">
               <p className="text-xl font-semibold text-gray-800 mb-4">Continue estudando</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {iniciados.map((roadmap) => (
-                  <RoadmapCard key={roadmap.id_roadmap} roadmap={roadmap} />
-                ))}
+                {iniciados.map((roadmap) => {
+                  const categoria = categorias.find((c) => c.id_categoria === roadmap.categoria_id);
+                  return (
+                    <RoadmapCard key={roadmap.id_roadmap} roadmap={roadmap} categoriaNome={categoria?.nome ?? ""} />
+                  );
+                })}
               </div>
             </div>
           )}
@@ -63,9 +66,9 @@ export default function ClientInicioPage() {
                   <p className="text-xl font-semibold text-gray-800 mb-4">{categoria.nome}</p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                     {roadmaps
-                      .filter((r) => r.categoria_id === categoria.id_categoria)
+                      .filter((r) => r.categoria_id === categoria.id_categoria && !r.iniciado)
                       .map((roadmap) => (
-                        <RoadmapCard key={roadmap.id_roadmap} roadmap={roadmap} />
+                        <RoadmapCard key={roadmap.id_roadmap} roadmap={roadmap} categoriaNome={categoria.nome} />
                       ))}
                   </div>
                 </section>
@@ -78,21 +81,26 @@ export default function ClientInicioPage() {
   );
 }
 
-function RoadmapCard({ roadmap }: { roadmap: RoadmapComProgresso }) {
+function RoadmapCard({ roadmap, categoriaNome }: { roadmap: RoadmapComProgresso; categoriaNome: string }) {
   return (
     <Link
       href={`/dashboard/user/roadmap/${roadmap.id_roadmap}`}
       className="flex flex-col bg-[#eeff66] rounded-2xl px-5 py-5 hover:bg-[#FBBF24] active:scale-95 transition-all duration-150"
     >
       <span className="text-lg font-semibold text-gray-900 truncate">{roadmap.titulo}</span>
+      <span className="text-xs text-gray-600 mt-0.5">{categoriaNome}</span>
 
-      <div className="mt-3 h-2 bg-black/10 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-[#1a0066] rounded-full transition-all duration-300"
-          style={{ width: `${roadmap.progresso_percentual}%` }}
-        />
-      </div>
-      <span className="text-xs text-gray-700 mt-1">{roadmap.progresso_percentual}% concluído</span>
+      {roadmap.iniciado && (
+        <>
+          <div className="mt-3 h-2 bg-black/10 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[#1a0066] rounded-full transition-all duration-300"
+              style={{ width: `${roadmap.progresso_percentual}%` }}
+            />
+          </div>
+          <span className="text-xs text-gray-700 mt-1">{roadmap.progresso_percentual}% concluído</span>
+        </>
+      )}
     </Link>
   );
 }
