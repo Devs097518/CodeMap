@@ -34,7 +34,8 @@ export default function ClientInicioPage() {
     <main className="min-h-screen bg-white px-10 py-10 font-sans">
       <div className="mb-10">
         <h1 className="text-3xl font-bold text-gray-900 leading-tight">Olá, {username}!</h1>
-        <p className="text-xl text-gray-500 mt-0.5">continue seus estudos</p>
+        <p className="text-xl text-gray-500 mt-0.5">continue seus estudos</p> 
+        <hr className="border mt-8"/>
       </div>
 
       {erro && <p className="text-red-500 text-sm mb-4">{erro}</p>}
@@ -85,7 +86,7 @@ function RoadmapCard({ roadmap, categoriaNome }: { roadmap: RoadmapComProgresso;
   return (
     <Link
       href={`/dashboard/user/roadmap/${roadmap.id_roadmap}`}
-      className="flex flex-col bg-[#eeff66] rounded-2xl px-5 py-5 hover:bg-[#FBBF24] active:scale-95 transition-all duration-150"
+      className="flex flex-col bg-[#ffffff] rounded-2xl px-5 py-5 hover:border-gray-700 border-gray-200 border-3 active:scale-95 transition-all duration-150"
     >
       <span className="text-lg font-semibold text-gray-900 truncate">{roadmap.titulo}</span>
       <span className="text-xs text-gray-600 mt-0.5">{categoriaNome}</span>

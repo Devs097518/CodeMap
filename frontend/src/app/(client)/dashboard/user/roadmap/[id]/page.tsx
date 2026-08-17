@@ -78,15 +78,15 @@ export default function RoadmapDetalheClientPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white px-10 py-10 font-sans">
-      <Link href="/dashboard/user/inicio" className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 mb-6">
+    <main className="min-h-screen bg-white px-75 py-10 font-sans">
+      <Link href="/dashboard/user/inicio" className="flex items-center gap-2 text-x text-gray-500 hover:text-gray-700 mb-6">
         <ArrowLeft size={16} />
         voltar ao início
       </Link>
 
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">{roadmap.titulo}</h1>
-        {roadmap.descricao && <p className="text-sm text-gray-600 mt-3">{roadmap.descricao}</p>}
+        {roadmap.descricao && <p className="text-x text-gray-600 mt-3">{roadmap.descricao}</p>}
       </div>
 
       {erro && <p className="text-red-500 text-sm mb-4">{erro}</p>}
@@ -96,42 +96,44 @@ export default function RoadmapDetalheClientPage() {
           <p className="text-gray-400 text-xl">Nenhum tópico disponível ainda.</p>
         ) : (
           topicos.map((topico) => (
-            <div key={topico.id_topico} className="border border-gray-200 rounded-2xl px-6 py-5">
-              <label className="flex items-center gap-2 text-xs text-gray-500 mb-2 cursor-pointer w-fit">
+            <div key={topico.id_topico} className="bg-white shadow-[0px_0px_4px_3px_#00000010] rounded-2xl px-6 py-5">
+              <label className="flex items-center gap-2 text-x text-gray-500 mb-2 cursor-pointer w-fit">
                 <input
                   type="checkbox"
                   checked={topico.estudado}
+                  className="cursor-pointer w-3 h-3 bg-green-400 accent-emerald-600 rounded cursor-pointer"
                   onChange={(e) => handleToggleTopico(topico.id_topico, e.target.checked)}
                 />
                 estudado
               </label>
 
-              <h2 className="text-lg font-semibold text-gray-900">{topico.titulo}</h2>
-              {topico.descricao && <p className="text-sm text-gray-600 mt-2">{topico.descricao}</p>}
+              <h2 className="text-xl font-semibold text-gray-900">{topico.titulo}</h2>
+              {topico.descricao && <p className="text-x text-gray-600 mt-2">{topico.descricao}</p>}
 
               <div className="mt-3">
-                <p className="text-sm font-semibold text-gray-800 mb-1">Recursos</p>
+                <p className="text-x font-semibold text-gray-800 mb-1">Recursos</p>
                 <RecursosBadge tipo="topico" id={topico.id_topico} readOnly />
               </div>
 
               {topico.subitens.length > 0 && (
-                <div className="border-l-2 border-gray-200 ml-2 pl-5 mt-4 flex flex-col gap-4">
+                <div className="border-l-3 border-gray-500 ml-2 pl-5 mt-4 flex flex-col gap-4">
                   {topico.subitens.map((sub) => (
-                    <div key={sub.id_subitem} className="border border-gray-200 rounded-2xl px-5 py-4">
-                      <label className="flex items-center gap-2 text-xs text-gray-500 mb-2 cursor-pointer w-fit">
+                    <div key={sub.id_subitem} className="bg-gray-100 inset-shadow-sm rounded-2xl px-5 py-4">
+                      <label className="flex items-center gap-2 text-x text-gray-500 mb-2 cursor-pointer w-fit">
                         <input
                           type="checkbox"
                           checked={sub.estudado}
+                          className="cursor-pointer w-3 h-3 bg-green-400 accent-emerald-600 rounded cursor-pointer"
                           onChange={(e) => handleToggleSubitem(topico.id_topico, sub.id_subitem, e.target.checked)}
                         />
                         estudado
                       </label>
 
-                      <h3 className="text-base font-semibold text-gray-900">{sub.titulo}</h3>
-                      {sub.descricao && <p className="text-sm text-gray-600 mt-2">{sub.descricao}</p>}
+                      <h3 className="text-xl font-semibold text-gray-900">{sub.titulo}</h3>
+                      {sub.descricao && <p className="text-x text-gray-600 mt-2">{sub.descricao}</p>}
 
                       <div className="mt-3">
-                        <p className="text-sm font-semibold text-gray-800 mb-1">Recursos</p>
+                        <p className="text-x font-semibold text-gray-800 mb-1">Recursos</p>
                         <RecursosBadge tipo="subitem" id={sub.id_subitem} readOnly />
                       </div>
                     </div>

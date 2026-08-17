@@ -31,7 +31,7 @@ function RecursosBadge({ tipo, id, readOnly = false }: { tipo: TipoItem; id: num
     <>
       <button
         onClick={() => setModalAberto(true)}
-        className="flex items-center gap-1.5 text-x text-gray-400 hover:text-gray-700 mt-2"
+        className="flex items-center gap-1.5 text-sl text-gray-600 hover:text-gray-800 mt-2"
       >
         <Link2 size={18} />
         {recursos === null
@@ -191,10 +191,10 @@ function RecursoModal({
                   </div>
                   {!readOnly && (
                     <div className="flex items-center gap-2 shrink-0 ml-2">
-                    <button onClick={() => abrirEditar(recurso)} aria-label="Editar recurso" className="text-gray-400 hover:text-gray-700">
+                    <button onClick={() => abrirEditar(recurso)} aria-label="Editar recurso" className="text-gray-600 hover:text-gray-700">
                       <Pencil size={14} />
                     </button>
-                    <button onClick={() => setRecursoParaExcluir(recurso)} aria-label="Excluir recurso" className="text-gray-400 hover:text-red-600">
+                    <button onClick={() => setRecursoParaExcluir(recurso)} aria-label="Excluir recurso" className="text-gray-600 hover:text-red-600">
                       <Trash2 size={14} />
                     </button>
                     </div>
