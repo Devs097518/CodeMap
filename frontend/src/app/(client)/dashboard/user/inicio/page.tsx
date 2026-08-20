@@ -31,53 +31,57 @@ export default function ClientInicioPage() {
   );
 
   return (
-    <main className="min-h-screen bg-white px-10 py-10 font-sans">
-      <div className="mb-10">
-        <h1 className="text-3xl font-bold text-gray-900 leading-tight">Olá, {username}!</h1>
-        <p className="text-xl text-gray-500 mt-0.5">continue seus estudos</p> 
-        <hr className="border mt-8"/>
-      </div>
+    <main className="min-h-screen bg-white px-4 sm:px-20 lg:px-40 xl:px-70 py-10 font-sans">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-10">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">
+            Olá, {username}!
+          </h1>
+          <p className="text-lg sm:text-xl text-gray-500 mt-0.5">continue seus estudos</p>
+          <hr className="border mt-8" />
+        </div>
 
-      {erro && <p className="text-red-500 text-sm mb-4">{erro}</p>}
+        {erro && <p className="text-red-500 text-sm mb-4">{erro}</p>}
 
-      {loading ? (
-        <p className="text-gray-400 text-xl">Carregando...</p>
-      ) : (
-        <>
-          {iniciados.length > 0 && (
-            <div className="mb-10">
-              <p className="text-xl font-semibold text-gray-800 mb-4">Continue estudando</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {iniciados.map((roadmap) => {
-                  const categoria = categorias.find((c) => c.id_categoria === roadmap.categoria_id);
-                  return (
-                    <RoadmapCard key={roadmap.id_roadmap} roadmap={roadmap} categoriaNome={categoria?.nome ?? ""} />
-                  );
-                })}
+        {loading ? (
+          <p className="text-gray-400 text-xl">Carregando...</p>
+        ) : (
+          <>
+            {iniciados.length > 0 && (
+              <div className="mb-10">
+                <p className="text-xl font-semibold text-gray-800 mb-4">Continue estudando</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+                  {iniciados.map((roadmap) => {
+                    const categoria = categorias.find((c) => c.id_categoria === roadmap.categoria_id);
+                    return (
+                      <RoadmapCard key={roadmap.id_roadmap} roadmap={roadmap} categoriaNome={categoria?.nome ?? ""} />
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {categoriasComRoadmap.length === 0 ? (
-            <p className="text-gray-400 text-xl">Nenhum roadmap disponível ainda.</p>
-          ) : (
-            <div className="flex flex-col gap-8">
-              {categoriasComRoadmap.map((categoria) => (
-                <section key={categoria.id_categoria}>
-                  <p className="text-xl font-semibold text-gray-800 mb-4">{categoria.nome}</p>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {roadmaps
-                      .filter((r) => r.categoria_id === categoria.id_categoria && !r.iniciado)
-                      .map((roadmap) => (
-                        <RoadmapCard key={roadmap.id_roadmap} roadmap={roadmap} categoriaNome={categoria.nome} />
-                      ))}
-                  </div>
-                </section>
-              ))}
-            </div>
-          )}
-        </>
-      )}
+            {categoriasComRoadmap.length === 0 ? (
+              <p className="text-gray-400 text-xl">Nenhum roadmap disponível ainda.</p>
+            ) : (
+              <div className="flex flex-col gap-8">
+                {categoriasComRoadmap.map((categoria) => (
+                  <section key={categoria.id_categoria}>
+                    <p className="text-xl font-semibold text-gray-800 mb-4">{categoria.nome}</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
+                      {roadmaps
+                        .filter((r) => r.categoria_id === categoria.id_categoria && !r.iniciado)
+                        .map((roadmap) => (
+                          <RoadmapCard key={roadmap.id_roadmap} roadmap={roadmap} categoriaNome={categoria.nome} />
+                        ))}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </main>
   );
 }

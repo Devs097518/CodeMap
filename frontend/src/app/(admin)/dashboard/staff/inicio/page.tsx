@@ -13,7 +13,7 @@ import {
   Categoria,
 } from "@/service/categoria-service";
 import { ConfirmModal } from "@/components/ConfirmModal";
-import  RoadmapModal  from "@/components/RoadmapModal";
+import RoadmapModal from "@/components/RoadmapModal";
 import { useAuth } from "@/context/AuthContext";
 import {
   listarRoadmapsAdmin,
@@ -95,7 +95,7 @@ export default function AdminInicioPage() {
     }
   };
 
-    const abrirModalCriarRoadmap = (categoria: Categoria) => {
+  const abrirModalCriarRoadmap = (categoria: Categoria) => {
     setRoadmapEditando(null);
     setCategoriaParaNovoRoadmap(categoria);
     setModalRoadmapAberto(true);
@@ -128,205 +128,205 @@ export default function AdminInicioPage() {
   };
 
   return (
-    
-    <main className="min-h-screen bg-white px-10 py-10 font-sans">
-      <div className="mb-10 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 leading-tight">Olá, {username}!</h1>
-          <p className="text-xl text-gray-500 mt-0.5">espaço de gerenciamento dos roadmaps</p>
+    <main className="min-h-screen bg-white px-4 sm:px-8 lg:px-16 py-10 font-sans">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 leading-tight">Olá, {username}!</h1>
+            <p className="text-lg sm:text-xl text-gray-500 mt-0.5">espaço de gerenciamento dos roadmaps</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-4">
+            <label className="flex items-center gap-2 text-sm text-gray-600">
+              <input
+                type="checkbox"
+                checked={mostrarArquivados}
+                onChange={(e) => setMostrarArquivados(e.target.checked)}
+              />
+              Mostrar arquivados
+            </label>
+            <button
+              onClick={abrirModalCriar}
+              className="flex items-center justify-center gap-2 bg-[#0C0F4F] text-white text-sm px-4 py-2.5 rounded-xl hover:bg-[#1f237d] transition-colors duration-150"
+            >
+              <Plus size={16} />
+              Nova Categoria
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2 text-x text-gray-600">
-            <input
-              type="checkbox"
-              checked={mostrarArquivados}
-              onChange={(e) => setMostrarArquivados(e.target.checked)}
-            />
-            Mostrar arquivados
-          </label>
-          <button
-            onClick={abrirModalCriar}
-            className="flex items-center gap-2 bg-[#0C0F4F] text-white text-x px-4 py-2.5 rounded-xl hover:bg-[#1f237d] transition-colors duration-150"
-          >
-            <Plus size={16} />
-            Nova Categoria
-          </button>
-        </div>
-      </div>
 
-      <h2 className="text-2xl border-t-2 border-gray-200 font-bold text-gray-900 mb-6 pt-6">Roadmaps</h2>
+        <h2 className="text-2xl border-t-2 border-gray-200 font-bold text-gray-900 mb-6 pt-6">Roadmaps</h2>
 
-      {erro && <p className="text-red-500 text-sm mb-4">{erro}</p>}
+        {erro && <p className="text-red-500 text-sm mb-4">{erro}</p>}
 
-      {loading ? (
-        <p className="text-gray-400 text-xl">Carregando categorias...</p>
-      ) : categorias.length === 0 ? (
-        <p className="text-gray-400 text-xl">Nenhuma categoria criada ainda.</p>
-      ) : (
-        <div className="flex flex-col gap-8">
-          {categorias.map((categoria, index) => (
-            <section key={categoria.id_categoria}>
-              <div className="flex items-center gap-2 mb-3">
-                <h3
-                  className={`text-xl rounded-xl p-2 font-semibold ${
-                    categoria.deleted_at ? "text-gray-400 bg-gray-100" : "text-gray-800 bg-yellow-100" 
-                  }`}
-                >
-                  {categoria.nome}
-                </h3>
-
-                <button
-                  onClick={() => handleMover(categoria.id_categoria, "cima")}
-                  disabled={index === 0 || !!categoria.deleted_at}
-                  aria-label="Mover categoria para cima"
-                  className="text-gray-700 hover:text-gray-900 disabled:opacity-30 disabled:hover:text-gray-400"
-                >
-                  <ChevronUp size={16} />
-                </button>
-                <button
-                  onClick={() => handleMover(categoria.id_categoria, "baixo")}
-                  disabled={index === categorias.length - 1 || !!categoria.deleted_at}
-                  aria-label="Mover categoria para baixo"
-                  className="text-gray-700 hover:text-gray-900 disabled:opacity-30 disabled:hover:text-gray-400"
-                >
-                  <ChevronDown size={16} />
-                </button>
-
-                <button
-                  onClick={() => abrirModalEditar(categoria)}
-                  disabled={!!categoria.deleted_at}
-                  aria-label="Editar categoria"
-                  className="text-gray-600 hover:text-gray-900 disabled:opacity-30 disabled:hover:text-gray-400"
-                >
-                  <Pencil size={16} />
-                </button>
-
-                {categoria.deleted_at ? (
-                  <button
-                    onClick={() => handleRestaurar(categoria)}
-                    aria-label="Restaurar categoria"
-                    className="text-gray-400 hover:text-gray-700"
+        {loading ? (
+          <p className="text-gray-400 text-xl">Carregando categorias...</p>
+        ) : categorias.length === 0 ? (
+          <p className="text-gray-400 text-xl">Nenhuma categoria criada ainda.</p>
+        ) : (
+          <div className="flex flex-col gap-8">
+            {categorias.map((categoria, index) => (
+              <section key={categoria.id_categoria}>
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <h3
+                    className={`text-lg sm:text-xl rounded-xl p-2 font-semibold ${
+                      categoria.deleted_at ? "text-gray-400 bg-gray-100" : "text-gray-800 bg-yellow-100"
+                    }`}
                   >
-                    <ArchiveRestore size={16} />
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setCategoriaParaArquivar(categoria)}
-                    aria-label="Arquivar categoria"
-                    className="text-gray-700 hover:text-red-600"
-                  >
-                    <Archive size={16} />
-                  </button>
-                )}
-              </div>
+                    {categoria.nome}
+                  </h3>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {roadmaps
-                .filter((r) => r.categoria_id === categoria.id_categoria)
-                .map((roadmap) => (
-                    <Link
-                      key={roadmap.id_roadmap}
-                      href={`/dashboard/staff/roadmap/${roadmap.id_roadmap}`}
-                      className="relative group bg-white border border-gray-200 rounded-2xl px-5 py-5 hover:border-gray-300 transition-colors duration-150 block"
+                  <button
+                    onClick={() => handleMover(categoria.id_categoria, "cima")}
+                    disabled={index === 0 || !!categoria.deleted_at}
+                    aria-label="Mover categoria para cima"
+                    className="text-gray-700 hover:text-gray-900 disabled:opacity-30 disabled:hover:text-gray-400"
+                  >
+                    <ChevronUp size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleMover(categoria.id_categoria, "baixo")}
+                    disabled={index === categorias.length - 1 || !!categoria.deleted_at}
+                    aria-label="Mover categoria para baixo"
+                    className="text-gray-700 hover:text-gray-900 disabled:opacity-30 disabled:hover:text-gray-400"
+                  >
+                    <ChevronDown size={16} />
+                  </button>
+
+                  <button
+                    onClick={() => abrirModalEditar(categoria)}
+                    disabled={!!categoria.deleted_at}
+                    aria-label="Editar categoria"
+                    className="text-gray-600 hover:text-gray-900 disabled:opacity-30 disabled:hover:text-gray-400"
+                  >
+                    <Pencil size={16} />
+                  </button>
+
+                  {categoria.deleted_at ? (
+                    <button
+                      onClick={() => handleRestaurar(categoria)}
+                      aria-label="Restaurar categoria"
+                      className="text-gray-400 hover:text-gray-700"
                     >
-                      <p className={`text-base font-semibold truncate pr-2 ${roadmap.deleted_at ? "text-gray-400" : "text-gray-900"}`}>
-                        {roadmap.titulo}
-                      </p>
+                      <ArchiveRestore size={16} />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setCategoriaParaArquivar(categoria)}
+                      aria-label="Arquivar categoria"
+                      className="text-gray-700 hover:text-red-600"
+                    >
+                      <Archive size={16} />
+                    </button>
+                  )}
+                </div>
 
-                      {roadmap.deleted_at ? (
-                        <span className="inline-block mt-2 text-x text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">arquivado</span>
-                      ) : !roadmap.is_active ? (
-                        <span className="inline-block mt-2 text-x text-amber-600 bg-amber-50 rounded-full px-2 py-0.5">rascunho</span>
-                      ) : null}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {roadmaps
+                    .filter((r) => r.categoria_id === categoria.id_categoria)
+                    .map((roadmap) => (
+                      <Link
+                        key={roadmap.id_roadmap}
+                        href={`/dashboard/staff/roadmap/${roadmap.id_roadmap}`}
+                        className="relative group bg-white border-2 border-gray-300 rounded-2xl px-5 py-5 hover:border-gray-500 transition-colors duration-150 block"
+                      >
+                        <p className={`text-base font-semibold truncate pr-2 ${roadmap.deleted_at ? "text-gray-400" : "text-gray-900"}`}>
+                          {roadmap.titulo}
+                        </p>
 
-                      <div className="flex gap-2 mt-3">
-                        <button
-                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); abrirModalEditarRoadmap(roadmap); }}
-                          disabled={!!roadmap.deleted_at}
-                          aria-label="Editar roadmap"
-                          className="text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:hover:text-gray-400"
-                        >
-                          <Pencil size={14} />
-                        </button>
                         {roadmap.deleted_at ? (
+                          <span className="inline-block mt-2 text-xs text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">arquivado</span>
+                        ) : !roadmap.is_active ? (
+                          <span className="inline-block mt-2 text-xs text-amber-600 bg-amber-50 rounded-full px-2 py-0.5">rascunho</span>
+                        ) : null}
+
+                        <div className="flex gap-2 mt-3">
                           <button
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRestaurarRoadmap(roadmap); }}
-                            aria-label="Restaurar roadmap"
-                            className="text-gray-400 hover:text-gray-700"
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); abrirModalEditarRoadmap(roadmap); }}
+                            disabled={!!roadmap.deleted_at}
+                            aria-label="Editar roadmap"
+                            className="text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:hover:text-gray-400"
                           >
-                            <ArchiveRestore size={14} />
+                            <Pencil size={14} />
                           </button>
-                        ) : (
-                          <button
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setRoadmapParaArquivar(roadmap); }}
-                            aria-label="Arquivar roadmap"
-                            className="text-gray-400 hover:text-red-600"
-                          >
-                            <Archive size={14} />
-                          </button>
-                        )}
-                      </div>
-                    </Link>
-                  ))}
+                          {roadmap.deleted_at ? (
+                            <button
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleRestaurarRoadmap(roadmap); }}
+                              aria-label="Restaurar roadmap"
+                              className="text-gray-400 hover:text-gray-700"
+                            >
+                              <ArchiveRestore size={14} />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setRoadmapParaArquivar(roadmap); }}
+                              aria-label="Arquivar roadmap"
+                              className="text-gray-400 hover:text-red-600"
+                            >
+                              <Archive size={14} />
+                            </button>
+                          )}
+                        </div>
+                      </Link>
+                    ))}
 
-                {!categoria.deleted_at && (
-                  <button
-                    onClick={() => abrirModalCriarRoadmap(categoria)}
-                    className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-2xl px-5 py-8 text-gray-300 hover:border-gray-300 hover:text-gray-400 transition-colors duration-150"
-                  >
-                    <Plus size={20} />
-                    <span className="text-xl mt-2">Novo roadmap</span>
-                  </button>
-                )}
-              </div>
-            </section>
-          ))}
-        </div>
-      )}
+                  {!categoria.deleted_at && (
+                    <button
+                      onClick={() => abrirModalCriarRoadmap(categoria)}
+                      className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-2xl px-5 py-8 text-gray-300 hover:border-gray-300 hover:text-gray-400 transition-colors duration-150"
+                    >
+                      <Plus size={20} />
+                      <span className="text-lg mt-2">Novo roadmap</span>
+                    </button>
+                  )}
+                </div>
+              </section>
+            ))}
+          </div>
+        )}
 
-      {modalAberto && (
-        <CategoriaModal
-          categoria={categoriaEditando}
-          onClose={() => setModalAberto(false)}
-          onSuccess={() => {
-            setModalAberto(false);
-            carregarDados();
-          }}
-        />
-      )}
+        {modalAberto && (
+          <CategoriaModal
+            categoria={categoriaEditando}
+            onClose={() => setModalAberto(false)}
+            onSuccess={() => {
+              setModalAberto(false);
+              carregarDados();
+            }}
+          />
+        )}
 
-      {categoriaParaArquivar && (
-        <ConfirmModal
-          titulo="Arquivar categoria"
-          mensagem={`Arquivar "${categoriaParaArquivar.nome}"? Ela some da listagem padrão.`}
-          textoConfirmar="Arquivar"
-          textoConfirmando="Arquivando..."
-          onCancel={() => setCategoriaParaArquivar(null)}
-          onConfirm={handleArquivar}
-        />
-      )}
+        {categoriaParaArquivar && (
+          <ConfirmModal
+            titulo="Arquivar categoria"
+            mensagem={`Arquivar "${categoriaParaArquivar.nome}"? Ela some da listagem padrão.`}
+            textoConfirmar="Arquivar"
+            textoConfirmando="Arquivando..."
+            onCancel={() => setCategoriaParaArquivar(null)}
+            onConfirm={handleArquivar}
+          />
+        )}
 
-      {modalRoadmapAberto && (
-        <RoadmapModal
-          roadmap={roadmapEditando}
-          categoriaPadrao={categoriaParaNovoRoadmap}
-          categorias={categorias}
-          onClose={() => setModalRoadmapAberto(false)}
-          onSuccess={() => { setModalRoadmapAberto(false); carregarDados(); }}
-        />
-      )}
+        {modalRoadmapAberto && (
+          <RoadmapModal
+            roadmap={roadmapEditando}
+            categoriaPadrao={categoriaParaNovoRoadmap}
+            categorias={categorias}
+            onClose={() => setModalRoadmapAberto(false)}
+            onSuccess={() => { setModalRoadmapAberto(false); carregarDados(); }}
+          />
+        )}
 
-      {roadmapParaArquivar && (
-        <ConfirmModal
-          titulo="Arquivar roadmap"
-          mensagem={`Arquivar "${roadmapParaArquivar.titulo}"? Ele some da listagem padrão, mas os tópicos continuam intactos.`}
-          textoConfirmar="Arquivar"
-          textoConfirmando="Arquivando..."
-          onCancel={() => setRoadmapParaArquivar(null)}
-          onConfirm={handleArquivarRoadmap}
-        />
-      )}
-
+        {roadmapParaArquivar && (
+          <ConfirmModal
+            titulo="Arquivar roadmap"
+            mensagem={`Arquivar "${roadmapParaArquivar.titulo}"? Ele some da listagem padrão, mas os tópicos continuam intactos.`}
+            textoConfirmar="Arquivar"
+            textoConfirmando="Arquivando..."
+            onCancel={() => setRoadmapParaArquivar(null)}
+            onConfirm={handleArquivarRoadmap}
+          />
+        )}
+      </div>
     </main>
   );
 }
@@ -365,7 +365,7 @@ function CategoriaModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4" onClick={onClose}>
       <div className="bg-white rounded-2xl px-6 py-6 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-lg font-bold text-gray-900 mb-4">
           {categoria ? "Editar categoria" : "Nova categoria"}

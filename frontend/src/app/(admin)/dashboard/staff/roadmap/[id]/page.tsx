@@ -115,184 +115,179 @@ export default function RoadmapDetalhePage() {
   }, [roadmapId]);
 
   if (loading) {
-    return <main className="min-h-screen bg-white px-10 py-10 font-sans text-gray-400 text-xl">Carregando...</main>;
+    return <main className="min-h-screen bg-white px-4 sm:px-8 lg:px-16 py-10 font-sans text-gray-400 text-xl">Carregando...</main>;
   }
 
   if (erro || !roadmap) {
-    return <main className="min-h-screen bg-white px-10 py-10 font-sans text-red-500">{erro ?? "Roadmap não encontrado."}</main>;
+    return <main className="min-h-screen bg-white px-4 sm:px-8 lg:px-16 py-10 font-sans text-red-500">{erro ?? "Roadmap não encontrado."}</main>;
   }
 
   return (
-    <main className="min-h-screen bg-white px-10 py-10 font-sans">
-      <div className="flex items-center justify-between mb-6 border-b-2 pb-9">
-        <Link href="/dashboard/staff/inicio" className="flex items-center gap-2 text-x text-gray-500 hover:text-gray-700">
-          <ArrowLeft size={16} />
-          voltar ao início
-        </Link>
-        <button
-          onClick={abrirModalCriarTopico}
-          className="flex items-center gap-2 bg-[#0C0F4F] text-white text-x px-4 py-2.5 rounded-xl hover:bg-[#1f237d] transition-colors duration-150"
-        >
-          <Plus size={16} />
-          Novo tópico
-        </button>
-      </div>
+    <main className="min-h-screen bg-white px-4 sm:px-8 lg:px-16 py-10 font-sans">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 border-b-2 pb-9">
+          <Link href="/dashboard/staff/inicio" className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700">
+            <ArrowLeft size={16} />
+            voltar ao início
+          </Link>
+          <button
+            onClick={abrirModalCriarTopico}
+            className="flex items-center justify-center gap-2 bg-[#0C0F4F] text-white text-sm px-4 py-2.5 rounded-xl hover:bg-[#1f237d] transition-colors duration-150 w-full sm:w-auto"
+          >
+            <Plus size={16} />
+            Novo tópico
+          </button>
+        </div>
 
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">{roadmap.titulo}</h1>
-        <p className="text-x text-gray-500 mt-1">
-          {roadmap.deleted_at ? "arquivado" : roadmap.is_active ? "ativo" : "rascunho"}
-        </p>
-        {roadmap.descricao && <p className="text-sm text-gray-600 mt-3">{roadmap.descricao}</p>}
-      </div>
+        <div className="mb-8">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{roadmap.titulo}</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            {roadmap.deleted_at ? "arquivado" : roadmap.is_active ? "ativo" : "rascunho"}
+          </p>
+          {roadmap.descricao && <p className="text-sm text-gray-600 mt-3">{roadmap.descricao}</p>}
+        </div>
 
-      <div className="flex flex-col gap-4">
-        {topicos.map((topico, index) => (
-  <div key={topico.id_topico} className="border-gray-200 bg-gray-50 rounded-2xl px-7 py-4 mb-2">
-    <div className="flex items-center justify-between">
-
-      <span className="text-base text-xl font-semibold text-gray-900">{topico.titulo}</span>
-      <div className="flex items-center gap-1">
-        <span className="text-x text-gray-400 mr-1">ordem #{topico.ordem}</span>
-
-        <button onClick={() => 
-          handleMoverTopico(topico.id_topico, "cima")} 
-          disabled={index === 0} aria-label="Mover tópico para cima" 
-          className="text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:hover:text-gray-400">
-          <ChevronUp size={16} />
-        </button>
-
-        <button onClick={() => 
-          handleMoverTopico(topico.id_topico, "baixo")} 
-          disabled={index === topicos.length - 1} 
-          aria-label="Mover tópico para baixo" 
-          className="text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:hover:text-gray-400">
-          <ChevronDown size={16} />
-        </button>
-
-        <button onClick={() => 
-          abrirModalEditarTopico(topico)} 
-          aria-label="Editar tópico" 
-          className="text-gray-400 hover:text-gray-700">
-          <Pencil size={16} />
-        </button>
-
-        <button onClick={() => setTopicoParaExcluir(topico)} aria-label="Excluir tópico" className="text-gray-400 hover:text-red-600">
-          <Trash2 size={16} />
-        </button>
-
-      </div>
-    </div>
-    {topico.descricao && <p className="text-x text-gray-500 mt-1">{topico.descricao}</p>}
-
-      <RecursosBadge tipo="topico" id={topico.id_topico} />
-
-      {topico.subitens.length > 0 && (
-        <div className="ml-1.5 mt-3 flex flex-col gap-2">
-          {topico.subitens.map((sub, subIndex) => (
-            <div key={sub.id_subitem} className="bg-white rounded-xl px-3 py-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-800">{sub.titulo}</span>
+        <div className="flex flex-col gap-4">
+          {topicos.map((topico, index) => (
+            <div key={topico.id_topico} className="border-gray-200 bg-gray-50 rounded-2xl px-4 sm:px-7 py-4 mb-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-lg sm:text-xl font-semibold text-gray-900">{topico.titulo}</span>
                 <div className="flex items-center gap-1">
-                  <span className="text-xs text-gray-400 mr-1">ordem #{sub.ordem}</span>
+                  <span className="text-xs text-gray-400 mr-1">ordem #{topico.ordem}</span>
 
                   <button
-                    onClick={() => handleMoverSubitem(sub.id_subitem, "cima")}
-                    disabled={subIndex === 0}
-                    aria-label="Mover sub-item para cima"
+                    onClick={() => handleMoverTopico(topico.id_topico, "cima")}
+                    disabled={index === 0}
+                    aria-label="Mover tópico para cima"
                     className="text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:hover:text-gray-400"
                   >
-                    <ChevronUp size={14} />
+                    <ChevronUp size={16} />
                   </button>
 
                   <button
-                    onClick={() => handleMoverSubitem(sub.id_subitem, "baixo")}
-                    disabled={subIndex === topico.subitens.length - 1}
-                    aria-label="Mover sub-item para baixo"
+                    onClick={() => handleMoverTopico(topico.id_topico, "baixo")}
+                    disabled={index === topicos.length - 1}
+                    aria-label="Mover tópico para baixo"
                     className="text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:hover:text-gray-400"
                   >
-                    <ChevronDown size={14} />
+                    <ChevronDown size={16} />
                   </button>
 
-                  <button onClick={() => abrirModalEditarSubitem(sub)} aria-label="Editar sub-item" className="text-gray-400 hover:text-gray-700">
-                    <Pencil size={14} />
+                  <button onClick={() => abrirModalEditarTopico(topico)} aria-label="Editar tópico" className="text-gray-400 hover:text-gray-700">
+                    <Pencil size={16} />
                   </button>
 
-                  <button onClick={() => setSubitemParaExcluir(sub)} aria-label="Excluir sub-item" className="text-gray-400 hover:text-red-600">
-                    <Trash2 size={14} />
+                  <button onClick={() => setTopicoParaExcluir(topico)} aria-label="Excluir tópico" className="text-gray-400 hover:text-red-600">
+                    <Trash2 size={16} />
                   </button>
-
                 </div>
               </div>
-              {sub.descricao && <p className="text-xs text-gray-500 mt-0.5">{sub.descricao}</p>}
 
-              <RecursosBadge tipo="subitem" id={sub.id_subitem} />
+              {topico.descricao && <p className="text-sm text-gray-500 mt-1">{topico.descricao}</p>}
 
+              <RecursosBadge tipo="topico" id={topico.id_topico} />
+
+              {topico.subitens.length > 0 && (
+                <div className="ml-1.5 mt-3 flex flex-col gap-2">
+                  {topico.subitens.map((sub, subIndex) => (
+                    <div key={sub.id_subitem} className="bg-white rounded-xl px-3 py-2">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <span className="text-sm font-medium text-gray-800">{sub.titulo}</span>
+                        <div className="flex items-center gap-1">
+                          <span className="text-xs text-gray-400 mr-1">ordem #{sub.ordem}</span>
+
+                          <button
+                            onClick={() => handleMoverSubitem(sub.id_subitem, "cima")}
+                            disabled={subIndex === 0}
+                            aria-label="Mover sub-item para cima"
+                            className="text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:hover:text-gray-400"
+                          >
+                            <ChevronUp size={14} />
+                          </button>
+
+                          <button
+                            onClick={() => handleMoverSubitem(sub.id_subitem, "baixo")}
+                            disabled={subIndex === topico.subitens.length - 1}
+                            aria-label="Mover sub-item para baixo"
+                            className="text-gray-400 hover:text-gray-700 disabled:opacity-30 disabled:hover:text-gray-400"
+                          >
+                            <ChevronDown size={14} />
+                          </button>
+
+                          <button onClick={() => abrirModalEditarSubitem(sub)} aria-label="Editar sub-item" className="text-gray-400 hover:text-gray-700">
+                            <Pencil size={14} />
+                          </button>
+
+                          <button onClick={() => setSubitemParaExcluir(sub)} aria-label="Excluir sub-item" className="text-gray-400 hover:text-red-600">
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                      {sub.descricao && <p className="text-xs text-gray-500 mt-0.5">{sub.descricao}</p>}
+
+                      <RecursosBadge tipo="subitem" id={sub.id_subitem} />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <button
+                onClick={() => abrirModalCriarSubitem(topico)}
+                className="mt-3 flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800"
+              >
+                <Plus size={18} />
+                Adicionar sub-item
+              </button>
+
+              {topicoParaExcluir && (
+                <ConfirmModal
+                  titulo="Excluir tópico"
+                  mensagem={
+                    topicoParaExcluir.subitens.length > 0
+                      ? `Excluir "${topicoParaExcluir.titulo}"? Isso vai apagar também ${topicoParaExcluir.subitens.length} sub-item(ns) junto. Essa ação não pode ser desfeita.`
+                      : `Excluir "${topicoParaExcluir.titulo}"? Essa ação não pode ser desfeita.`
+                  }
+                  textoConfirmar="Excluir"
+                  textoConfirmando="Excluindo..."
+                  onCancel={() => setTopicoParaExcluir(null)}
+                  onConfirm={handleExcluirTopico}
+                />
+              )}
+
+              {subitemParaExcluir && (
+                <ConfirmModal
+                  titulo="Excluir sub-item"
+                  mensagem={`Excluir "${subitemParaExcluir.titulo}"? Essa ação não pode ser desfeita.`}
+                  textoConfirmar="Excluir"
+                  textoConfirmando="Excluindo..."
+                  onCancel={() => setSubitemParaExcluir(null)}
+                  onConfirm={handleExcluirSubitem}
+                />
+              )}
             </div>
           ))}
         </div>
-      )}
 
-      <button
-        onClick={() => abrirModalCriarSubitem(topico)}
-        className="mt-3 flex items-center gap-1.5 text-x text-gray-500 hover:text-gray-800"
-      >
-        <Plus size={18} />
-        Adicionar sub-item
-      </button>
+        {modalTopicoAberto && (
+          <TopicoModal
+            topico={topicoEditando}
+            roadmapId={roadmapId}
+            onClose={() => setModalTopicoAberto(false)}
+            onSuccess={() => { setModalTopicoAberto(false); carregarDados(); }}
+          />
+        )}
 
-      {topicoParaExcluir && (
-        <ConfirmModal
-          titulo="Excluir tópico"
-          mensagem={
-            topicoParaExcluir.subitens.length > 0
-              ? `Excluir "${topicoParaExcluir.titulo}"? Isso vai apagar também ${topicoParaExcluir.subitens.length} sub-item(ns) junto. Essa ação não pode ser desfeita.`
-              : `Excluir "${topicoParaExcluir.titulo}"? Essa ação não pode ser desfeita.`
-          }
-          textoConfirmar="Excluir"
-          textoConfirmando="Excluindo..."
-          onCancel={() => setTopicoParaExcluir(null)}
-          onConfirm={handleExcluirTopico}
-        />
-      )}
-
-      {subitemParaExcluir && (
-        <ConfirmModal
-          titulo="Excluir sub-item"
-          mensagem={`Excluir "${subitemParaExcluir.titulo}"? Essa ação não pode ser desfeita.`}
-          textoConfirmar="Excluir"
-          textoConfirmando="Excluindo..."
-          onCancel={() => setSubitemParaExcluir(null)}
-          onConfirm={handleExcluirSubitem}
-        />
-      )}
-
-    </div>
-  ))}
+        {modalSubitemAberto && (
+          <SubitemModal
+            subitem={subitemEditando}
+            topico={topicoParaNovoSubitem}
+            onClose={() => setModalSubitemAberto(false)}
+            onSuccess={() => { setModalSubitemAberto(false); carregarDados(); }}
+          />
+        )}
       </div>
-
-      {modalTopicoAberto && (
-        <TopicoModal
-          topico={topicoEditando}
-          roadmapId={roadmapId}
-          onClose={() => setModalTopicoAberto(false)}
-          onSuccess={() => { setModalTopicoAberto(false); carregarDados(); }}
-        />
-      )}
-
-      {modalSubitemAberto && (
-        <SubitemModal
-          subitem={subitemEditando}
-          topico={topicoParaNovoSubitem}
-          onClose={() => setModalSubitemAberto(false)}
-          onSuccess={() => { setModalSubitemAberto(false); carregarDados(); }}
-        />
-      )}
-
     </main>
   );
-
-
 }
 
 function TopicoModal({
@@ -332,7 +327,7 @@ function TopicoModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4" onClick={onClose}>
       <div className="bg-white rounded-2xl px-6 py-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-lg font-bold text-gray-900 mb-4">
           {topico ? "Editar tópico" : "Novo tópico"}
@@ -371,7 +366,6 @@ function TopicoModal({
     </div>
   );
 }
-
 
 function SubitemModal({
   subitem,
@@ -412,7 +406,7 @@ function SubitemModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4" onClick={onClose}>
       <div className="bg-white px-6 py-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-lg font-bold text-gray-900 mb-1">
           {subitem ? "Editar sub-item" : "Novo sub-item"}
@@ -452,6 +446,3 @@ function SubitemModal({
     </div>
   );
 }
-
-
-

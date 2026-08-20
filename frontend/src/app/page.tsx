@@ -8,7 +8,7 @@ export default function Home() {
     <div className="min-h-screen bg-[#ffffff] text-black font-sans">
 
       {/* NAVBAR */}
-      <nav className="w-full px-8 py-4 flex items-center justify-between text-white bg-[#0C0F4F]">
+      <nav className="bg-[#0C0F4F] text-white shadow-lg p-4 flex items-center justify-between shrink-0">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 font-bold text-base">
 
@@ -17,19 +17,38 @@ export default function Home() {
             alt="Mapa de tesouro"
             width={40}
             height={40}
-            className="rounded-4xl"
+            className="rounded-2xl"
           />
           <h1 className='text-4xl'>CodeMap</h1>
           
         </Link>
 
         {/* Links */}
-        <ul className="flex items-center gap-20 text-sm font-medium text-white/80">
-          <li><Link href="#" className="hover:text-white transition-colors text-2xl">sobre</Link></li>
-          <li><Link href="#" className="hover:text-white transition-colors text-2xl">contato</Link></li>
+        <ul className="flex items-center gap-20 text-sm">
           <li>
-            <Link href="/login" className="hover:text-white transition-colors text-2xl">entrar</Link>
+            <Link 
+              href="#" 
+              className="flex items-center gap-2 hover:bg-sky-200/10 px-3 py-1 rounded-lg transition-all text-2xl">
+              Sobre
+            </Link>
           </li>
+
+          <li>
+            <Link 
+            href="#" 
+            className="flex items-center gap-2 hover:bg-sky-200/10 px-3 py-1 rounded-lg transition-all text-2xl">
+              Contato
+            </Link>
+          </li>
+
+          <li>
+            <Link 
+              href="/login" 
+              className="flex items-center gap-2 hover:bg-sky-200/10 px-3 py-1 rounded-lg transition-all text-2xl">
+              Entrar
+            </Link>
+          </li>
+
         </ul>
       </nav>
 

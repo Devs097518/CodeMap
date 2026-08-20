@@ -30,10 +30,10 @@ export default function LoginPage() {
 
 
   return (
-    <main className="min-h-screen bg-[#ffffff] flex items-center justify-center px-4">
+    <main className="min-h-screen bg-white flex items-center justify-center px-4">
       <div
-        className="bg-gris rounded-2xl shadow-lg px-10 py-12 w-full max-w-sm flex flex-col items-center"
-        style={{ boxShadow: "8px 8px 20px 2px #969696a6" }}
+        className="bg-[#F3F3F3] rounded-2xl shadow-sm px-10 py-12 w-full max-w-sm flex flex-col items-center"
+        style={{ boxShadow: "5px 5px 5px 1px #96969472" }}
       >
         {/* Logo */}
         <div className="mb-4">
@@ -95,11 +95,11 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 w-32 bg-[#2d2f6e] hover:bg-[#223dc0] active:scale-[0.98] text-white text-sm font-medium rounded-full py-3 transition-all duration-200 disabled:opacity-70 flex items-center justify-center gap-2"
+            className="mt-2 w-32 bg-[#2d2f6e] hover:bg-[#223dc0] active:scale-[0.98] text-white text-sm font-medium rounded-lg py-3 transition-all duration-200 disabled:opacity-70 flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
-                <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-lg animate-spin" />
                 entrando...
               </>
             ) : (
