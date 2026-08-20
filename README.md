@@ -44,8 +44,8 @@ O CodeMap está sendo construído em versões funcionais incrementais:
 | V3 | Autenticação | ✅ Concluído |
 | V4 | Painel do Administrador | ✅ Concluído |
 | V5 | Painel do Cliente | ✅ Concluído |
-| V5 | Testes automatizados | 🔜 Planejado |
-| V5 | Deploy | 🔜 Planejado |
+| V6 | Testes automatizados | 🔜 Planejado |
+| V7 | Deploy | 🔜 Planejado |
 
 ---
 
