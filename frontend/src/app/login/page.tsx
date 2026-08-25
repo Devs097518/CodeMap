@@ -4,30 +4,29 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { realizarLogin } from '../../service/usuario-service';
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [erroLogin, setErroLogin] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate login
     try {
       const idUsuario = await realizarLogin(email, password);
       router.push('/dashboard/staff/inicio');
     } catch (error: unknown) {
-      alert(error); // "Email não cadastrado" ou "Senha incorreta"
+      const mensagem = error instanceof Error ? error.message : "Erro ao realizar login";
+      setErroLogin(mensagem);
     }
 
-
-    await new Promise((r) => setTimeout(r, 1200));
     setLoading(false);
   };
-
 
   return (
     <main className="min-h-screen bg-white flex items-center justify-center px-4">
@@ -57,10 +56,7 @@ export default function LoginPage() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="w-full flex flex-col items-center justify-center gap-4">
           <div className="flex flex-col gap-1">
-            <label
-              htmlFor="email"
-              className="text-sm text-gray-600 font-medium"
-            >
+            <label htmlFor="email" className="text-sm text-gray-600 font-medium">
               email
             </label>
             <input
@@ -75,10 +71,7 @@ export default function LoginPage() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <label
-              htmlFor="senha"
-              className="text-sm text-gray-600 font-medium"
-            >
+            <label htmlFor="senha" className="text-sm text-gray-600 font-medium">
               senha
             </label>
             <input
@@ -111,15 +104,23 @@ export default function LoginPage() {
         {/* Register link */}
         <p className="mt-6 text-sm text-gray-500">
           Não tem conta?{" "}
-          <Link
-            href="/cadastro"
-            className="text-[#3b82f6] hover:text-[#2563eb] font-medium transition-colors"
-          >
+          <Link href="/cadastro" className="text-[#3b82f6] hover:text-[#2563eb] font-medium transition-colors">
             Cadastre-se
           </Link>
         </p>
       </div>
+
+      {/* Modal de erro de login */}
+      {erroLogin && (
+        <ConfirmModal
+          titulo="Não foi possível entrar"
+          mensagem={erroLogin}
+          textoConfirmar="Ok"
+          textoConfirmando="Ok"
+          onCancel={() => setErroLogin(null)}
+          onConfirm={async () => setErroLogin(null)}
+        />
+      )}
     </main>
   );
 }
-

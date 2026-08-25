@@ -7,6 +7,7 @@ interface ConfirmModalProps {
   mensagem: string;
   textoConfirmar?: string;
   textoConfirmando?: string;
+  textoCancelar?: string;
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -16,6 +17,7 @@ export function ConfirmModal({
   mensagem,
   textoConfirmar = "Confirmar",
   textoConfirmando = "Salvando...",
+  textoCancelar = "Cancelar",
   onCancel,
   onConfirm,
 }: ConfirmModalProps) {
@@ -42,6 +44,9 @@ export function ConfirmModal({
             className="bg-red-600 text-white text-sm font-bold px-4 py-2.5 rounded-xl disabled:opacity-50"
           >
             {confirmando ? textoConfirmando : textoConfirmar}
+          </button>
+          <button onClick={onCancel} className="text-sm text-gray-500 px-4 py-2">
+            {textoCancelar}
           </button>
         </div>
       </div>

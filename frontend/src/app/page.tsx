@@ -146,8 +146,7 @@ export default function Home() {
                 <img
                   src={passo.src}
                   alt={passo.alt}
-                  className="w-full rounded-10 inset-shadow-sm
-                  hover:-translate-y-1 transition-all duration-200 ease-out hover:shadow-lg"
+                  className="w-full rounded-10 inset-shadow-sm shadow-lg hover:-translate-y-1 transition-all duration-200 ease-out hover:shadow-lg"
                 />
                 <span className="text font-medium text-gray-700">{passo.legenda}</span>
               </div>

@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { cadastrarCompleto } from '../../service/cadastro-service';
 import { useRouter } from 'next/navigation';
+import { ConfirmModal } from "@/components/ConfirmModal";
+import { realizarLogin } from '../../service/usuario-service';
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -23,6 +25,8 @@ export default function LoginPage() {
     ];
 
 
+    const [cadastroSucesso, setCadastroSucesso] = useState(false);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -31,34 +35,23 @@ export default function LoginPage() {
             return;
         }
 
-        setLoading(true); 
+        setLoading(true);
 
         try {
-            await cadastrarCompleto({
-                email,
-                senha: password,
-                username,
-                uf,
-            });
-            router.push('../');
+            await cadastrarCompleto({ email, senha: password, username, uf });
+            setCadastroSucesso(true);
         } catch (error: any) {
             const msg: string = error?.message ?? "";
-
             if (msg.includes("usuario_email_key")) {
                 setFieldError({ email: "Este e-mail já está cadastrado." });
-
             } else if (msg.includes("pessoa_username_key")) {
-
                 setFieldError({ username: "Este username já está em uso." });
-
             } else {
                 setFieldError(null);
                 console.log(error);
             }
-
             setLoading(false);
         }
-
     };
 
     return (
@@ -221,6 +214,24 @@ export default function LoginPage() {
                     </Link>
                 </p>
             </div>
+            {cadastroSucesso && (
+            <ConfirmModal
+                titulo="Conta criada com sucesso!"
+                mensagem="Você já pode fazer login com suas credenciais."
+                textoCancelar=""
+                textoConfirmar="Fazer Login"
+                textoConfirmando="Entrando..."
+                onCancel={() => router.push('../')}
+                onConfirm={async () => {
+                try {
+                    await realizarLogin(email, password); // email e password já estão em state
+                    router.push('/dashboard/staff/inicio');
+                } catch {
+                    router.push('/login'); // fallback se algo der errado
+                }
+                }}
+            />
+            )}
         </main>
     );
 }
