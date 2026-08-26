@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { realizarLogin } from '../../service/usuario-service';
 import { AlertModal } from "@/components/AlertModal";
+import { ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -29,9 +30,13 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white flex items-center justify-center px-4">
+    <main className="min-h-screen bg-gray-100 flex flex-col items-center justify-center columns-2 px-4">
+      <Link href="../" className="flex items-center gap-2 my-3 text-sm text-gray-500 hover:text-gray-700">
+          <ArrowLeft size={16} />
+        voltar ao início
+      </Link>
       <div
-        className="bg-[#F3F3F3] rounded-2xl shadow-sm px-10 py-12 w-full max-w-sm flex flex-col items-center"
+        className="bg-gray-50 rounded-2xl shadow-sm px-10 py-12 w-full max-w-sm flex flex-col items-center"
         style={{ boxShadow: "5px 5px 5px 1px #96969472" }}
       >
         {/* Logo */}

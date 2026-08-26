@@ -97,7 +97,7 @@ export default function Home() {
 
         <div className="flex-1 flex justify-center">
           <img
-            src="/imagens/roadmap_img.avif"
+            src="/imagens/roadmap_img.png"
             alt="Ilustração de um caminho sinuoso com marcadores de progresso"
             width={480}
             height={480}
