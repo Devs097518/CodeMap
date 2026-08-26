@@ -7,17 +7,15 @@ interface ConfirmModalProps {
   mensagem: string;
   textoConfirmar?: string;
   textoConfirmando?: string;
-  textoCancelar?: string;
   onCancel: () => void;
   onConfirm: () => void;
 }
 
-export function ConfirmModal({
+export function ConfirmLoginModal({
   titulo,
   mensagem,
   textoConfirmar = "Confirmar",
   textoConfirmando = "Salvando...",
-  textoCancelar = "Cancelar",
   onCancel,
   onConfirm,
 }: ConfirmModalProps) {
@@ -36,7 +34,7 @@ export function ConfirmModal({
         <p className="text-sm text-gray-500 mb-6">{mensagem}</p>
         <div className="flex justify-end gap-3">
           <button onClick={onCancel} className="text-sm text-gray-500 px-4 py-2">
-            Cancelar
+            Ok
           </button>
           <button
             onClick={handleConfirmar}
@@ -44,9 +42,6 @@ export function ConfirmModal({
             className="bg-blue-600 text-white text-sm font-bold px-4 py-2.5 rounded-xl disabled:opacity-50"
           >
             {confirmando ? textoConfirmando : textoConfirmar}
-          </button>
-          <button onClick={onCancel} className="text-sm text-gray-500 px-4 py-2">
-            {textoCancelar}
           </button>
         </div>
       </div>

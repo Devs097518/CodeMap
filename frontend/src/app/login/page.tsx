@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { realizarLogin } from '../../service/usuario-service';
-import { ConfirmModal } from "@/components/ConfirmModal";
+import { AlertModal } from "@/components/AlertModal";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -112,13 +112,10 @@ export default function LoginPage() {
 
       {/* Modal de erro de login */}
       {erroLogin && (
-        <ConfirmModal
+        <AlertModal
           titulo="Não foi possível entrar"
           mensagem={erroLogin}
-          textoConfirmar="Ok"
-          textoConfirmando="Ok"
-          onCancel={() => setErroLogin(null)}
-          onConfirm={async () => setErroLogin(null)}
+          onClose={() => setErroLogin(null)}
         />
       )}
     </main>

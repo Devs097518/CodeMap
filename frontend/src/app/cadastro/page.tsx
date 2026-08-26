@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { cadastrarCompleto } from '../../service/cadastro-service';
 import { useRouter } from 'next/navigation';
-import { ConfirmModal } from "@/components/ConfirmModal";
+import { ConfirmLoginModal } from "@/components/ConfirmLoginModal";
 import { realizarLogin } from '../../service/usuario-service';
 
 export default function LoginPage() {
@@ -215,19 +215,18 @@ export default function LoginPage() {
                 </p>
             </div>
             {cadastroSucesso && (
-            <ConfirmModal
+            <ConfirmLoginModal
                 titulo="Conta criada com sucesso!"
                 mensagem="Você já pode fazer login com suas credenciais."
-                textoCancelar=""
                 textoConfirmar="Fazer Login"
                 textoConfirmando="Entrando..."
                 onCancel={() => router.push('../')}
                 onConfirm={async () => {
                 try {
-                    await realizarLogin(email, password); // email e password já estão em state
+                    await realizarLogin(email, password);
                     router.push('/dashboard/staff/inicio');
                 } catch {
-                    router.push('/login'); // fallback se algo der errado
+                    router.push('/login');
                 }
                 }}
             />
