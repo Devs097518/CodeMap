@@ -327,9 +327,9 @@ export default function NotesApp() {
 
         <div className="relative max-w-250 mx-auto px-4 py-8">
 
-          <Link href="../staff/inicio" className="flex items-center gap-1.5 text-xl mb-6 text-[#0C0F4F] hover:gap-3 transition-all">
+          <Link href="/dashboard/user/cadernos" className="flex items-center gap-1.5 text-xl mb-6 text-[#0C0F4F] hover:gap-3 transition-all">
             <BackIcon />
-            voltar ao início
+            voltar para meus cadernos
           </Link>
 
           <div className="flex items-center justify-between mb-6">

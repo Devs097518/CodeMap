@@ -37,7 +37,7 @@ function StaffLayoutContent({ children }: { children: ReactNode }) {
             </Link>
 
             <Link
-              href="/dashboard/user/notas"
+              href="/dashboard/user/cadernos"
               className="flex items-center gap-2 hover:bg-white/20 px-3 py-1 rounded-lg transition-all text-2xl"
             >
               Cadernos
