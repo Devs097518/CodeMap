@@ -1,12 +1,12 @@
 import db from '../../../db/pool.js'
 
-export const listarNotas = async (id_pasta) => {
+export const listarNotas = async (id_caderno) => {
   let query = `SELECT * FROM nota`
   let params = []
 
-  if (id_pasta) {
-    query += ` WHERE id_pasta = $1`
-    params.push(id_pasta)
+  if (id_caderno) {
+    query += ` WHERE id_caderno = $1`
+    params.push(id_caderno)
   }
 
   const { rows } = await db.query(query, params)
@@ -21,10 +21,10 @@ export const listarNotaPorUsuario = async (id_usuario) => {
   return result.rows[0] || null
 }
 
-export const criarNota = async (conteudo, id_pasta, titulo, status) => {
+export const criarNota = async (conteudo, id_caderno, titulo, status) => {
   const result = await db.query(
-    'INSERT INTO public.nota (conteudo, id_pasta, titulo, status) VALUES ($1, $2, $3, $4) RETURNING *',
-    [conteudo, id_pasta, titulo, status]
+    'INSERT INTO public.nota (conteudo, id_caderno, titulo, status) VALUES ($1, $2, $3, $4) RETURNING *',
+    [conteudo, id_caderno, titulo, status]
   )
   return result.rows[0]
 }

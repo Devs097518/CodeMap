@@ -1,11 +1,11 @@
 import { Router } from 'express'
-import * as pastaController from './pasta.controller.js'
+import * as cadernoController from './caderno.controller.js'
 
 const router = Router()
 
-router.get('/listagem', pastaController.listagem)
-router.post('/novo', pastaController.novo)
-router.put('/editar/:id', pastaController.editar)
-router.delete('/deletar/:id', pastaController.deletar)
+router.get('/listagem', cadernoController.listagem)
+router.post('/novo', cadernoController.novo)
+router.put('/editar/:id', cadernoController.editar)
+router.delete('/deletar/:id', cadernoController.deletar)
 
 export default router

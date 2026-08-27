@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  listarNotasPorPasta,
+  listarNotasPorCaderno,
   criarNota,
   editarNota,
   excluirNota,
@@ -249,20 +249,20 @@ export default function NotesApp() {
   const [notes, setNotes] = useState<NoteUI[]>([]);
   const [editingNote, setEditingNote] = useState<NoteUI | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [idPasta, setIdPasta] = useState<string>("");
-  const [nomePasta, setNomePasta] = useState<string>("Pasta");
+  const [idCaderno, setIdCaderno] = useState<string>("");
+  const [nomeCaderno, setNomeCaderno] = useState<string>("Caderno");
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
-  // Lê o id_pasta do sessionStorage e carrega as notas
+  // Lê o id_caderno do sessionStorage e carrega as notas
   useEffect(() => {
-    const id = sessionStorage.getItem("id_pasta") ?? "";
-    const nome = sessionStorage.getItem("titulo_pasta") ?? "Pasta";
-    setIdPasta(id);
-    setNomePasta(nome);
+    const id = sessionStorage.getItem("id_caderno") ?? "";
+    const nome = sessionStorage.getItem("titulo_caderno") ?? "Caderno";
+    setIdCaderno(id);
+    setNomeCaderno(nome);
 
     if (!id) {
-      setErro("Nenhuma pasta selecionada.");
+      setErro("Nenhuma caderno selecionada.");
       setCarregando(false);
       return;
     }
@@ -274,7 +274,7 @@ export default function NotesApp() {
     setCarregando(true);
     setErro("");
     try {
-      const dados = await listarNotasPorPasta(id);
+      const dados = await listarNotasPorCaderno(id);
       setNotes(dados.map((n) => ({
         ...n,
         // Preserva status local se já existir, senão começa como "pendente"
@@ -289,7 +289,7 @@ export default function NotesApp() {
 
   const handleSave = async (data: { titulo: string; conteudo: string; status: Status }) => {
     if (isCreating) {
-      const nova = await criarNota({ titulo: data.titulo, conteudo: data.conteudo, id_pasta: idPasta, status: data.status });
+      const nova = await criarNota({ titulo: data.titulo, conteudo: data.conteudo, id_caderno: idCaderno, status: data.status });
       statusLocal[nova.id_nota] = data.status;
       setNotes((prev) => [...prev, { ...nova, status: data.status }]);
     } else if (editingNote) {
@@ -333,10 +333,10 @@ export default function NotesApp() {
           </Link>
 
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 leading-tight">{nomePasta}</h1>
+            <h1 className="text-3xl font-bold text-gray-900 leading-tight">{nomeCaderno}</h1>
             <button
               onClick={() => setIsCreating(true)}
-              disabled={!idPasta || carregando}
+              disabled={!idCaderno || carregando}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xl font-semibold text-white bg-[#0C0F4F] shadow-lg shadow-violet-300/40 hover:brightness-105 transition-all disabled:opacity-50"
             >
               <PlusIcon />

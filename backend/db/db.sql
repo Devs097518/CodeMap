@@ -18,8 +18,8 @@ CREATE TABLE pessoa(
     id_usuario INTEGER UNIQUE REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
 
-CREATE TABLE pasta(
-    id_pasta SERIAL PRIMARY KEY,
+CREATE TABLE caderno(
+    id_caderno SERIAL PRIMARY KEY,
     titulo TEXT NOT NULL,
     id_usuario INTEGER NOT NULL REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
@@ -30,7 +30,7 @@ CREATE TABLE nota(
     id_nota SERIAL PRIMARY KEY,
     titulo TEXT,
     conteudo TEXT NOT NULL,
-    id_pasta INTEGER REFERENCES pasta(id_pasta) ON DELETE CASCADE NOT NULL,
+    id_caderno INTEGER REFERENCES caderno(id_caderno) ON DELETE CASCADE NOT NULL,
     status status_nota
 );
 

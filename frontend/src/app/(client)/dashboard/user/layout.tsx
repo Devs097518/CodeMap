@@ -28,10 +28,26 @@ function StaffLayoutContent({ children }: { children: ReactNode }) {
             <span>CodeMap</span>
           </Link>
           <div className="flex items-center gap-6">
+
+            <Link
+              href="/dashboard/user/inicio"
+              className="flex items-center gap-2 hover:bg-white/20 px-3 py-1 rounded-lg transition-all text-2xl"
+            >
+              Roadmaps
+            </Link>
+
+            <Link
+              href="/dashboard/user/notas"
+              className="flex items-center gap-2 hover:bg-white/20 px-3 py-1 rounded-lg transition-all text-2xl"
+            >
+              Cadernos
+            </Link>
+
             <div className="flex items-center gap-2 text-2xl">
               <UserCircleIcon />
               <span>{usuario?.username}</span>
             </div>
+
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 hover:bg-white/20 px-3 py-1 rounded-lg transition-all text-2xl"
@@ -39,6 +55,7 @@ function StaffLayoutContent({ children }: { children: ReactNode }) {
               <LogoutIcon />
               Sair
             </button>
+
           </div>
         </header>
 

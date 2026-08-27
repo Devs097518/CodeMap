@@ -5,14 +5,14 @@ export interface Nota {
   id_nota: number;
   titulo: string;
   conteudo: string;
-  id_pasta: string;
+  id_caderno: string;
   status: string;
 }
 
 export interface CriarNota {
   titulo: string;
   conteudo: string;
-  id_pasta: string;
+  id_caderno: string;
   status: string;
 }
 
@@ -24,8 +24,8 @@ export interface EditarNota {
 
 // Listar todas as notas do usuário
 
-export async function listarNotasPorPasta(id_pasta: string): Promise<Nota[]> {
-  const response = await apiFetch(`/api/nota/listagem/?id_pasta=${id_pasta}`, {
+export async function listarNotasPorCaderno(id_caderno: string): Promise<Nota[]> {
+  const response = await apiFetch(`/api/nota/listagem/?id_caderno=${id_caderno}`, {
     method: 'GET',
   });
 
@@ -69,7 +69,7 @@ export async function criarNota(dados: CriarNota): Promise<Nota> {
       id_nota: result.id_nota as number,
       titulo: result.titulo,
       conteudo: result.conteudo,
-      id_pasta: dados.id_pasta,
+      id_caderno: dados.id_caderno,
       status: result.status
     } as Nota;
   }

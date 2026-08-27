@@ -1,7 +1,7 @@
 import db from '../../../db/pool.js'
 
-export const listarPastas = async (id_usuario) => {
-  let query = `SELECT * FROM pasta`
+export const listarCadernos = async (id_usuario) => {
+  let query = `SELECT * FROM caderno`
   let params = []
 
   if (id_usuario) {
@@ -13,25 +13,25 @@ export const listarPastas = async (id_usuario) => {
   return rows
 }
 
-export const criarPasta = async (id_usuario, titulo) => {
+export const criarCaderno = async (id_usuario, titulo) => {
   const result = await db.query(
-    'INSERT INTO public.pasta (id_usuario, titulo) VALUES ($1, $2) RETURNING *',
+    'INSERT INTO public.caderno (id_usuario, titulo) VALUES ($1, $2) RETURNING *',
     [id_usuario, titulo]
   )
   return result.rows[0]
 }
 
-export const editarPasta = async (id, titulo) => {
+export const editarCaderno = async (id, titulo) => {
   const result = await db.query(
-    'UPDATE public.pasta SET titulo = $1 WHERE id_pasta = $2 RETURNING *',
+    'UPDATE public.caderno SET titulo = $1 WHERE id_caderno = $2 RETURNING *',
     [titulo, id]
   )
   return result.rows[0] || null
 }
 
-export const deletarPasta = async (id) => {
+export const deletarCaderno = async (id) => {
   const result = await db.query(
-    'DELETE FROM public.pasta WHERE id_pasta = $1 RETURNING *',
+    'DELETE FROM public.caderno WHERE id_caderno = $1 RETURNING *',
     [id]
   )
   return result.rows[0] || null

@@ -1,48 +1,48 @@
 import { apiFetch } from './api-fetch';
 
-export interface Pasta {
-  id_pasta: number;
+export interface Caderno {
+  id_caderno: number;
   titulo: string;
   id_usuario: string;
 }
 
-export interface CriarPasta {
+export interface CriarCaderno {
   titulo: string;
   id_usuario: string;
 }
 
-export interface EditarPasta {
+export interface EditarCaderno {
   titulo: string;
 }
 
-export async function listarPastasPorUsuario(id_usuario: string): Promise<Pasta[]> {
-  const response = await apiFetch(`/api/pasta/listagem?id_usuario=${id_usuario}`, {
+export async function listarCadernosPorUsuario(id_usuario: string): Promise<Caderno[]> {
+  const response = await apiFetch(`/api/caderno/listagem?id_usuario=${id_usuario}`, {
     method: 'GET',
   });
 
   if (response.status === 404) return [];
 
   if (!response.ok) {
-    throw new Error(`Erro ao buscar pastas (HTTP ${response.status})`);
+    throw new Error(`Erro ao buscar cadernos (HTTP ${response.status})`);
   }
 
   const data = await response.json();
 
-  if (Array.isArray(data)) return data as Pasta[];
-  if (data?.pastas && Array.isArray(data.pastas)) return data.pastas as Pasta[];
+  if (Array.isArray(data)) return data as Caderno[];
+  if (data?.cadernos && Array.isArray(data.cadernos)) return data.cadernos as Caderno[];
 
   return [];
 }
 
-// Criar nova pasta 
+// Criar novo caderno
 
-export async function criarPasta(dados: CriarPasta): Promise<Pasta> {
-  const response = await apiFetch('/api/pasta/novo', {
+export async function criarCaderno(dados: CriarCaderno): Promise<Caderno> {
+  const response = await apiFetch('/api/caderno/novo', {
     method: 'POST',
     body: JSON.stringify(dados),
   });
 
-  let result: { status?: string; mensagem?: string; pasta?: Pasta; id_pasta?: number; data?: Pasta } & Partial<Pasta> = {};
+  let result: { status?: string; mensagem?: string; caderno?: Caderno; id_caderno?: number; data?: Caderno } & Partial<Caderno> = {};
 
   try {
     result = await response.json();
@@ -51,26 +51,26 @@ export async function criarPasta(dados: CriarPasta): Promise<Pasta> {
   }
 
   if (!response.ok || result.status === 'erro') {
-    throw new Error(result.mensagem || `Erro ao criar pasta (HTTP ${response.status})`);
+    throw new Error(result.mensagem || `Erro ao criar caderno (HTTP ${response.status})`);
   }
 
-  if (result.id_pasta) {
+  if (result.id_caderno) {
     return {
-      id_pasta: result.id_pasta as number,
+      id_caderno: result.id_caderno as number,
       titulo: result.titulo,
       id_usuario: dados.id_usuario,
-    } as Pasta;
+    } as Caderno;
   }
 
-  throw new Error('Resposta inesperada do servidor ao criar pasta');
+  throw new Error('Resposta inesperada do servidor ao criar caderno');
 }
 
 
 
-// Editar pasta existente 
+// Editar caderno existente 
 
-export async function editarPasta(id_pasta: number, dados: EditarPasta): Promise<void> {
-  const response = await apiFetch(`/api/pasta/editar${id_pasta}`, {
+export async function editarCaderno(id_caderno: number, dados: EditarCaderno): Promise<void> {
+  const response = await apiFetch(`/api/caderno/editar/${id_caderno}`, {
     method: 'PUT',
     body: JSON.stringify(dados),
   });
@@ -84,14 +84,14 @@ export async function editarPasta(id_pasta: number, dados: EditarPasta): Promise
   }
 
   if (!response.ok || result.status === 'erro') {
-    throw new Error(result.mensagem || `Erro ao editar pasta (HTTP ${response.status})`);
+    throw new Error(result.mensagem || `Erro ao editar caderno (HTTP ${response.status})`);
   }
 }
 
-// Excluir pasta 
+// Excluir caderno 
 
-export async function excluirPasta(id_pasta: number): Promise<void> {
-  const response = await apiFetch(`/api/pasta/deletar${id_pasta}`, {
+export async function excluirCaderno(id_caderno: number): Promise<void> {
+  const response = await apiFetch(`/api/caderno/deletar/${id_caderno}`, {
     method: 'DELETE',
   });
 
@@ -106,6 +106,6 @@ export async function excluirPasta(id_pasta: number): Promise<void> {
   }
 
   if (!response.ok || result.status === 'erro') {
-    throw new Error(result.mensagem || `Erro ao excluir pasta (HTTP ${response.status})`);
+    throw new Error(result.mensagem || `Erro ao excluir caderno (HTTP ${response.status})`);
   }
 }

@@ -2,8 +2,8 @@ import * as notaService from './nota.service.js'
 
 export const listagem = async (req, res) => {
   try {
-    const { id_pasta } = req.query
-    const notas = await notaService.listarNotas(id_pasta)
+    const { id_caderno } = req.query
+    const notas = await notaService.listarNotas(id_caderno)
     res.json(notas)
   } catch (err) {
     res.status(500).send(err.message)
@@ -27,8 +27,8 @@ export const porUsuario = async (req, res) => {
 
 export const novo = async (req, res) => {
   try {
-    const { conteudo, id_pasta, titulo, status } = req.body
-    const nota = await notaService.criarNota(conteudo, id_pasta, titulo, status)
+    const { conteudo, id_caderno, titulo, status } = req.body
+    const nota = await notaService.criarNota(conteudo, id_caderno, titulo, status)
     res.status(201).json(nota)
   } catch (err) {
     res.status(500).json({ status: 'erro', mensagem: err.message })
