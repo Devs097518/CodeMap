@@ -15,7 +15,7 @@ import { ConfirmModal } from "@/components/ConfirmModal";
 import { AlertModal } from "@/components/AlertModal";
 import { EditModal } from "@/components/EditModal";
 
-const CORES_LOMBADA = ["#2d2f6e", "#c0392b", "#1e8f5e", "#b8860b", "#6a3fa0"];
+const CORES_LOMBADA = ["#3c3b3b", "#385826", "#564d2a", "#204346"];
 
 export default function CadernosPage() {
   const { usuario } = useAuth();
@@ -90,13 +90,27 @@ export default function CadernosPage() {
     router.push("/dashboard/user/notas");
   };
 
+  const EditIcon = () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="#292929" strokeWidth={1.8} className="w-5 h-5 text-color-gray-800">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
+  const TrashIcon = () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="#292929" strokeWidth={1.8} className="w-5 h-5">
+      <polyline points="3 6 5 6 21 6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
   return (
-    <main className="min-h-screen bg-white px-6 py-10">
+    <main className="min-h-screen bg-white px-6 py-10 bg-gray-50">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-semibold text-gray-800 tracking-tight mb-1">
+        <h1 className="text-3xl font-bold text-gray-800 leading-tight mb-1">
           Meus Cadernos
         </h1>
-        <p className="text-sm text-gray-400 mb-8">
+        <p className="text-lg text-gray-500 mb-8">
           organize suas anotações por caderno
         </p>
 
@@ -107,12 +121,12 @@ export default function CadernosPage() {
             placeholder="Nome do novo caderno"
             value={novoTitulo}
             onChange={(e) => setNovoTitulo(e.target.value)}
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-800 outline-none focus:border-[#2d2f6e] focus:ring-2 focus:ring-[#2d2f6e]/10 transition-all bg-white"
+            className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-lg text-gray-800 outline-none focus:border-[#2d2f6e] focus:ring-2 focus:ring-[#2d2f6e]/10 transition-all bg-white"
           />
           <button
             type="submit"
             disabled={criando || !novoTitulo.trim()}
-            className="bg-[#2d2f6e] hover:bg-[#223dc0] active:scale-[0.98] text-white text-sm font-medium rounded-lg px-5 py-2.5 transition-all duration-200 disabled:opacity-50"
+            className="bg-[#2d2f6e] hover:bg-[#223dc0] active:scale-[0.98] text-white text-lg font-medium rounded-lg px-5 py-2.5 transition-all duration-200 disabled:opacity-50"
           >
             {criando ? "criando..." : "novo caderno"}
           </button>
@@ -120,36 +134,33 @@ export default function CadernosPage() {
 
         {/* Lista de cadernos */}
         {loading ? (
-          <p className="text-sm text-gray-400">carregando cadernos...</p>
+          <p className="text-lg text-gray-400">carregando cadernos...</p>
         ) : cadernos.length === 0 ? (
-          <p className="text-sm text-gray-400">
+          <p className="text-lg text-gray-400">
             Nenhum caderno criado ainda. Crie o primeiro acima.
           </p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
             {cadernos.map((caderno, i) => (
-              <div key={caderno.id_caderno} className="flex flex-col items-center gap-2">
+              <div key={caderno.id_caderno} className="flex flex-col items-center gap-2 rounded-r-full">
                 <button
                   onClick={() => abrirCaderno(caderno)}
-                  className="group relative w-full aspect-[3/4] bg-white rounded-r-lg rounded-l-sm overflow-hidden transition-transform hover:-translate-y-1"
-                  style={{
-                    boxShadow: "3px 4px 8px 1px #96969472",
-                  }}
+                  className="group relative w-full aspect-[4/4] bg-white rounded-r-2xl rounded-l-sm overflow-hidden transition-transform border-2 border-gray-300 hover:border-gray-600 shadow-lg hover:shadow-2xl cursor-pointer"
                 >
                   {/* Lombada */}
                   <div
-                    className="absolute left-0 top-0 bottom-0 w-3"
+                    className="absolute left-0 top-0 bottom-0 w-10"
                     style={{ backgroundColor: CORES_LOMBADA[i % CORES_LOMBADA.length] }}
                   />
                   {/* Furos de espiral */}
-                  <div className="absolute left-1 top-0 bottom-0 flex flex-col justify-evenly items-center w-1">
+                  <div className="absolute left-2 top-0 bottom-0 flex flex-col justify-evenly items-center w-1">
                     {Array.from({ length: 8 }).map((_, idx) => (
-                      <span key={idx} className="w-1 h-1 rounded-full bg-white/70" />
+                      <span key={idx} className="w-2 h-2 rounded-full bg-white" />
                     ))}
                   </div>
                   {/* Capa */}
-                  <div className="absolute inset-0 pl-5 pr-3 py-4 flex flex-col justify-between bg-[#FFFFFF] group-hover:bg-[#ececec] transition-colors">
-                    <span className="text-sm font-semibold text-gray-800 text-left break-words line-clamp-4">
+                  <div className="absolute inset-y-0 left-5 right-0 pl-2 pr-3 py-4 flex flex-col justify-between bg-[#FFFFFF]  transition-colors duration-200 rounded-r-full">
+                    <span className="text-xl font-semibold text-gray-800 text-left break-words line-clamp-4">
                       {caderno.titulo}
                     </span>
                     <div className="w-full h-px bg-gray-300" />
@@ -165,7 +176,7 @@ export default function CadernosPage() {
                     }}
                     className="text-xs text-[#3b82f6] hover:text-[#2563eb] font-medium transition-colors"
                   >
-                    editar
+                    {EditIcon()}
                   </button>
                   <button
                     onClick={(e) => {
@@ -174,7 +185,7 @@ export default function CadernosPage() {
                     }}
                     className="text-xs text-red-500 hover:text-red-600 font-medium transition-colors"
                   >
-                    excluir
+                    {TrashIcon()}
                   </button>
                 </div>
               </div>

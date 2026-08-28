@@ -41,7 +41,7 @@ export function ConfirmModal({
           <button
             onClick={handleConfirmar}
             disabled={confirmando}
-            className="bg-blue-600 text-white text-sm font-bold px-4 py-2.5 rounded-xl disabled:opacity-50"
+            className="bg-[#2d2f6e] text-white text-sm font-bold px-4 py-2.5 rounded-xl disabled:opacity-50"
           >
             {confirmando ? textoConfirmando : textoConfirmar}
           </button>

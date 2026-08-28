@@ -40,7 +40,7 @@ function StaffLayoutContent({ children }: { children: ReactNode }) {
               href="/dashboard/user/cadernos"
               className="flex items-center gap-2 hover:bg-white/20 px-3 py-1 rounded-lg transition-all text-2xl"
             >
-              Cadernos
+              Meus Cadernos
             </Link>
 
             <div className="flex items-center gap-2 text-2xl">
