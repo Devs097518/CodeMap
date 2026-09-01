@@ -21,18 +21,18 @@ export const listarNotaPorUsuario = async (id_usuario) => {
   return result.rows[0] || null
 }
 
-export const criarNota = async (conteudo, id_caderno, titulo, status) => {
+export const criarNota = async (conteudo, id_caderno, titulo) => {
   const result = await db.query(
-    'INSERT INTO public.nota (conteudo, id_caderno, titulo, status) VALUES ($1, $2, $3, $4) RETURNING *',
-    [conteudo, id_caderno, titulo, status]
+    'INSERT INTO public.nota (conteudo, id_caderno, titulo) VALUES ($1, $2, $3) RETURNING *',
+    [conteudo, id_caderno, titulo]
   )
   return result.rows[0]
 }
 
-export const editarNota = async (id, conteudo, titulo, status) => {
+export const editarNota = async (id, conteudo, titulo) => {
   const result = await db.query(
-    'UPDATE public.nota SET conteudo = $1, titulo = $2, status = $4 WHERE id_nota = $3 RETURNING *',
-    [conteudo, titulo, id, status]
+    'UPDATE public.nota SET conteudo = $1, titulo = $2 WHERE id_nota = $3 RETURNING *',
+    [conteudo, titulo, id]
   )
   return result.rows[0] || null
 }

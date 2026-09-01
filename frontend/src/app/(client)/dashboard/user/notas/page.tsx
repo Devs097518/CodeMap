@@ -9,35 +9,12 @@ import {
   type Nota,
 } from "@/service/conteudo-service";
 
-type Status = "pendente" | "fazendo" | "feito";
-
-interface NoteUI extends Nota {
-  status: Status;
-}
+// type Status = "pendente" | "fazendo" | "feito";
+type NoteUI = Nota // & { status: Status };
 
 // ---------------------------------------------------------------------------
-// Icons (mantidos iguais)
+// Icons
 // ---------------------------------------------------------------------------
-const StatusIcon = ({ status }: { status: Status }) => {
-  if (status === "pendente")
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
-        <circle cx="12" cy="12" r="9" />
-      </svg>
-    );
-  if (status === "fazendo")
-    return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
-        <path d="M5 3h14M5 21h14M8 3v3a4 4 0 0 0 8 0V3M8 21v-3a4 4 0 0 1 8 0v3" />
-      </svg>
-    );
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5">
-      <circle cx="12" cy="12" r="9" />
-      <path d="m8.5 12 2.5 2.5 4.5-4.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-};
 
 const EditIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
@@ -70,16 +47,15 @@ const BackIcon = () => (
 // EditModal
 // ---------------------------------------------------------------------------
 interface EditModalProps {
-  note: NoteUI | null;
+  note?: NoteUI | null;
   isNew: boolean;
   onClose: () => void;
-  onSave: (data: { titulo: string; conteudo: string; status: Status }) => Promise<void>;
+  onSave: (data: { titulo: string; conteudo: string }) => Promise<void>;
 }
 
 function EditModal({ note, isNew, onClose, onSave }: EditModalProps) {
   const [titulo, setTitulo] = useState(note?.titulo ?? "");
   const [conteudo, setConteudo] = useState(note?.conteudo ?? "");
-  const [status, setStatus] = useState<Status>(note?.status ?? "pendente");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
 
@@ -88,7 +64,10 @@ function EditModal({ note, isNew, onClose, onSave }: EditModalProps) {
     setLoading(true);
     setErro("");
     try {
-      await onSave({ titulo, conteudo, status });
+      await onSave({
+        titulo,
+        conteudo,
+      });
       onClose();
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : "Erro ao salvar nota");
@@ -139,29 +118,6 @@ function EditModal({ note, isNew, onClose, onSave }: EditModalProps) {
               className="w-full rounded-xl px-4 py-2.5 text-1xl outline-none resize-none bg-violet-50 text-[#2d2540] placeholder:text-violet-300 border border-transparent focus:border-violet-400 transition-colors"
             />
           </div>
-
-          <div className="space-y-2.5">
-            <label className="block text-xl font-medium tracking-widest uppercase text-gray-800">status</label>
-            <div className="flex gap-2">
-              {(["pendente", "fazendo", "feito"] as Status[]).map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setStatus(s)}
-                  className={`flex-1 flex flex-col items-center gap-1.5 py-2.5 rounded-xl transition-all border-2 border-transparent
-                    ${s === "pendente" && status === s ? "bg-slate-300 ring-2 ring-slate-300/50 text-[#1e1b2e]" : ""}
-                    ${s === "pendente" && status !== s ? "bg-slate-100 text-slate-500" : ""}
-                    ${s === "fazendo" && status === s ? "bg-amber-400 ring-2 ring-amber-400/50 text-[#1e1b2e]" : ""}
-                    ${s === "fazendo" && status !== s ? "bg-amber-100 text-slate-500" : ""}
-                    ${s === "feito" && status === s ? "bg-emerald-400 ring-2 ring-emerald-400/50 text-[#1e1b2e]" : ""}
-                    ${s === "feito" && status !== s ? "bg-emerald-100 text-slate-500" : ""}
-                  `}
-                >
-                  <StatusIcon status={s} />
-                  <span className="text-1xl font-semibold">{s}</span>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
 
         <div className="px-6 py-4 flex gap-3 border-t border-violet-100">
@@ -198,15 +154,9 @@ function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
   return (
     <div
       className={`rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300 border
-        ${note.status === "pendente" && "border-slate-300"}
-        ${note.status === "fazendo" && "border-amber-400"}
-        ${note.status === "feito" && "border-emerald-400"}
       `}
     >
       <div className={`h-0.5 w-full bg-gradient-to-r to-transparent
-        ${note.status === "pendente" && "from-slate-300"}
-        ${note.status === "fazendo" && "from-amber-400"}
-        ${note.status === "feito" && "from-emerald-400"}
       `} />
 
       <div className="flex items-center justify-between px-5 pt-4 pb-3">
@@ -218,13 +168,6 @@ function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
           <button onClick={onDelete} className="p-1.5 rounded-lg text-violet-400 hover:bg-red-50 hover:text-red-400 transition-colors">
             <TrashIcon />
           </button>
-          <div className={`p-1 rounded-lg
-            ${note.status === "pendente" && "text-slate-400"}
-            ${note.status === "fazendo" && "text-amber-400"}
-            ${note.status === "feito" && "text-emerald-400"}
-          `}>
-            <StatusIcon status={note.status} />
-          </div>
         </div>
       </div>
 
@@ -243,7 +186,7 @@ function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
 // O status não vem da API — é gerenciado localmente no cliente.
 // Ao carregar, todas as notas começam como "pendente".
 // O status é preservado enquanto o usuário estiver na sessão.
-const statusLocal: Record<number, Status> = {};
+// const statusLocal: Record<number, Status> = {};
 
 export default function NotesApp() {
   const [notes, setNotes] = useState<NoteUI[]>([]);
@@ -277,8 +220,6 @@ export default function NotesApp() {
       const dados = await listarNotasPorCaderno(id);
       setNotes(dados.map((n) => ({
         ...n,
-        // Preserva status local se já existir, senão começa como "pendente"
-        status: statusLocal[n.id_nota] ?? "pendente",
       })));
     } catch (e: unknown) {
       setErro(e instanceof Error ? e.message : "Erro ao carregar notas");
@@ -287,18 +228,16 @@ export default function NotesApp() {
     }
   };
 
-  const handleSave = async (data: { titulo: string; conteudo: string; status: Status }) => {
+  const handleSave = async (data: { titulo: string; conteudo: string }) => {
     if (isCreating) {
-      const nova = await criarNota({ titulo: data.titulo, conteudo: data.conteudo, id_caderno: idCaderno, status: data.status });
-      statusLocal[nova.id_nota] = data.status;
-      setNotes((prev) => [...prev, { ...nova, status: data.status }]);
+      const nova = await criarNota({ titulo: data.titulo, conteudo: data.conteudo, id_caderno: idCaderno });
+      setNotes((prev) => [...prev, nova]);
     } else if (editingNote) {
-      await editarNota(editingNote.id_nota, { titulo: data.titulo, conteudo: data.conteudo, status: data.status });
-      statusLocal[editingNote.id_nota] = data.status;
+      await editarNota(editingNote.id_nota, { titulo: data.titulo, conteudo: data.conteudo });
       setNotes((prev) =>
         prev.map((n) =>
           n.id_nota === editingNote.id_nota
-            ? { ...n, titulo: data.titulo, conteudo: data.conteudo, status: data.status }
+            ? { ...n, titulo: data.titulo, conteudo: data.conteudo }
             : n
         )
       );
@@ -310,7 +249,6 @@ export default function NotesApp() {
   const handleDelete = async (id: number) => {
     try {
       await excluirNota(id);
-      delete statusLocal[id];
       setNotes((prev) => prev.filter((n) => n.id_nota !== id));
     } catch (e: unknown) {
       alert(e instanceof Error ? e.message : "Erro ao excluir nota");
@@ -375,20 +313,6 @@ export default function NotesApp() {
               ))}
             </div>
           )}
-
-          {/* Legenda */}
-          <div className="mt-8 flex items-center justify-center gap-6 py-3 rounded-xl bg-white/50 border border-violet-100">
-            {[
-              { cor: "bg-slate-400", label: "pendente" },
-              { cor: "bg-amber-400", label: "fazendo" },
-              { cor: "bg-emerald-400", label: "feito" },
-            ].map(({ cor, label }) => (
-              <div key={label} className="flex items-center gap-1.5">
-                <div className={`w-2 h-2 rounded-full ${cor}`} />
-                <span className="text-1xl text-gray-600">{label}</span>
-              </div>
-            ))}
-          </div>
 
         </div>
       </div>

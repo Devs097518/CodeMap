@@ -27,8 +27,8 @@ export const porUsuario = async (req, res) => {
 
 export const novo = async (req, res) => {
   try {
-    const { conteudo, id_caderno, titulo, status } = req.body
-    const nota = await notaService.criarNota(conteudo, id_caderno, titulo, status)
+    const { conteudo, id_caderno, titulo } = req.body
+    const nota = await notaService.criarNota(conteudo, id_caderno, titulo)
     res.status(201).json(nota)
   } catch (err) {
     res.status(500).json({ status: 'erro', mensagem: err.message })
@@ -38,8 +38,8 @@ export const novo = async (req, res) => {
 export const editar = async (req, res) => {
   try {
     const { id } = req.params
-    const { conteudo, titulo, status } = req.body
-    const nota = await notaService.editarNota(id, conteudo, titulo, status)
+    const { conteudo, titulo } = req.body
+    const nota = await notaService.editarNota(id, conteudo, titulo)
 
     if (!nota) {
       return res.status(404).json({ status: 'erro', mensagem: 'Nota não encontrada' })

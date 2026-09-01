@@ -6,20 +6,17 @@ export interface Nota {
   titulo: string;
   conteudo: string;
   id_caderno: string;
-  status: string;
 }
 
 export interface CriarNota {
   titulo: string;
   conteudo: string;
   id_caderno: string;
-  status: string;
 }
 
 export interface EditarNota {
   titulo: string;
   conteudo: string;
-  status: string;
 }
 
 // Listar todas as notas do usuário
@@ -69,8 +66,7 @@ export async function criarNota(dados: CriarNota): Promise<Nota> {
       id_nota: result.id_nota as number,
       titulo: result.titulo,
       conteudo: result.conteudo,
-      id_caderno: dados.id_caderno,
-      status: result.status
+      id_caderno: dados.id_caderno
     } as Nota;
   }
 

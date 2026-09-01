@@ -24,14 +24,11 @@ CREATE TABLE caderno(
     id_usuario INTEGER NOT NULL REFERENCES usuario(id_usuario) ON DELETE CASCADE
 );
 
-CREATE TYPE status_nota AS ENUM ('pendente', 'fazendo', 'feito');
-
 CREATE TABLE nota(
     id_nota SERIAL PRIMARY KEY,
     titulo TEXT,
     conteudo TEXT NOT NULL,
     id_caderno INTEGER REFERENCES caderno(id_caderno) ON DELETE CASCADE NOT NULL,
-    status status_nota
 );
 
 CREATE TABLE categoria(
