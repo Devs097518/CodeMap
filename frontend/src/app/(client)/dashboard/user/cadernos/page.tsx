@@ -14,8 +14,9 @@ import {
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { AlertModal } from "@/components/AlertModal";
 import { EditModal } from "@/components/EditModal";
+import { CadernoCard } from "@/components/CadernoCard";
 
-const CORES_LOMBADA = ["#3c3b3b", "#385826", "#564d2a", "#204346"];
+const CORES_LOMBADA = ["#ba4444", "#468323", "#3482aa", "#204346", "#997656", "#8b4e9c", "#d1a12f", "#4a4a4a"];
 
 export default function CadernosPage() {
   const { usuario } = useAuth();
@@ -142,53 +143,14 @@ export default function CadernosPage() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
             {cadernos.map((caderno, i) => (
-              <div key={caderno.id_caderno} className="flex flex-col items-center gap-2 rounded-r-full">
-                <button
-                  onClick={() => abrirCaderno(caderno)}
-                  className="group relative w-full aspect-[4/4] bg-white rounded-r-2xl rounded-l-sm overflow-hidden transition-transform border-2 border-gray-300 hover:border-gray-600 shadow-lg hover:shadow-2xl cursor-pointer"
-                >
-                  {/* Lombada */}
-                  <div
-                    className="absolute left-0 top-0 bottom-0 w-10"
-                    style={{ backgroundColor: CORES_LOMBADA[i % CORES_LOMBADA.length] }}
-                  />
-                  {/* Furos de espiral */}
-                  <div className="absolute left-2 top-0 bottom-0 flex flex-col justify-evenly items-center w-1">
-                    {Array.from({ length: 8 }).map((_, idx) => (
-                      <span key={idx} className="w-2 h-2 rounded-full bg-white" />
-                    ))}
-                  </div>
-                  {/* Capa */}
-                  <div className="absolute inset-y-0 left-5 right-0 pl-2 pr-3 py-4 flex flex-col justify-between bg-[#FFFFFF]  transition-colors duration-200 rounded-r-full">
-                    <span className="text-xl font-semibold text-gray-800 text-left break-words line-clamp-4">
-                      {caderno.titulo}
-                    </span>
-                    <div className="w-full h-px bg-gray-300" />
-                  </div>
-                </button>
-
-                {/* Ações */}
-                <div className="flex gap-3">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCadernoEditando(caderno);
-                    }}
-                    className="text-xs text-[#3b82f6] hover:text-[#2563eb] font-medium transition-colors"
-                  >
-                    {EditIcon()}
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCadernoParaExcluir(caderno);
-                    }}
-                    className="text-xs text-red-500 hover:text-red-600 font-medium transition-colors"
-                  >
-                    {TrashIcon()}
-                  </button>
-                </div>
-              </div>
+              <CadernoCard
+                key={caderno.id_caderno}
+                titulo={caderno.titulo}
+                cor={CORES_LOMBADA[i % CORES_LOMBADA.length]}
+                onOpen={() => abrirCaderno(caderno)}
+                onEdit={() => setCadernoEditando(caderno)}
+                onDelete={() => setCadernoParaExcluir(caderno)}
+              />
             ))}
           </div>
         )}
