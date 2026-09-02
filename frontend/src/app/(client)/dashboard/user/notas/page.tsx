@@ -9,8 +9,14 @@ import {
   type Nota,
 } from "@/service/conteudo-service";
 
-// type Status = "pendente" | "fazendo" | "feito";
-type NoteUI = Nota // & { status: Status };
+type NoteUI = Nota;
+
+// Paleta do tema (creme + roxo-marinho)
+const COR_BG_PAGINA = "#fdf6e2";
+const COR_BG_HEADER = "#fbf1ce";
+const COR_BORDA_HEADER = "#ecdfad";
+const COR_ACCENT = "#0C0F4F";
+const COR_ICONE = "#6f6da8";
 
 // ---------------------------------------------------------------------------
 // Icons
@@ -78,14 +84,14 @@ function EditModal({ note, isNew, onClose, onSave }: EditModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(15,15,25,0.55)] backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[rgba(30,25,10,0.45)] backdrop-blur-sm"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="w-full max-w-md rounded-2xl shadow-2xl overflow-hidden bg-gradient-to-br from-white to-[#f8f6ff] border border-violet-100">
+      <div className="w-full max-w-md rounded-2xl shadow-2xl overflow-hidden bg-[#fffdf6] border border-[#ecdfad]">
 
-        <div className="px-6 py-4 text-center border-b border-violet-100">
-          <h2 className="text-2xl font-bold text-gray-800 leading-tight">
-            {isNew ? "NOVA NOTA" : "EDITAR NOTA"}
+        <div className="px-6 py-4 text-center border-b border-[#ecdfad]">
+          <h2 className="text-xl font-bold text-gray-900 leading-tight">
+            {isNew ? "Nova nota" : "Editar nota"}
           </h2>
         </div>
 
@@ -98,40 +104,40 @@ function EditModal({ note, isNew, onClose, onSave }: EditModalProps) {
           )}
 
           <div className="space-y-1.5">
-            <label className="block text-xl font-medium tracking-widest uppercase text-gray-800">título</label>
+            <label className="block text-sm font-medium tracking-wide uppercase text-gray-500">título</label>
             <input
               type="text"
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
               placeholder="Título da nota..."
-              className="w-full rounded-xl px-4 py-2.5 text-1xl outline-none bg-violet-50 text-gray-800 placeholder:text-violet-300 border border-transparent focus:border-violet-400 transition-colors"
+              className="w-full rounded-xl px-4 py-2.5 text-base outline-none bg-[#fbf6e6] text-gray-800 placeholder:text-gray-400 border border-transparent focus:border-[#0C0F4F]/40 transition-colors"
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-xl font-medium tracking-widest uppercase text-gray-800">conteúdo</label>
+            <label className="block text-sm font-medium tracking-wide uppercase text-gray-500">conteúdo</label>
             <textarea
               value={conteudo}
               onChange={(e) => setConteudo(e.target.value)}
               placeholder="Escreva sua nota aqui..."
-              rows={4}
-              className="w-full rounded-xl px-4 py-2.5 text-1xl outline-none resize-none bg-violet-50 text-[#2d2540] placeholder:text-violet-300 border border-transparent focus:border-violet-400 transition-colors"
+              rows={5}
+              className="w-full rounded-xl px-4 py-2.5 text-base outline-none resize-none bg-[#fbf6e6] text-gray-800 placeholder:text-gray-400 border border-transparent focus:border-[#0C0F4F]/40 transition-colors"
             />
           </div>
         </div>
 
-        <div className="px-6 py-4 flex gap-3 border-t border-violet-100">
+        <div className="px-6 py-4 flex gap-3 border-t border-[#ecdfad]">
           <button
             onClick={onClose}
             disabled={loading}
-            className="flex-1 py-2.5 rounded-xl text-1xl font-medium bg-violet-50 text-[#0C0F4F] hover:bg-violet-100 transition-colors disabled:opacity-50"
+            className="flex-1 py-2.5 rounded-xl font-medium bg-[#fbf6e6] text-[#0C0F4F] hover:bg-[#f4ecd3] transition-colors disabled:opacity-50"
           >
             cancelar
           </button>
           <button
             onClick={handleSave}
             disabled={loading}
-            className="flex-1 py-2.5 rounded-xl text-1xl font-semibold text-white bg-[#0C0F4F] hover:brightness-150 transition-all disabled:opacity-50"
+            className="flex-1 py-2.5 rounded-xl font-semibold text-white bg-[#0C0F4F] hover:brightness-125 transition-all disabled:opacity-50"
           >
             {loading ? "salvando..." : "salvar"}
           </button>
@@ -142,7 +148,7 @@ function EditModal({ note, isNew, onClose, onSave }: EditModalProps) {
 }
 
 // ---------------------------------------------------------------------------
-// NoteCard (mantido igual)
+// NoteCard
 // ---------------------------------------------------------------------------
 interface NoteCardProps {
   note: NoteUI;
@@ -152,27 +158,28 @@ interface NoteCardProps {
 
 function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
   return (
-    <div
-      className={`rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-300 border
-      `}
-    >
-      <div className={`h-0.5 w-full bg-gradient-to-r to-transparent
-      `} />
-
-      <div className="flex items-center justify-between px-5 pt-4 pb-3">
-        <h3 className="text-2xl font-bold text-gray-800 leading-tight">{note.titulo}</h3>
-        <div className="flex items-center gap-1">
-          <button onClick={onEdit} className="p-1.5 rounded-lg text-violet-400 hover:bg-violet-50 transition-colors">
+    <div className="rounded-2xl bg-white shadow-md p-6">
+      <div className="flex items-start justify-between gap-4 mb-3">
+        <h3 className="text-xl font-medium text-gray-800 leading-tight">{note.titulo}</h3>
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            onClick={onEdit}
+            className="p-1.5 rounded-lg transition-colors hover:bg-violet-50"
+            style={{ color: COR_ICONE }}
+          >
             <EditIcon />
           </button>
-          <button onClick={onDelete} className="p-1.5 rounded-lg text-violet-400 hover:bg-red-50 hover:text-red-400 transition-colors">
+          <button
+            onClick={onDelete}
+            className="p-1.5 rounded-lg hover:bg-red-50 hover:text-red-400 transition-colors"
+            style={{ color: COR_ICONE }}
+          >
             <TrashIcon />
           </button>
         </div>
       </div>
 
-      <div className="mx-5 h-px bg-violet-50" />
-      <p className="px-5 py-4 text-xl leading-relaxed text-slate-500">
+      <p className="text-base leading-relaxed text-gray-500">
         {note.conteudo || <span className="italic opacity-50">sem conteúdo</span>}
       </p>
     </div>
@@ -182,11 +189,6 @@ function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
 // ---------------------------------------------------------------------------
 // Main page
 // ---------------------------------------------------------------------------
-
-// O status não vem da API — é gerenciado localmente no cliente.
-// Ao carregar, todas as notas começam como "pendente".
-// O status é preservado enquanto o usuário estiver na sessão.
-// const statusLocal: Record<number, Status> = {};
 
 export default function NotesApp() {
   const [notes, setNotes] = useState<NoteUI[]>([]);
@@ -257,35 +259,38 @@ export default function NotesApp() {
 
   return (
     <>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');`}</style>
-
-      <div className="min-h-screen bg-gradient-to-br from-[#f5f2ff] via-[#ede9fe] to-[#f0fdf4]">
-        <div className="fixed top-0 right-0 w-64 h-64 rounded-full pointer-events-none bg-[radial-gradient(circle,_#c4b5fd33_0%,_transparent_70%)] translate-x-1/3 -translate-y-1/3" />
-        <div className="fixed bottom-0 left-0 w-48 h-48 rounded-full pointer-events-none bg-[radial-gradient(circle,_#6ee7b733_0%,_transparent_70%)] -translate-x-1/3 translate-y-1/3" />
-
-        <div className="relative max-w-250 mx-auto px-4 py-8">
-
-          <Link href="/dashboard/user/cadernos" className="flex items-center gap-1.5 text-xl mb-6 text-[#0C0F4F] hover:gap-3 transition-all">
+      <div className="min-h-screen" style={{ backgroundColor: COR_BG_PAGINA }}>
+        <header
+          className="sticky top-0 z-10 flex items-center justify-between px-6 sm:px-8 py-4 border-b"
+          style={{ backgroundColor: COR_BG_HEADER, borderColor: COR_BORDA_HEADER }}
+        >
+          <Link
+            href="/dashboard/user/cadernos"
+            className="flex items-center gap-2 text-lg text-gray-600 hover:gap-3 transition-all"
+          >
             <BackIcon />
-            voltar para meus cadernos
+            voltar ao início
           </Link>
 
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 leading-tight">{nomeCaderno}</h1>
-            <button
-              onClick={() => setIsCreating(true)}
-              disabled={!idCaderno || carregando}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xl font-semibold text-white bg-[#0C0F4F] shadow-lg shadow-violet-300/40 hover:brightness-105 transition-all disabled:opacity-50"
-            >
-              <PlusIcon />
-              nova nota
-            </button>
-          </div>
+          <button
+            onClick={() => setIsCreating(true)}
+            disabled={!idCaderno || carregando}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white shadow-sm hover:brightness-110 transition-all disabled:opacity-50"
+            style={{ backgroundColor: COR_ACCENT }}
+          >
+            <PlusIcon />
+            Nova Nota
+          </button>
+        </header>
 
-          {/* Estados de carregamento e erro */}
+        <main className="max-w-2xl mx-auto px-4 py-10">
+          <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">
+            {nomeCaderno}
+          </h1>
+
           {carregando && (
-            <div className="text-center py-16 rounded-2xl bg-white/50 border border-dashed border-violet-300">
-              <p className="text-violet-400 animate-pulse">carregando notas...</p>
+            <div className="text-center py-16 rounded-2xl bg-white/60 border border-dashed" style={{ borderColor: COR_BORDA_HEADER }}>
+              <p className="text-gray-400 animate-pulse">carregando notas...</p>
             </div>
           )}
 
@@ -295,12 +300,11 @@ export default function NotesApp() {
             </div>
           )}
 
-          {/* Lista de notas */}
           {!carregando && !erro && (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {notes.length === 0 && (
-                <div className="text-center py-16 rounded-2xl bg-white/50 border border-dashed border-violet-300">
-                  <p className="text-violet-400">nenhuma nota ainda</p>
+                <div className="text-center py-16 rounded-2xl bg-white/60 border border-dashed" style={{ borderColor: COR_BORDA_HEADER }}>
+                  <p className="text-gray-400">nenhuma nota ainda</p>
                 </div>
               )}
               {notes.map((note) => (
@@ -313,8 +317,7 @@ export default function NotesApp() {
               ))}
             </div>
           )}
-
-        </div>
+        </main>
       </div>
 
       {(isCreating || editingNote) && (
