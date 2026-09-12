@@ -3,25 +3,11 @@ import request from 'supertest'
 import app from '../../app.js'
 import * as roadmapService from '../../api/modules/roadmap/roadmap.service.js'
 import * as topicoController from '../../api/modules/topico/topico.controller.js'
-import { autenticar } from '../../api/middlewares/auth.middleware.js'
+import { autenticarComo, semAutenticacao } from '../helpers/auth.js'
 
 jest.mock('../../api/modules/roadmap/roadmap.service.js')
 jest.mock('../../api/modules/topico/topico.controller.js')
 jest.mock('../../api/middlewares/auth.middleware.js')
-
-// Helpers para controlar o middleware de autenticação mockado, teste a teste
-const autenticarComo = (user) => {
-  autenticar.mockImplementation((req, res, next) => {
-    req.user = user
-    next()
-  })
-}
-
-const semAutenticacao = () => {
-  autenticar.mockImplementation((req, res) => {
-    res.status(401).json({ message: 'Token não fornecido' })
-  })
-}
 
 afterEach(() => {
   jest.clearAllMocks()
