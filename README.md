@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/version-V2.0-0ea5e9?style=for-the-badge&logo=git&logoColor=white" />
+<img src="https://img.shields.io/badge/version-V5.0-0ea5e9?style=for-the-badge&logo=git&logoColor=white" />
 <img src="https://img.shields.io/badge/status-Em%20Desenvolvimento-f59e0b?style=for-the-badge" />
 <img src="https://img.shields.io/badge/licença-MIT-22c55e?style=for-the-badge" />
 
