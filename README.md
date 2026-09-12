@@ -137,6 +137,48 @@ Acesse em: `http://localhost:3000`
 
 ---
 
+## ✅ Testes automatizados
+
+### Bibliotecas necessárias
+
+Instalar como `devDependencies`:
+
+```bash
+cd backend
+npm install --save-dev jest babel-jest @babel/core @babel/preset-env supertest
+```
+
+### Configuração necessária
+
+**`backend/babel.config.json`**
+```json
+{
+  "presets": [["@babel/preset-env", { "targets": { "node": "current" } }]]
+}
+```
+
+**`backend/package.json`**
+```json
+"scripts": {
+  "test": "jest"
+}
+```
+
+### Como rodar
+
+```bash
+cd backend
+npm test
+```
+
+### Os três tipos de teste usados
+
+1. **Service** — mocka `db`/`pg`, testa a lógica de acesso a dados isolada do banco real
+2. **Controller** — mocka o `service`, testa os status HTTP retornados em cada caminho (sucesso, erro, não encontrado, conflito)
+3. **Routes (integração)** — usa Supertest contra o `app` real, mocka `auth.middleware.js` (via helper) e o `service`/`controller` de módulos delegados, valida que roteamento + middlewares + controller estão conectados corretamente
+
+---
+
 ## 🤝 Como Contribuir
 
 Contribuições são muito bem-vindas! Veja como participar:
