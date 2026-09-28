@@ -6,16 +6,6 @@ import { autenticarComo, semAutenticacao } from './auth.js'
 
 jest.mock('../../api/middlewares/auth.middleware.js')
 
-/**
- * Exemplo autocontido (não depende de nenhum módulo real do projeto) de
- * como usar o helper `tests/helpers/auth.js` em qualquer teste de
- * integração de rota protegida por `autenticar`.
- *
- * Padrão pra copiar em novas issues:
- *   1. jest.mock('.../auth.middleware.js') no topo do arquivo de teste
- *   2. import { autenticarComo, semAutenticacao } from '../helpers/auth.js'
- *   3. chamar um dos dois helpers ANTES de cada request(app)... do teste
- */
 const appExemplo = express()
 appExemplo.get('/rota-protegida', autenticar, (req, res) => {
   res.json({ mensagem: `Olá, usuário ${req.user.id}` })
