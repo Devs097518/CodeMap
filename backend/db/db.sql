@@ -28,7 +28,7 @@ CREATE TABLE nota(
     id_nota SERIAL PRIMARY KEY,
     titulo TEXT,
     conteudo TEXT NOT NULL,
-    id_caderno INTEGER REFERENCES caderno(id_caderno) ON DELETE CASCADE NOT NULL,
+    id_caderno INTEGER REFERENCES caderno(id_caderno) ON DELETE CASCADE NOT NULL
 );
 
 CREATE TABLE categoria(
