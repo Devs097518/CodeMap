@@ -110,7 +110,7 @@ export const editar = async (req, res) => {
 export const deletar = async (req, res) => {
   try {
     const { id } = req.params
-    const roadmap = await roadmapService.buscarRoadmapPorId(id)
+    const roadmap = await roadmapService.buscarRoadmapAdminPorId(id)
 
     if (!roadmap) {
       return res.status(404).json({ status: 'erro', mensagem: 'Roadmap não encontrado' })
@@ -129,7 +129,7 @@ export const deletar = async (req, res) => {
 export const restaurar = async (req, res) => {
   try {
     const { id } = req.params
-    const roadmap = await roadmapService.buscarRoadmapPorId(id)
+    const roadmap = await roadmapService.buscarRoadmapAdminPorId(id)
 
     if (!roadmap) {
       return res.status(404).json({ status: 'erro', mensagem: 'Roadmap não encontrado' })

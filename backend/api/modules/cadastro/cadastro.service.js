@@ -8,7 +8,6 @@ export const cadastrar = async (email, senha, username, uf) => {
     await client.query('BEGIN')
 
     const hashSenha = await bcrypt.hash(senha, 10)
-    // const hashSenha = senha;
 
     const usuarioResult = await client.query(
       'INSERT INTO public.usuario (email, senha) VALUES ($1, $2) RETURNING *',
