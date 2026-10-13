@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/version-V5.0-0ea5e9?style=for-the-badge&logo=git&logoColor=white" />
+<img src="https://img.shields.io/badge/version-V6.0-0ea5e9?style=for-the-badge&logo=git&logoColor=white" />
 <img src="https://img.shields.io/badge/status-Em%20Desenvolvimento-f59e0b?style=for-the-badge" />
 <img src="https://img.shields.io/badge/licença-MIT-22c55e?style=for-the-badge" />
 
@@ -44,8 +44,8 @@ O CodeMap está sendo construído em versões funcionais incrementais:
 | V3 | Autenticação | ✅ Concluído |
 | V4 | Painel do Administrador | ✅ Concluído |
 | V5 | Painel do Cliente | ✅ Concluído |
-| **V6** | **Testes automatizados** | 🔄 **Trabalhando...** |
-| V7 | Deploy | 🔜 Planejado |
+| V6 | Testes automatizados | ✅ Concluído |
+| **V7** | **Deploy** | 🔄 **Trabalhando...** |
 
 ---
 
