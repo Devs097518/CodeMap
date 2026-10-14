@@ -4,6 +4,7 @@ export interface Caderno {
   id_caderno: number;
   titulo: string;
   id_usuario: string;
+  total_notas?: number;
 }
 
 export interface CriarCaderno {

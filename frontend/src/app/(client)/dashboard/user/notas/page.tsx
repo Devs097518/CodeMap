@@ -1,3 +1,4 @@
+// app/dashboard/user/notas/page.tsx
 'use client';
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -8,6 +9,7 @@ import {
   excluirNota,
   type Nota,
 } from "@/service/conteudo-service";
+import { LIMITE_PAGINAS_POR_CADERNO } from "@/constants/caderno";
 
 type NoteUI = Nota;
 
@@ -199,6 +201,9 @@ export default function NotesApp() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
 
+  // Cada nota ocupa uma página do caderno
+  const limiteAtingido = notes.length >= LIMITE_PAGINAS_POR_CADERNO;
+
   // Lê o id_caderno do sessionStorage e carrega as notas
   useEffect(() => {
     const id = sessionStorage.getItem("id_caderno") ?? "";
@@ -232,6 +237,10 @@ export default function NotesApp() {
 
   const handleSave = async (data: { titulo: string; conteudo: string }) => {
     if (isCreating) {
+      // Segunda barreira, caso o botão tenha sido burlado ou a lista esteja desatualizada
+      if (limiteAtingido) {
+        throw new Error(`Este caderno já tem ${LIMITE_PAGINAS_POR_CADERNO} páginas, o limite máximo.`);
+      }
       const nova = await criarNota({ titulo: data.titulo, conteudo: data.conteudo, id_caderno: idCaderno });
       setNotes((prev) => [...prev, nova]);
     } else if (editingNote) {
@@ -272,21 +281,35 @@ export default function NotesApp() {
             voltar ao início
           </Link>
 
-          <button
-            onClick={() => setIsCreating(true)}
-            disabled={!idCaderno || carregando}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white shadow-sm hover:brightness-110 transition-all disabled:opacity-50"
-            style={{ backgroundColor: COR_ACCENT }}
-          >
-            <PlusIcon />
-            Nova Nota
-          </button>
+          <div className="flex items-center gap-4">
+            {!carregando && !erro && (
+              <span className="hidden sm:inline text-sm text-gray-500">
+                {notes.length}/{LIMITE_PAGINAS_POR_CADERNO} páginas
+              </span>
+            )}
+            <button
+              onClick={() => setIsCreating(true)}
+              disabled={!idCaderno || carregando || limiteAtingido}
+              title={limiteAtingido ? `Limite de ${LIMITE_PAGINAS_POR_CADERNO} páginas atingido` : undefined}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white shadow-sm hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:brightness-100"
+              style={{ backgroundColor: COR_ACCENT }}
+            >
+              <PlusIcon />
+              Nova Nota
+            </button>
+          </div>
         </header>
 
         <main className="max-w-2xl mx-auto px-4 py-10">
           <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">
             {nomeCaderno}
           </h1>
+
+          {!carregando && !erro && limiteAtingido && (
+            <div className="mb-6 px-4 py-3 rounded-xl bg-[#fbf1ce] border border-[#ecdfad] text-sm text-gray-700 text-center">
+              Este caderno chegou ao limite de {LIMITE_PAGINAS_POR_CADERNO} páginas. Exclua uma nota para criar outra.
+            </div>
+          )}
 
           {carregando && (
             <div className="text-center py-16 rounded-2xl bg-white/60 border border-dashed" style={{ borderColor: COR_BORDA_HEADER }}>
