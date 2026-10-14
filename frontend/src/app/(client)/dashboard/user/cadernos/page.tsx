@@ -16,7 +16,7 @@ import { AlertModal } from "@/components/AlertModal";
 import { EditModal } from "@/components/EditModal";
 import { CadernoCard } from "@/components/CadernoCard";
 
-const CORES_LOMBADA = ["#b6a88b", "#9eb690", "#9cc2d4", "#78a4a8", "#be9a78", "#c8aad0", "#bea670", "#606060"];
+const CORES_LOMBADA = ["#eea30f", "#db4c4c", "#71adc9", "#78a4a8", "#be9a78", "#c8aad0", "#bea670", "#606060"];
 
 export default function CadernosPage() {
   const { usuario } = useAuth();
@@ -91,23 +91,9 @@ export default function CadernosPage() {
     router.push("/dashboard/user/notas");
   };
 
-  const EditIcon = () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#292929" strokeWidth={1.8} className="w-5 h-5 text-color-gray-800">
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-
-  const TrashIcon = () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#292929" strokeWidth={1.8} className="w-5 h-5">
-      <polyline points="3 6 5 6 21 6" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-
   return (
     <main className="min-h-screen bg-white px-6 py-10 bg-gray-50">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 leading-tight mb-1">
           Meus Cadernos
         </h1>
@@ -141,12 +127,14 @@ export default function CadernosPage() {
             Nenhum caderno criado ainda. Crie o primeiro acima.
           </p>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {cadernos.map((caderno, i) => (
               <CadernoCard
                 key={caderno.id_caderno}
                 titulo={caderno.titulo}
                 cor={CORES_LOMBADA[i % CORES_LOMBADA.length]}
+                // Cada nota ocupa uma página; caderno recém-criado não traz total_notas (conta 0)
+                paginas={caderno.total_notas ?? 0}
                 onOpen={() => abrirCaderno(caderno)}
                 onEdit={() => setCadernoEditando(caderno)}
                 onDelete={() => setCadernoParaExcluir(caderno)}
