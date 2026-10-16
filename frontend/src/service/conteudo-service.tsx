@@ -6,18 +6,24 @@ export interface Nota {
   titulo: string;
   conteudo: string;
   id_caderno: string;
+  tags: string[];
 }
 
 export interface CriarNota {
   titulo: string;
   conteudo: string;
   id_caderno: string;
+  tags?: string[];
 }
 
 export interface EditarNota {
   titulo: string;
   conteudo: string;
+  tags?: string[];
 }
+
+// Garante que `tags` sempre exista (notas antigas ou respostas sem o campo)
+const comTags = (nota: Nota): Nota => ({ ...nota, tags: nota.tags ?? [] });
 
 // Listar todas as notas do usuário
 
@@ -35,8 +41,8 @@ export async function listarNotasPorCaderno(id_caderno: string): Promise<Nota[]>
   const data = await response.json();
 
   // Aceita tanto array direto quanto objeto com campo "notas"
-  if (Array.isArray(data)) return data as Nota[];
-  if (data?.notas && Array.isArray(data.notas)) return data.notas as Nota[];
+  if (Array.isArray(data)) return (data as Nota[]).map(comTags);
+  if (data?.notas && Array.isArray(data.notas)) return (data.notas as Nota[]).map(comTags);
 
   return [];
 }
@@ -66,13 +72,15 @@ export async function criarNota(dados: CriarNota): Promise<Nota> {
       id_nota: result.id_nota as number,
       titulo: result.titulo,
       conteudo: result.conteudo,
-      id_caderno: dados.id_caderno
+      id_caderno: dados.id_caderno,
+      // o backend normaliza as tags; se não devolver, usa as enviadas
+      tags: Array.isArray(result.tags) ? result.tags : dados.tags ?? [],
     } as Nota;
   }
 
-  if (result.nota) return result.nota;
+  if (result.nota) return comTags(result.nota);
 
-  if (result.data) return result.data;
+  if (result.data) return comTags(result.data);
 
   throw new Error('Resposta inesperada do servidor ao criar nota');
 }
