@@ -1,5 +1,8 @@
 import * as notaService from './nota.service.js'
 
+// tags é opcional, mas quando vem precisa ser uma lista
+const tagsValidas = (tags) => tags === undefined || Array.isArray(tags)
+
 export const listagem = async (req, res) => {
   try {
     const { id_caderno } = req.query
@@ -27,8 +30,13 @@ export const porUsuario = async (req, res) => {
 
 export const novo = async (req, res) => {
   try {
-    const { conteudo, id_caderno, titulo } = req.body
-    const nota = await notaService.criarNota(conteudo, id_caderno, titulo)
+    const { conteudo, id_caderno, titulo, tags } = req.body
+
+    if (!tagsValidas(tags)) {
+      return res.status(400).json({ status: 'erro', mensagem: 'tags deve ser uma lista' })
+    }
+
+    const nota = await notaService.criarNota(conteudo, id_caderno, titulo, tags)
     res.status(201).json(nota)
   } catch (err) {
     res.status(500).json({ status: 'erro', mensagem: err.message })
@@ -38,8 +46,13 @@ export const novo = async (req, res) => {
 export const editar = async (req, res) => {
   try {
     const { id } = req.params
-    const { conteudo, titulo } = req.body
-    const nota = await notaService.editarNota(id, conteudo, titulo)
+    const { conteudo, titulo, tags } = req.body
+
+    if (!tagsValidas(tags)) {
+      return res.status(400).json({ status: 'erro', mensagem: 'tags deve ser uma lista' })
+    }
+
+    const nota = await notaService.editarNota(id, conteudo, titulo, tags)
 
     if (!nota) {
       return res.status(404).json({ status: 'erro', mensagem: 'Nota não encontrada' })
