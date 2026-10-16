@@ -23,18 +23,18 @@ function StaffLayoutContent({ children }: { children: ReactNode }) {
               alt="CodeMap"
               width={40}
               height={40}
-              className="rounded-2xl"
+              className="rounded-xl"
             />
             <span>CodeMap</span>
           </Link>
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 text-2xl">
+            <div className="flex items-center gap-2 text-xl">
               <UserCircleIcon />
               <span>{usuario?.username}</span>
             </div>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 hover:bg-white/20 px-3 py-1 rounded-lg transition-all text-2xl"
+              className="flex items-center gap-2 hover:bg-white/20 px-3 py-1 rounded-lg transition-all text-xl"
             >
               <LogoutIcon />
               Sair

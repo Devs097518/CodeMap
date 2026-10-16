@@ -154,36 +154,80 @@ function EditModal({ note, isNew, onClose, onSave }: EditModalProps) {
 // ---------------------------------------------------------------------------
 interface NoteCardProps {
   note: NoteUI;
+  pagina: number;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-function NoteCard({ note, onEdit, onDelete }: NoteCardProps) {
+// Cores das etiquetas de página (fundo / texto), repetidas em ciclo
+const CORES_ETIQUETA = [
+  { bg: "#d6e6fb", text: "#2b5a9a" },
+  { bg: "#e8d9fa", text: "#6b3fa0" },
+  { bg: "#fde2cf", text: "#b3541e" },
+  { bg: "#d5f0de", text: "#2f7a4a" },
+  { bg: "#fbdbe7", text: "#a8325f" },
+  { bg: "#faefbf", text: "#8a6a0a" },
+];
+
+function NoteCard({ note, pagina, onEdit, onDelete }: NoteCardProps) {
+  const etiqueta = CORES_ETIQUETA[(pagina - 1) % CORES_ETIQUETA.length];
+
   return (
-    <div className="rounded-2xl bg-white shadow-md p-6">
-      <div className="flex items-start justify-between gap-4 mb-3">
-        <h3 className="text-xl font-medium text-gray-800 leading-tight">{note.titulo}</h3>
-        <div className="flex items-center gap-1 shrink-0">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onEdit}
+      onKeyDown={(e) => {
+        if (e.target !== e.currentTarget) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onEdit();
+        }
+      }}
+      className="flex flex-col gap-3 rounded-2xl bg-white border border-[#ece3c6] p-5 shadow-sm cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0C0F4F]/40"
+    >
+      <h3 className="text-lg font-semibold text-gray-900 leading-tight line-clamp-2 break-words">
+        {note.titulo}
+      </h3>
+
+      {/* whitespace-pre-line preserva as quebras de linha, então listas com "- " continuam em linhas separadas */}
+      <p className="flex-1 text-sm leading-relaxed text-gray-600 whitespace-pre-line line-clamp-5 break-words">
+        {note.conteudo || <span className="italic opacity-50">sem conteúdo</span>}
+      </p>
+
+      <div className="flex items-center justify-between pt-1">
+        <span
+          className="rounded-full px-3 py-1 text-xs font-medium"
+          style={{ backgroundColor: etiqueta.bg, color: etiqueta.text }}
+        >
+          Página {pagina}
+        </span>
+
+        <div className="flex items-center gap-0.5" style={{ color: COR_ICONE }}>
           <button
-            onClick={onEdit}
-            className="p-1.5 rounded-lg transition-colors hover:bg-violet-50"
-            style={{ color: COR_ICONE }}
-          >
-            <EditIcon />
-          </button>
-          <button
-            onClick={onDelete}
+            type="button"
+            aria-label="Excluir nota"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
             className="p-1.5 rounded-lg hover:bg-red-50 hover:text-red-400 transition-colors"
-            style={{ color: COR_ICONE }}
           >
             <TrashIcon />
           </button>
+          <button
+            type="button"
+            aria-label="Editar nota"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit();
+            }}
+            className="p-1.5 rounded-lg hover:bg-violet-50 transition-colors"
+          >
+            <EditIcon />
+          </button>
         </div>
       </div>
-
-      <p className="text-base leading-relaxed text-gray-500">
-        {note.conteudo || <span className="italic opacity-50">sem conteúdo</span>}
-      </p>
     </div>
   );
 }
@@ -300,8 +344,8 @@ export default function NotesApp() {
           </div>
         </header>
 
-        <main className="max-w-2xl mx-auto px-4 py-10">
-          <h1 className="text-3xl font-bold text-gray-900 text-center mb-8">
+        <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+          <h1 className="text-3xl font-bold text-gray-900 mb-8">
             {nomeCaderno}
           </h1>
 
@@ -324,16 +368,17 @@ export default function NotesApp() {
           )}
 
           {!carregando && !erro && (
-            <div className="space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {notes.length === 0 && (
-                <div className="text-center py-16 rounded-2xl bg-white/60 border border-dashed" style={{ borderColor: COR_BORDA_HEADER }}>
+                <div className="col-span-full text-center py-16 rounded-2xl bg-white/60 border border-dashed" style={{ borderColor: COR_BORDA_HEADER }}>
                   <p className="text-gray-400">nenhuma nota ainda</p>
                 </div>
               )}
-              {notes.map((note) => (
+              {notes.map((note, i) => (
                 <NoteCard
                   key={note.id_nota}
                   note={note}
+                  pagina={i + 1}
                   onEdit={() => setEditingNote(note)}
                   onDelete={() => handleDelete(note.id_nota)}
                 />
