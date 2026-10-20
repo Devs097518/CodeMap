@@ -46,7 +46,15 @@ CREATE TABLE roadmap(
     titulo VARCHAR(100) NOT NULL,
     descricao TEXT,
     is_active BOOLEAN NOT NULL DEFAULT false,
+    labels text[] NOT NULL DEFAULT '{}',
     deleted_at TIMESTAMPTZ DEFAULT NULL
+);
+
+CREATE TABLE meta_roadmap(
+    id_usuario INTEGER NOT NULL REFERENCES usuario(id_usuario) ON DELETE CASCADE,
+    roadmap_id INTEGER NOT NULL REFERENCES roadmap(id_roadmap) ON DELETE CASCADE,
+    criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id_usuario, roadmap_id)
 );
 
 CREATE TABLE topico(

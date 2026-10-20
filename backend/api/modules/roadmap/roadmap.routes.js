@@ -17,4 +17,8 @@ router.put('/editar/:id', role('admin'), roadmapController.editar)
 router.delete('/deletar/:id', role('admin'), roadmapController.deletar)
 router.put('/restaurar/:id', role('admin'), roadmapController.restaurar)
 
+router.get('/labels', role('admin'), roadmapController.listarLabels)
+router.post('/metas/:id', roadmapController.adicionarMeta)
+router.delete('/metas/:id', roadmapController.removerMeta)
+
 export default router

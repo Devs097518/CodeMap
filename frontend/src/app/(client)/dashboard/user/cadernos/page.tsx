@@ -16,7 +16,7 @@ import { AlertModal } from "@/components/AlertModal";
 import { EditModal } from "@/components/EditModal";
 import { CadernoCard } from "@/components/CadernoCard";
 
-const CORES_LOMBADA = ["#eea30f", "#db4c4c", "#71adc9", "#78a4a8", "#be9a78", "#c8aad0", "#bea670", "#606060"];
+const CORES_LOMBADA = ["#f79000", "#6c9f32", "#311cb6", "#ff8585", "#224648", "#c8aad0", "#bea670", "#606060"];
 
 export default function CadernosPage() {
   const { usuario } = useAuth();

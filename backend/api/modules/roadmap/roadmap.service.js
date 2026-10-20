@@ -1,5 +1,20 @@
 import db from '../../../db/pool.js'
 
+const MAX_LABELS = 8
+const MAX_CHARS_LABEL = 30
+
+// Padroniza as labels digitadas pelo admin: minúsculas, espaços simples, sem repetidas
+// e no máximo 8. Isso evita "Web" e "web " virarem labels diferentes.
+export const normalizarLabels = (labels) => {
+  if (!Array.isArray(labels)) return []
+
+  const limpas = labels
+    .map((l) => String(l).toLowerCase().replace(/\s+/g, ' ').trim().slice(0, MAX_CHARS_LABEL).trim())
+    .filter(Boolean)
+
+  return [...new Set(limpas)].slice(0, MAX_LABELS)
+}
+
 export const listarRoadmapsAdmin = async ({ categoria_id, incluirArquivados } = {}) => {
   const conditions = []
   const params = []
@@ -27,10 +42,26 @@ export const buscarRoadmapAdminPorId = async (id) => {
   return rows[0] || null
 }
 
+// Labels já usadas em roadmaps (para o admin reaproveitar em vez de digitar de novo)
+export const listarLabels = async () => {
+  const { rows } = await db.query(
+    `SELECT DISTINCT label
+     FROM roadmap, unnest(labels) AS label
+     WHERE deleted_at IS NULL
+     ORDER BY label`
+  )
+  return rows.map((r) => r.label)
+}
+
 export const listarRoadmapsPublicos = async (id_usuario) => {
+  // r.* já traz as labels. `meta` diz se o roadmap está na lista de metas do usuário.
   const { rows } = await db.query(
     `SELECT 
        r.*,
+       EXISTS (
+         SELECT 1 FROM meta_roadmap m
+         WHERE m.roadmap_id = r.id_roadmap AND m.id_usuario = $1
+       ) AS meta,
        COALESCE(unidades.total, 0) AS total_unidades,
        COALESCE(unidades.estudadas, 0) AS unidades_estudadas
      FROM roadmap r
@@ -67,22 +98,26 @@ export const buscarRoadmapPublicoPorId = async (id) => {
   return rows[0] || null
 }
 
-export const criarRoadmap = async (categoria_id, titulo, descricao, is_active) => {
+export const criarRoadmap = async (categoria_id, titulo, descricao, is_active, labels = []) => {
   const { rows } = await db.query(
-    `INSERT INTO public.roadmap (categoria_id, titulo, descricao, is_active)
-     VALUES ($1, $2, $3, $4) RETURNING *`,
-    [categoria_id, titulo, descricao, is_active]
+    `INSERT INTO public.roadmap (categoria_id, titulo, descricao, is_active, labels)
+     VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+    [categoria_id, titulo, descricao, is_active, normalizarLabels(labels)]
   )
   return rows[0]
 }
 
-export const editarRoadmap = async (id, categoria_id, titulo, descricao, is_active) => {
+// Se `labels` não vier (undefined), as labels atuais do roadmap são mantidas
+export const editarRoadmap = async (id, categoria_id, titulo, descricao, is_active, labels) => {
+  const labelsNormalizadas = labels === undefined ? null : normalizarLabels(labels)
+
   const result = await db.query(
     `UPDATE public.roadmap
-     SET categoria_id = $1, titulo = $2, descricao = $3, is_active = $4
+     SET categoria_id = $1, titulo = $2, descricao = $3, is_active = $4,
+         labels = COALESCE($6::text[], labels)
      WHERE id_roadmap = $5 AND deleted_at IS NULL
      RETURNING *`,
-    [categoria_id, titulo, descricao, is_active, id]
+    [categoria_id, titulo, descricao, is_active, id, labelsNormalizadas]
   )
   return result.rows[0] || null
 }
@@ -101,4 +136,26 @@ export const restaurarRoadmap = async (id) => {
     [id]
   )
   return result.rows[0]
+}
+
+// ---------------------------------------------------------------------------
+// Metas: roadmaps que o usuário quer iniciar
+// ---------------------------------------------------------------------------
+
+// Idempotente: adicionar duas vezes a mesma meta não dá erro nem duplica
+export const adicionarMeta = async (id_usuario, roadmap_id) => {
+  await db.query(
+    `INSERT INTO meta_roadmap (id_usuario, roadmap_id)
+     VALUES ($1, $2)
+     ON CONFLICT DO NOTHING`,
+    [id_usuario, roadmap_id]
+  )
+}
+
+export const removerMeta = async (id_usuario, roadmap_id) => {
+  const { rowCount } = await db.query(
+    'DELETE FROM meta_roadmap WHERE id_usuario = $1 AND roadmap_id = $2',
+    [id_usuario, roadmap_id]
+  )
+  return rowCount > 0
 }
