@@ -4,7 +4,8 @@
 import { useState, useEffect, type ReactNode } from "react";
 import Link from "next/link";
 import { listarCategorias, Categoria } from "@/service/categoria-service";
-import { listarRoadmaps, RoadmapComProgresso } from "@/service/roadmap-service";
+import { listarRoadmaps, adicionarMeta, removerMeta, RoadmapComProgresso } from "@/service/roadmap-service";
+import { CardQuiz, QuizRoadmapModal, type RoadmapQuiz } from "@/components/QuizRoadmapModal";
 import { useAuth } from "@/context/AuthContext";
 
 // ---------------------------------------------------------------------------
@@ -18,11 +19,8 @@ const semAcento = (s: string) =>
 const progressoDe = (r: RoadmapComProgresso) =>
   Math.min(100, Math.max(0, Math.round(Number(r.progresso_percentual) || 0)));
 
-// A descrição é opcional: se o tipo do roadmap não tiver esse campo, cai na categoria
-const descricaoDe = (r: RoadmapComProgresso) => {
-  const d = (r as unknown as { descricao?: string | null }).descricao;
-  return d && d.trim() ? d : null;
-};
+// A descrição é opcional: sem ela, os cards mostram a categoria
+const descricaoDe = (r: RoadmapComProgresso) => (r.descricao && r.descricao.trim() ? r.descricao : null);
 
 // Cada categoria recebe sempre a mesma cor
 const PALETA = [
@@ -48,49 +46,47 @@ function tipoDeIcone(titulo: string, categoria: string): TipoIcone {
   return "livro";
 }
 
-// Metas automáticas, geradas a partir dos roadmaps (no máximo 3)
+// Metas: as que o usuário salvou (pelo quiz) vêm primeiro, depois as geradas a partir dos roadmaps
 interface Meta {
   id: string;
+  roadmapId: number;
   texto: string;
   progresso: number;
   concluida: boolean;
+  salva: boolean; // veio da lista de metas do usuário (pode ser removida)
 }
+
+const MAX_METAS = 4;
 
 function gerarMetas(
   emAndamento: RoadmapComProgresso[],
   disponiveis: RoadmapComProgresso[],
   concluidos: RoadmapComProgresso[]
 ): Meta[] {
-  const metas: Meta[] = [];
+  const iniciar = (r: RoadmapComProgresso): Meta => ({
+    id: `iniciar-${r.id_roadmap}`,
+    roadmapId: r.id_roadmap,
+    texto: `Iniciar a trilha de ${r.titulo}`,
+    progresso: 0,
+    concluida: false,
+    salva: r.meta,
+  });
 
-  emAndamento.slice(0, 2).forEach((r) =>
-    metas.push({
-      id: `concluir-${r.id_roadmap}`,
-      texto: `Concluir a trilha de ${r.titulo}`,
-      progresso: progressoDe(r),
-      concluida: false,
-    })
-  );
+  const concluir = (r: RoadmapComProgresso, feita: boolean): Meta => ({
+    id: `${feita ? "feito" : "concluir"}-${r.id_roadmap}`,
+    roadmapId: r.id_roadmap,
+    texto: `Concluir a trilha de ${r.titulo}`,
+    progresso: progressoDe(r),
+    concluida: feita,
+    salva: false,
+  });
 
-  disponiveis.slice(0, 3 - metas.length).forEach((r) =>
-    metas.push({
-      id: `iniciar-${r.id_roadmap}`,
-      texto: `Iniciar a trilha de ${r.titulo}`,
-      progresso: 0,
-      concluida: false,
-    })
-  );
-
-  concluidos.slice(0, 3 - metas.length).forEach((r) =>
-    metas.push({
-      id: `feito-${r.id_roadmap}`,
-      texto: `Concluir a trilha de ${r.titulo}`,
-      progresso: 100,
-      concluida: true,
-    })
-  );
-
-  return metas;
+  return [
+    ...disponiveis.filter((r) => r.meta).map(iniciar),
+    ...emAndamento.map((r) => concluir(r, false)),
+    ...disponiveis.filter((r) => !r.meta).map(iniciar),
+    ...concluidos.map((r) => concluir(r, true)),
+  ].slice(0, MAX_METAS);
 }
 
 const DICAS = [
@@ -173,6 +169,13 @@ const IconArrow = ({ className }: IconeProps) => (
 const IconCheck = ({ className }: IconeProps) => (
   <Icone className={className}>
     <path d="M20 6 9 17l-5-5" />
+  </Icone>
+);
+
+const IconX = ({ className }: IconeProps) => (
+  <Icone className={className}>
+    <path d="M18 6 6 18" />
+    <path d="m6 6 12 12" />
   </Icone>
 );
 
@@ -518,7 +521,7 @@ function CardProgressoGeral({
   );
 }
 
-function CardMetas({ metas }: { metas: Meta[] }) {
+function CardMetas({ metas, onRemover }: { metas: Meta[]; onRemover: (id_roadmap: number) => void }) {
   return (
     <CardLateral icone={<IconTarget />} titulo="Metas do momento">
       {metas.length === 0 ? (
@@ -548,6 +551,20 @@ function CardMetas({ metas }: { metas: Meta[] }) {
               </div>
 
               <span className="w-9 shrink-0 text-right text-xs text-gray-500">{meta.progresso}%</span>
+
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center">
+                {meta.salva && (
+                  <button
+                    type="button"
+                    aria-label={`Remover meta: ${meta.texto}`}
+                    title="Remover da minha lista"
+                    onClick={() => onRemover(meta.roadmapId)}
+                    className="rounded-full p-0.5 text-gray-300 transition-colors hover:bg-red-50 hover:text-red-500"
+                  >
+                    <IconX className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </span>
             </li>
           ))}
         </ul>
@@ -645,6 +662,7 @@ export default function ClientInicioPage() {
   const [erro, setErro] = useState<string | null>(null);
   const [categoriaFiltro, setCategoriaFiltro] = useState<number | null>(null);
   const [dica, setDica] = useState(DICAS[0]);
+  const [quizAberto, setQuizAberto] = useState(false);
 
   const username = usuario?.username ?? "";
 
@@ -665,6 +683,21 @@ export default function ClientInicioPage() {
     const diaDoAno = Math.floor((hoje.getTime() - inicioDoAno.getTime()) / 86400000);
     setDica(DICAS[diaDoAno % DICAS.length]);
   }, []);
+
+  // Metas: salvar e remover direto no backend, atualizando a lista local
+  const handleAdicionarMeta = async (id_roadmap: number) => {
+    await adicionarMeta(id_roadmap); // se falhar, o quiz mostra o erro
+    setRoadmaps((prev) => prev.map((r) => (r.id_roadmap === id_roadmap ? { ...r, meta: true } : r)));
+  };
+
+  const handleRemoverMeta = async (id_roadmap: number) => {
+    try {
+      await removerMeta(id_roadmap);
+      setRoadmaps((prev) => prev.map((r) => (r.id_roadmap === id_roadmap ? { ...r, meta: false } : r)));
+    } catch {
+      setErro("Não foi possível remover a meta.");
+    }
+  };
 
   // ----- Dados derivados -----
   const emAndamento = roadmaps
@@ -696,6 +729,16 @@ export default function ClientInicioPage() {
       return { id: c.id_categoria, nome: c.nome, progresso: media, cor: corDaCategoria(c.id_categoria) };
     })
     .filter((x): x is NonNullable<typeof x> => x !== null);
+
+  // Candidatos do quiz: roadmaps que o usuário ainda não iniciou
+  const roadmapsQuiz: RoadmapQuiz[] = disponiveis.map((r) => ({
+    id_roadmap: r.id_roadmap,
+    titulo: r.titulo,
+    descricao: r.descricao,
+    categoriaNome: nomeDaCategoria(r.categoria_id),
+    labels: r.labels,
+  }));
+  const metasIds = roadmaps.filter((r) => r.meta).map((r) => r.id_roadmap);
 
   const conquistas = [
     {
@@ -909,7 +952,8 @@ export default function ClientInicioPage() {
                 concluidos={concluidos.length}
                 total={roadmaps.length}
               />
-              <CardMetas metas={metas} />
+              <CardMetas metas={metas} onRemover={handleRemoverMeta} />
+              <CardQuiz onIniciar={() => setQuizAberto(true)} />
               <CardCategorias itens={progressoPorCategoria} />
               <CardConquistas conquistas={conquistas} />
               <CardDica dica={dica} />
@@ -917,6 +961,15 @@ export default function ClientInicioPage() {
           </div>
         )}
       </div>
+
+      {quizAberto && (
+        <QuizRoadmapModal
+          roadmaps={roadmapsQuiz}
+          metasIds={metasIds}
+          onAdicionarMeta={handleAdicionarMeta}
+          onClose={() => setQuizAberto(false)}
+        />
+      )}
     </main>
   );
 }

@@ -23,6 +23,7 @@ import {
   restaurarRoadmap,
   Roadmap,
 } from "@/service/roadmap-service";
+import RoadmapLabelsModal from "@/components/RoadmapLabelModal";
 
 export default function AdminInicioPage() {
   const { usuario } = useAuth();
@@ -38,8 +39,11 @@ export default function AdminInicioPage() {
   const [roadmapEditando, setRoadmapEditando] = useState<Roadmap | null>(null);
   const [categoriaParaNovoRoadmap, setCategoriaParaNovoRoadmap] = useState<Categoria | null>(null);
   const [roadmapParaArquivar, setRoadmapParaArquivar] = useState<Roadmap | null>(null);
+  const [modalLabelsAberto, setModalLabelsAberto] = useState(false);
+  const [roadmapParaEditarLabels, setRoadmapParaEditarLabels] = useState<Roadmap | null>(null);
 
   const username = usuario?.username ?? "";
+  
 
   const carregarDados = () => {
     setLoading(true);
@@ -266,6 +270,23 @@ export default function AdminInicioPage() {
                             </button>
                           )}
                         </div>
+                        <div className="flex flex-wrap items-center gap-2 mt-3">
+                          {roadmap.labels.map((label) => (
+                            <span key={label} className="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full">{label}</span>
+                          ))}
+                          {roadmap.labels.length === 0 && <span className="text-xs text-gray-400">sem labels</span>}
+                          {!roadmap.deleted_at && (
+                            <button
+                              onClick={() => {
+                                setRoadmapParaEditarLabels(roadmap);
+                                setModalLabelsAberto(true);
+                              }}
+                              className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800"
+                            >
+                              <Pencil size={12} /> Editar labels
+                            </button>
+                          )}
+                        </div>
                       </Link>
                     ))}
 
@@ -324,6 +345,21 @@ export default function AdminInicioPage() {
             textoConfirmando="Arquivando..."
             onCancel={() => setRoadmapParaArquivar(null)}
             onConfirm={handleArquivarRoadmap}
+          />
+        )}
+
+        {modalLabelsAberto && roadmapParaEditarLabels && (
+          <RoadmapLabelsModal
+            roadmap={roadmapParaEditarLabels}
+            onClose={() => {
+              setModalLabelsAberto(false);
+              setRoadmapParaEditarLabels(null);
+            }}
+            onSuccess={(atualizado) => {
+              setRoadmaps((prev) => prev.map((r) => (r.id_roadmap === atualizado.id_roadmap ? atualizado : r)));
+              setModalLabelsAberto(false);
+              setRoadmapParaEditarLabels(null);
+            }}
           />
         )}
       </div>
