@@ -5,6 +5,7 @@ export interface Roadmap {
   categoria_id: number;
   titulo: string;
   descricao: string | null;
+  meta?: boolean;
   is_active: boolean;
   deleted_at: string | null;
   labels: string[];

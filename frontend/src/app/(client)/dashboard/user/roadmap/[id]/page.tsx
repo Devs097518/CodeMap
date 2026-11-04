@@ -14,13 +14,14 @@ import {
   Info,
   Lightbulb,
   ListChecks,
+  Plus,
   Play,
   RefreshCw,
   Rocket,
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { buscarRoadmap, Roadmap } from "@/service/roadmap-service";
+import { adicionarMeta, buscarRoadmap, removerMeta, Roadmap } from "@/service/roadmap-service";
 import { listarTopicosComProgresso, TopicoComProgresso } from "@/service/topico-service";
 import { alternarProgressoTopico, alternarProgressoSubitem } from "@/service/progresso-service";
 import RecursosBadge from "@/components/RecursoModal";
@@ -115,6 +116,7 @@ export default function RoadmapDetalheClientPage() {
   const [topicos, setTopicos] = useState<TopicoComProgresso[]>([]);
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
+  const [metaAtualizando, setMetaAtualizando] = useState(false);
 
   // Etapas abertas (a etapa atual abre sozinha na primeira carga)
   const [abertas, setAbertas] = useState<number[]>([]);
@@ -124,7 +126,7 @@ export default function RoadmapDetalheClientPage() {
     if (!roadmapId) return;
     Promise.all([buscarRoadmap(roadmapId), listarTopicosComProgresso(roadmapId)])
       .then(([r, t]) => {
-        setRoadmap(r);
+        setRoadmap({ ...r, meta: Boolean(r.meta) });
         setTopicos(t);
       })
       .catch(() => setErro("Erro ao carregar roadmap."))
@@ -176,6 +178,25 @@ export default function RoadmapDetalheClientPage() {
         )
       );
       setErro("Erro ao atualizar progresso.");
+    }
+  };
+
+  const handleAlternarMeta = async () => {
+    if (!roadmap) return;
+
+    setMetaAtualizando(true);
+    setErro(null);
+    try {
+      if (roadmap.meta) {
+        await removerMeta(roadmap.id_roadmap);
+      } else {
+        await adicionarMeta(roadmap.id_roadmap);
+      }
+      setRoadmap((atual) => (atual ? { ...atual, meta: !roadmap.meta } : atual));
+    } catch {
+      setErro(`Não foi possível ${roadmap.meta ? "remover" : "adicionar"} este roadmap às metas.`);
+    } finally {
+      setMetaAtualizando(false);
     }
   };
 
@@ -261,6 +282,24 @@ export default function RoadmapDetalheClientPage() {
 
             <div className="min-w-0 flex-1">
               <h1 className="text-3xl font-bold leading-tight text-gray-900">{roadmap.titulo}</h1>
+              <button
+                type="button"
+                aria-pressed={Boolean(roadmap.meta)}
+                disabled={metaAtualizando}
+                onClick={handleAlternarMeta}
+                className={`mt-3 inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors disabled:cursor-wait disabled:opacity-60 ${
+                  roadmap.meta
+                    ? "border-[#d8c98f] bg-white/60 text-gray-600 hover:bg-white"
+                    : "border-transparent text-gray-500 hover:border-[#d8c98f] hover:bg-white/60 hover:text-gray-700"
+                }`}
+              >
+                {roadmap.meta ? <Check size={16} /> : <Plus size={16} />}
+                {metaAtualizando
+                  ? "Salvando..."
+                  : roadmap.meta
+                    ? "Remover das minhas metas"
+                    : "Adicionar às minhas metas"}
+              </button>
               {roadmap.descricao && (
                 <p className="mt-1.5 max-w-xl text-base leading-relaxed text-gray-600">
                   {roadmap.descricao}

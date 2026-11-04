@@ -46,47 +46,33 @@ function tipoDeIcone(titulo: string, categoria: string): TipoIcone {
   return "livro";
 }
 
-// Metas: as que o usuário salvou (pelo quiz) vêm primeiro, depois as geradas a partir dos roadmaps
+// Metas: somente os roadmaps que o usuário adicionou à lista.
 interface Meta {
   id: string;
   roadmapId: number;
   texto: string;
   progresso: number;
   concluida: boolean;
-  salva: boolean; // veio da lista de metas do usuário (pode ser removida)
 }
 
-const MAX_METAS = 4;
+function gerarMetas(roadmaps: RoadmapComProgresso[]): Meta[] {
+  return roadmaps.filter((r) => r.meta).map((r) => {
+    const progresso = progressoDe(r);
+    const concluida = r.iniciado && progresso >= 100;
+    const texto = !r.iniciado
+      ? `Iniciar a trilha de ${r.titulo}`
+      : concluida
+        ? `Trilha concluída: ${r.titulo}`
+        : `Concluir a trilha de ${r.titulo}`;
 
-function gerarMetas(
-  emAndamento: RoadmapComProgresso[],
-  disponiveis: RoadmapComProgresso[],
-  concluidos: RoadmapComProgresso[]
-): Meta[] {
-  const iniciar = (r: RoadmapComProgresso): Meta => ({
-    id: `iniciar-${r.id_roadmap}`,
-    roadmapId: r.id_roadmap,
-    texto: `Iniciar a trilha de ${r.titulo}`,
-    progresso: 0,
-    concluida: false,
-    salva: r.meta,
+    return {
+      id: `meta-${r.id_roadmap}`,
+      roadmapId: r.id_roadmap,
+      texto,
+      progresso,
+      concluida,
+    };
   });
-
-  const concluir = (r: RoadmapComProgresso, feita: boolean): Meta => ({
-    id: `${feita ? "feito" : "concluir"}-${r.id_roadmap}`,
-    roadmapId: r.id_roadmap,
-    texto: `Concluir a trilha de ${r.titulo}`,
-    progresso: progressoDe(r),
-    concluida: feita,
-    salva: false,
-  });
-
-  return [
-    ...disponiveis.filter((r) => r.meta).map(iniciar),
-    ...emAndamento.map((r) => concluir(r, false)),
-    ...disponiveis.filter((r) => !r.meta).map(iniciar),
-    ...concluidos.map((r) => concluir(r, true)),
-  ].slice(0, MAX_METAS);
 }
 
 const DICAS = [
@@ -362,27 +348,29 @@ function CardEmAndamento({
   const p = progressoDe(roadmap);
 
   return (
-    <Link
-      href={`/dashboard/user/roadmap/${roadmap.id_roadmap}`}
-      className="group relative flex items-center gap-5 overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 to-white p-5 transition-all duration-150 hover:border-indigo-300 hover:shadow-md active:scale-[0.99]"
-    >
-      <span className="absolute inset-y-0 left-0 w-1 bg-indigo-500" aria-hidden="true" />
+    <div className="flex items-center gap-3 overflow-hidden rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50/70 to-white p-3 transition-all duration-150 hover:border-indigo-300 hover:shadow-md sm:gap-5 sm:p-5">
+      <Link
+        href={`/dashboard/user/roadmap/${roadmap.id_roadmap}`}
+        className="group relative flex min-w-0 flex-1 items-center gap-5"
+      >
+        <span className="absolute inset-y-0 -left-3 w-1 bg-indigo-500 sm:-left-5" aria-hidden="true" />
 
-      <IconeRoadmap titulo={roadmap.titulo} categoria={categoriaNome} cor={cor} grande />
+        <IconeRoadmap titulo={roadmap.titulo} categoria={categoriaNome} cor={cor} grande />
 
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-lg font-semibold text-gray-900">{roadmap.titulo}</p>
-        <p className="mt-0.5 line-clamp-2 text-sm text-gray-500">
-          {descricaoDe(roadmap) ?? categoriaNome}
-        </p>
-        <Barra valor={p} className="mt-3 h-2.5" />
-        <p className="mt-1 text-xs text-gray-600">{p}% concluído</p>
-      </div>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-lg font-semibold text-gray-900">{roadmap.titulo}</p>
+          <p className="mt-0.5 line-clamp-2 text-sm text-gray-500">
+            {descricaoDe(roadmap) ?? categoriaNome}
+          </p>
+          <Barra valor={p} className="mt-3 h-2.5" />
+          <p className="mt-1 text-xs text-gray-600">{p}% concluído</p>
+        </div>
 
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 transition-transform group-hover:translate-x-0.5">
-        <IconArrow />
-      </span>
-    </Link>
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 transition-transform group-hover:translate-x-0.5">
+          <IconArrow />
+        </span>
+      </Link>
+    </div>
   );
 }
 
@@ -396,30 +384,32 @@ function LinhaDisponivel({
   cor: Cor;
 }) {
   return (
-    <Link
-      href={`/dashboard/user/roadmap/${roadmap.id_roadmap}`}
-      className="group flex items-center gap-4 rounded-2xl border border-gray-200 bg-white p-4 transition-all duration-150 hover:border-indigo-300 hover:shadow-md active:scale-[0.99]"
-    >
-      <IconeRoadmap titulo={roadmap.titulo} categoria={categoriaNome} cor={cor} />
+    <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white p-4 transition-all duration-150 hover:border-indigo-300 hover:shadow-md">
+      <Link
+        href={`/dashboard/user/roadmap/${roadmap.id_roadmap}`}
+        className="group flex min-w-0 flex-1 items-center gap-4"
+      >
+        <IconeRoadmap titulo={roadmap.titulo} categoria={categoriaNome} cor={cor} />
 
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <p className="truncate font-semibold text-gray-900">{roadmap.titulo}</p>
-          <span className={`hidden shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium sm:inline ${cor.bg} ${cor.fg}`}>
-            {categoriaNome}
-          </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <p className="truncate font-semibold text-gray-900">{roadmap.titulo}</p>
+            <span className={`hidden shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium sm:inline ${cor.bg} ${cor.fg}`}>
+              {categoriaNome}
+            </span>
+          </div>
+          <p className="mt-0.5 line-clamp-1 text-sm text-gray-500">
+            {descricaoDe(roadmap) ?? `Trilha de ${categoriaNome}`}
+          </p>
+          <Barra valor={0} className="mt-2 h-1.5 max-w-sm" />
+          <p className="mt-1 text-xs text-gray-500">0% concluído</p>
         </div>
-        <p className="mt-0.5 line-clamp-1 text-sm text-gray-500">
-          {descricaoDe(roadmap) ?? `Trilha de ${categoriaNome}`}
-        </p>
-        <Barra valor={0} className="mt-2 h-1.5 max-w-sm" />
-        <p className="mt-1 text-xs text-gray-500">0% concluído</p>
-      </div>
 
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition-all group-hover:translate-x-0.5 group-hover:bg-indigo-100 group-hover:text-indigo-700">
-        <IconArrow className="h-4 w-4" />
-      </span>
-    </Link>
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition-all group-hover:translate-x-0.5 group-hover:bg-indigo-100 group-hover:text-indigo-700">
+          <IconArrow className="h-4 w-4" />
+        </span>
+      </Link>
+    </div>
   );
 }
 
@@ -431,18 +421,20 @@ function LinhaConcluida({
   categoriaNome: string;
 }) {
   return (
-    <Link
-      href={`/dashboard/user/roadmap/${roadmap.id_roadmap}`}
-      className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/50 px-4 py-3 transition-all hover:border-emerald-300 active:scale-[0.99]"
-    >
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white">
-        <IconCheck className="h-4 w-4" />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="truncate font-medium text-gray-900">{roadmap.titulo}</p>
-        <p className="text-xs text-gray-500">{categoriaNome} · 100% concluído</p>
-      </div>
-    </Link>
+    <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/50 px-4 py-3 transition-all hover:border-emerald-300">
+      <Link
+        href={`/dashboard/user/roadmap/${roadmap.id_roadmap}`}
+        className="flex min-w-0 flex-1 items-center gap-3"
+      >
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white">
+          <IconCheck className="h-4 w-4" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-medium text-gray-900">{roadmap.titulo}</p>
+          <p className="text-xs text-gray-500">{categoriaNome} · 100% concluído</p>
+        </div>
+      </Link>
+    </div>
   );
 }
 
@@ -525,7 +517,9 @@ function CardMetas({ metas, onRemover }: { metas: Meta[]; onRemover: (id_roadmap
   return (
     <CardLateral icone={<IconTarget />} titulo="Metas do momento">
       {metas.length === 0 ? (
-        <p className="text-sm text-gray-500">Nenhuma meta por enquanto.</p>
+        <p className="text-sm text-gray-500">
+          Nenhuma meta escolhida. Use o quiz para adicionar roadmaps à sua lista.
+        </p>
       ) : (
         <ul className="space-y-4">
           {metas.map((meta) => (
@@ -543,7 +537,7 @@ function CardMetas({ metas, onRemover }: { metas: Meta[]; onRemover: (id_roadmap
               <div className="min-w-0 flex-1">
                 <p
                   title={meta.texto}
-                  className={`truncate text-sm ${meta.concluida ? "text-gray-400 line-through" : "text-gray-800"}`}
+                  className={`break-words text-sm ${meta.concluida ? "text-gray-400 line-through" : "text-gray-800"}`}
                 >
                   {meta.texto}
                 </p>
@@ -553,17 +547,15 @@ function CardMetas({ metas, onRemover }: { metas: Meta[]; onRemover: (id_roadmap
               <span className="w-9 shrink-0 text-right text-xs text-gray-500">{meta.progresso}%</span>
 
               <span className="flex h-5 w-5 shrink-0 items-center justify-center">
-                {meta.salva && (
-                  <button
-                    type="button"
-                    aria-label={`Remover meta: ${meta.texto}`}
-                    title="Remover da minha lista"
-                    onClick={() => onRemover(meta.roadmapId)}
-                    className="rounded-full p-0.5 text-gray-300 transition-colors hover:bg-red-50 hover:text-red-500"
-                  >
-                    <IconX className="h-3.5 w-3.5" />
-                  </button>
-                )}
+                <button
+                  type="button"
+                  aria-label={`Remover meta: ${meta.texto}`}
+                  title="Remover da minha lista"
+                  onClick={() => onRemover(meta.roadmapId)}
+                  className="rounded-full p-0.5 text-gray-300 transition-colors hover:bg-red-50 hover:text-red-500"
+                >
+                  <IconX className="h-3.5 w-3.5" />
+                </button>
               </span>
             </li>
           ))}
@@ -713,7 +705,7 @@ export default function ClientInicioPage() {
       ? Math.round(roadmaps.reduce((soma, r) => soma + progressoDe(r), 0) / roadmaps.length)
       : 0;
 
-  const metas = gerarMetas(emAndamento, disponiveis, concluidos);
+  const metas = gerarMetas(roadmaps);
 
   const nomeDaCategoria = (id: number) => categorias.find((c) => c.id_categoria === id)?.nome ?? "";
   const corDaCategoria = (id: number): Cor => {

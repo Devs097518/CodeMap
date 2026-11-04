@@ -29,11 +29,11 @@ describe('buscarRoadmapPublicoPorId', () => {
     const roadmapFake = { id_roadmap: 1, titulo: 'Front-end Básico' }
     db.query.mockResolvedValue({ rows: [roadmapFake] })
 
-    const resultado = await buscarRoadmapPublicoPorId(1)
+    const resultado = await buscarRoadmapPublicoPorId(1, 7)
 
     expect(db.query).toHaveBeenCalledWith(
-      expect.stringContaining('WHERE roadmap.id_roadmap = $1'),
-      [1]
+      expect.stringContaining('m.id_usuario = $2'),
+      [1, 7]
     )
     expect(resultado).toEqual(roadmapFake)
   })
@@ -43,6 +43,10 @@ describe('buscarRoadmapPublicoPorId', () => {
 
     const resultado = await buscarRoadmapPublicoPorId(999)
 
+    expect(db.query).toHaveBeenCalledWith(
+      expect.stringContaining('WHERE roadmap.id_roadmap = $1'),
+      [999]
+    )
     expect(resultado).toBeNull()
   })
 })

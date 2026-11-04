@@ -85,15 +85,24 @@ export const listarRoadmapsPublicos = async (id_usuario) => {
   return rows
 }
 
-export const buscarRoadmapPublicoPorId = async (id) => {
+export const buscarRoadmapPublicoPorId = async (id, id_usuario = null) => {
+  const campoMeta = id_usuario === null
+    ? ''
+    : `,
+       EXISTS (
+         SELECT 1 FROM meta_roadmap m
+         WHERE m.roadmap_id = roadmap.id_roadmap AND m.id_usuario = $2
+       ) AS meta`
+  const parametros = id_usuario === null ? [id] : [id, id_usuario]
   const { rows } = await db.query(
-    `SELECT roadmap.* FROM roadmap
+    `SELECT roadmap.*${campoMeta}
+     FROM roadmap
      JOIN categoria ON categoria.id_categoria = roadmap.categoria_id
      WHERE roadmap.id_roadmap = $1
        AND roadmap.is_active = true
        AND roadmap.deleted_at IS NULL
        AND categoria.deleted_at IS NULL`,
-    [id]
+    parametros
   )
   return rows[0] || null
 }

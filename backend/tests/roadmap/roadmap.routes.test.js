@@ -74,6 +74,7 @@ describe('GET /api/roadmap/detalhe/:id', () => {
     const res = await request(app).get('/api/roadmap/detalhe/1')
 
     expect(res.status).toBe(200)
+    expect(roadmapService.buscarRoadmapPublicoPorId).toHaveBeenCalledWith('1', 7)
     expect(res.body).toEqual({ id_roadmap: 1, titulo: 'X' })
   })
 

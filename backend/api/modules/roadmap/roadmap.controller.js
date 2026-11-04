@@ -49,7 +49,7 @@ export const listarLabels = async (req, res) => {
 export const detalhe = async (req, res) => {
   try {
     const { id } = req.params
-    const roadmap = await roadmapService.buscarRoadmapPublicoPorId(id)
+    const roadmap = await roadmapService.buscarRoadmapPublicoPorId(id, req.user.id)
     if (!roadmap) {
       return res.status(404).json({ status: 'erro', mensagem: 'Roadmap não encontrado' })
     }
