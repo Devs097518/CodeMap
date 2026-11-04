@@ -2,11 +2,17 @@
 
 import { ReactNode } from "react";
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { apiFetch } from '@/service/api-fetch';
 
 function StaffLayoutContent({ children }: { children: ReactNode }) {
   const { usuario } = useAuth();
+  const pathname = usePathname();
+  const roadmapsAtivo =
+    pathname === '/dashboard/user/inicio' || pathname.startsWith('/dashboard/user/roadmap/');
+  const cadernosAtivo =
+    pathname.startsWith('/dashboard/user/cadernos') || pathname.startsWith('/dashboard/user/notas');
 
   const handleLogout = async () => {
     await apiFetch('/api/auth/logout', { method: 'POST' });
@@ -31,14 +37,18 @@ function StaffLayoutContent({ children }: { children: ReactNode }) {
 
             <Link
               href="/dashboard/user/inicio"
-              className="flex items-center gap-2 hover:bg-white/20 px-3 py-1 rounded-lg transition-all text-xl"
+              className={`flex items-center gap-2 border-b-2 px-3 py-1 text-xl transition-all hover:bg-white/20 ${
+                roadmapsAtivo ? 'border-white' : 'border-transparent'
+              }`}
             >
               Roadmaps
             </Link>
 
             <Link
               href="/dashboard/user/cadernos"
-              className="flex items-center gap-2 hover:bg-white/20 px-3 py-1 rounded-lg transition-all text-xl"
+              className={`flex items-center gap-2 border-b-2 px-3 py-1 text-xl transition-all hover:bg-white/20 ${
+                cadernosAtivo ? 'border-white' : 'border-transparent'
+              }`}
             >
               Meus Cadernos
             </Link>
