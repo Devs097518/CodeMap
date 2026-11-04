@@ -5,7 +5,7 @@ import { LIMITE_PAGINAS_POR_CADERNO } from '@/constants/caderno';
 
 interface CadernoCardProps {
   titulo: string;
-  cor: string; // #rrggbb
+  cor: string; // #rrggbb — usada no quadrado do ícone e na faixa lateral
   onOpen: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -13,26 +13,6 @@ interface CadernoCardProps {
   ultimaAlteracao?: string; // ex.: "ontem"
   etiqueta?: string; // ex.: "Iniciante", "Estudos"
 }
-
-type RGB = [number, number, number];
-
-const PRETO: RGB = [0, 0, 0];
-const BRANCO: RGB = [255, 255, 255];
-
-function rgbDe(hex: string): RGB {
-  const num = parseInt(hex.replace('#', ''), 16);
-  return [(num >> 16) & 0xff, (num >> 8) & 0xff, num & 0xff];
-}
-
-// Mistura uma cor hex com uma cor alvo; `fator` vai de 0 (cor original) a 1 (cor alvo)
-function misturar(hex: string, alvo: RGB, fator: number) {
-  const [r, g, b] = rgbDe(hex);
-  const m = (a: number, t: number) => Math.round(a + (t - a) * fator);
-  return `rgb(${m(r, alvo[0])}, ${m(g, alvo[1])}, ${m(b, alvo[2])})`;
-}
-
-const escurecer = (hex: string, fator: number) => misturar(hex, PRETO, fator);
-const clarear = (hex: string, fator: number) => misturar(hex, BRANCO, fator);
 
 const EditIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-4 h-4">
@@ -49,50 +29,26 @@ const TrashIcon = () => (
 );
 
 const DotsIcon = () => (
-  <svg viewBox="0 0 24 24" fill="#292929" className="w-5 h-5">
+  <svg viewBox="0 0 24 24" fill="#475569" className="w-5 h-5">
     <circle cx="5" cy="12" r="1.8" />
     <circle cx="12" cy="12" r="1.8" />
     <circle cx="19" cy="12" r="1.8" />
   </svg>
 );
 
-// Pasta com símbolo de código e brilho, nas cores do caderno
-function PastaIcon({ cor }: { cor: string }) {
-  const traco = escurecer(cor, 0.65);
-  const fundo = clarear(cor, 0.35);
-  const frente = clarear(cor, 0.7);
+const ArrowIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4">
+    <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
 
-  return (
-    <svg viewBox="0 0 64 56" fill="none" className="w-14 h-12" aria-hidden="true">
-      {/* Parte de trás, com a aba */}
-      <path
-        d="M5 14a4 4 0 0 1 4-4h13l5 5h28a4 4 0 0 1 4 4v27a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"
-        fill={fundo}
-        stroke={traco}
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      {/* Frente */}
-      <path
-        d="M5 26a4 4 0 0 1 4-4h46a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"
-        fill={frente}
-        stroke={traco}
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      {/* </> */}
-      <path
-        d="M26 31l-5 5 5 5M38 31l5 5-5 5M34 29l-4 14"
-        stroke={traco}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {/* Brilho */}
-      <path d="M58 2l1.6 4.4L64 8l-4.4 1.6L58 14l-1.6-4.4L52 8l4.4-1.6z" fill={traco} />
-    </svg>
-  );
-}
+// Pasta com </> em branco, para ficar sobre o quadrado colorido (igual aos ícones dos roadmaps)
+const PastaIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6 text-white" aria-hidden="true">
+    <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M10 11l-2 2 2 2M14 11l2 2-2 2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
 
 export function CadernoCard({
   titulo,
@@ -124,14 +80,6 @@ export function CadernoCard({
     };
   }, [menuAberto]);
 
-  // Paleta pastel derivada da cor escolhida
-  const fundo = clarear(cor, 0.82);
-  const borda = clarear(cor, 0.45);
-  const trilho = clarear(cor, 0.6);
-  const preenchimento = escurecer(cor, 0.05);
-  const textoSecundario = escurecer(cor, 0.55);
-  const fundoEtiqueta = clarear(cor, 0.62);
-
   // A barra mostra quantas páginas do caderno já foram usadas do limite
   const usadas = Math.min(LIMITE_PAGINAS_POR_CADERNO, Math.max(0, paginas));
   const pct = (usadas / LIMITE_PAGINAS_POR_CADERNO) * 100;
@@ -151,109 +99,113 @@ export function CadernoCard({
           onOpen();
         }
       }}
-      className="group relative flex flex-col gap-4 rounded-2xl border-[1.5px] p-5 text-left cursor-pointer shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2"
-      style={{ backgroundColor: fundo, borderColor: borda }}
+      className="group relative flex flex-col gap-4 rounded-2xl border border-slate-200 border-l-4 bg-white p-5 text-left cursor-pointer shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+      style={{ borderLeftColor: cor }}
     >
-      {/* Menu de ações */}
-      <div
-        ref={menuRef}
-        className="absolute top-4 right-4 z-10"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          type="button"
-          aria-label="Opções do caderno"
-          aria-haspopup="menu"
-          aria-expanded={menuAberto}
-          onClick={() => setMenuAberto((v) => !v)}
-          className="flex h-7 w-9 items-center justify-center rounded-lg border border-black/5 bg-white shadow-sm transition-colors hover:bg-slate-50"
+      {/* Topo: ícone + menu de ações */}
+      <div className="flex items-start justify-between">
+        <div
+          className="flex h-12 w-12 items-center justify-center rounded-xl"
+          style={{ backgroundColor: cor }}
         >
-          <DotsIcon />
-        </button>
+          <PastaIcon />
+        </div>
 
-        {menuAberto && (
-          <div
-            role="menu"
-            className="absolute right-0 mt-2 w-36 overflow-hidden rounded-xl border border-black/5 bg-white py-1 shadow-lg"
+        <div ref={menuRef} className="relative z-10" onClick={(e) => e.stopPropagation()}>
+          <button
+            type="button"
+            aria-label="Opções do caderno"
+            aria-haspopup="menu"
+            aria-expanded={menuAberto}
+            onClick={() => setMenuAberto((v) => !v)}
+            className="flex h-8 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white transition-colors hover:bg-slate-50"
           >
-            <button
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                setMenuAberto(false);
-                onEdit();
-              }}
-              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[#3b82f6] transition-colors hover:bg-slate-50"
+            <DotsIcon />
+          </button>
+
+          {menuAberto && (
+            <div
+              role="menu"
+              className="absolute right-0 mt-2 w-36 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg"
             >
-              <EditIcon />
-              Editar
-            </button>
-            <button
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                setMenuAberto(false);
-                onDelete();
-              }}
-              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 transition-colors hover:bg-slate-50"
-            >
-              <TrashIcon />
-              Excluir
-            </button>
-          </div>
-        )}
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setMenuAberto(false);
+                  onEdit();
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-indigo-600 transition-colors hover:bg-slate-50"
+              >
+                <EditIcon />
+                Editar
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setMenuAberto(false);
+                  onDelete();
+                }}
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-500 transition-colors hover:bg-slate-50"
+              >
+                <TrashIcon />
+                Excluir
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
-      <PastaIcon cor={cor} />
-
-      <h3 title={titulo} className="truncate text-xl font-bold text-[#1f2937]">
+      <h3 title={titulo} className="truncate text-lg font-semibold text-slate-900">
         {titulo}
       </h3>
 
-      {/* Barra de progresso */}
-      <div className="-mt-2 flex flex-col gap-1.5">
+      {/* Barra de progresso (mesmo estilo da tela inicial) */}
+      <div className="-mt-1 flex flex-col gap-1.5">
         <div
           role="progressbar"
           aria-label="Páginas usadas do caderno"
           aria-valuemin={0}
           aria-valuemax={LIMITE_PAGINAS_POR_CADERNO}
           aria-valuenow={usadas}
-          className="h-1.5 w-full overflow-hidden rounded-full"
-          style={{ backgroundColor: trilho }}
+          className="h-2 w-full overflow-hidden rounded-full bg-slate-200"
         >
           <div
-            className="h-full rounded-full transition-all duration-300"
-            style={{ width: `${pct}%`, backgroundColor: preenchimento }}
+            className="h-full rounded-full bg-[#1e1065] transition-all duration-300"
+            style={{ width: `${pct}%` }}
           />
         </div>
 
-        <div
-          className="flex items-center justify-between text-xs"
-          style={{ color: textoSecundario }}
-        >
+        <div className="flex items-center justify-between text-xs text-slate-500">
           <span>
             {usadas}/{LIMITE_PAGINAS_POR_CADERNO} {usadas === 1 ? 'página' : 'páginas'}
           </span>
-          {cheio && <span className="font-semibold">Caderno cheio</span>}
+          {cheio && (
+            <span className="rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-700">
+              Caderno cheio
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Rodapé: meta + etiqueta */}
-      {(meta || etiqueta) && (
-        <div className="flex items-center justify-between gap-2">
-          <span className="truncate text-sm" style={{ color: textoSecundario }}>
-            {meta}
-          </span>
+      {/* Rodapé: meta + etiqueta + seta de abrir */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          {meta && <span className="truncate text-sm text-slate-500">{meta}</span>}
           {etiqueta && (
-            <span
-              className="shrink-0 rounded-full px-3 py-0.5 text-xs font-medium"
-              style={{ backgroundColor: fundoEtiqueta, color: textoSecundario }}
-            >
+            <span className="shrink-0 rounded-full bg-indigo-50 px-3 py-0.5 text-xs font-medium text-indigo-700">
               {etiqueta}
             </span>
           )}
         </div>
-      )}
+        <span
+          aria-hidden="true"
+          className="ml-auto flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 transition-colors group-hover:bg-indigo-200"
+        >
+          <ArrowIcon />
+        </span>
+      </div>
     </div>
   );
 }
